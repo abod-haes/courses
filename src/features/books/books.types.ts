@@ -3,6 +3,12 @@ import type { Locale } from "@/shared/lib/types";
 export type BookCategoryKey = "anatomy" | "cardiology" | "surgery" | "pediatrics";
 
 type LocalizedText = Readonly<Record<Locale, string>>;
+type LocalizedTextList = Readonly<Record<Locale, readonly string[]>>;
+
+export type BookProductDetail = Readonly<{
+  label: LocalizedText;
+  value: LocalizedText;
+}>;
 
 export type BookCatalogItem = Readonly<{
   id: string;
@@ -16,6 +22,28 @@ export type BookCatalogItem = Readonly<{
   href: string;
   image: string;
   imageAlt: LocalizedText;
+  details: Readonly<{
+    availability: LocalizedText;
+    accessNote: LocalizedText;
+    description: LocalizedTextList;
+    highlights: LocalizedTextList;
+    tableOfContents: LocalizedTextList;
+    authorBio: LocalizedTextList;
+    productDetails: readonly BookProductDetail[];
+  }>;
+}>;
+
+export type BookDetailView = Readonly<{
+  availability: string;
+  accessNote: string;
+  description: readonly string[];
+  highlights: readonly string[];
+  tableOfContents: readonly string[];
+  authorBio: readonly string[];
+  productDetails: readonly Readonly<{
+    label: string;
+    value: string;
+  }>[];
 }>;
 
 export type BookItemView = Readonly<{
@@ -30,6 +58,7 @@ export type BookItemView = Readonly<{
   href: string;
   image: string;
   imageAlt: string;
+  details: BookDetailView;
 }>;
 
 export type BooksPageCopy = Readonly<{
@@ -49,5 +78,17 @@ export type BooksPageCopy = Readonly<{
     viewDetails: string;
     noResultsTitle: string;
     noResultsDescription: string;
+  }>;
+  detail: Readonly<{
+    backToBooks: string;
+    addToCart: string;
+    saveForLater: string;
+    secureAccessTitle: string;
+    productDetailsTitle: string;
+    tabs: Readonly<{
+      description: string;
+      tableOfContents: string;
+      authorBio: string;
+    }>;
   }>;
 }>;
