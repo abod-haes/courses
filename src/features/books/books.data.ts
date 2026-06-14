@@ -4,12 +4,11 @@ import type { BookCatalogItem, BookItemView, BooksPageCopy } from "./books.types
 const booksPageCopyByLocale: Readonly<Record<Locale, BooksPageCopy>> = {
   en: {
     meta: {
-      title: "Books Library - IASS",
-      description: "Browse IASS digital books, clinical references, and focused study guides in a clean searchable library.",
-      ogTitle: "IASS Books Library",
-      ogDescription: "Search and explore curated medical, beauty, and professional learning books from IASS.",
+      title: "Medical Library - IASS",
+      description: "Access a clean searchable library of medical textbooks, reference books, and clinical guides.",
+      ogTitle: "IASS Medical Library",
+      ogDescription: "Browse medical books and clinical guides in a simple, focused library experience.",
     },
-    eyebrow: "IASS digital library",
     title: "Medical Library",
     subtitle:
       "Access our comprehensive collection of medical texts, reference books, and clinical guides. Essential reading for students and professionals.",
@@ -17,43 +16,28 @@ const booksPageCopyByLocale: Readonly<Record<Locale, BooksPageCopy>> = {
     filters: {
       all: "All Books",
     },
-    stats: {
-      books: "Curated books",
-      categories: "Focused categories",
-      access: "Digital access",
-    },
     labels: {
-      isbn: "ISBN",
       viewDetails: "View Details",
-      results: "books found",
       noResultsTitle: "No books found",
       noResultsDescription: "Try another search term or select a different category.",
     },
   },
   ar: {
     meta: {
-      title: "مكتبة الكتب - IASS",
-      description: "تصفح كتب IASS الرقمية والمراجع السريرية وأدلة الدراسة ضمن مكتبة واضحة وقابلة للبحث.",
-      ogTitle: "مكتبة كتب IASS",
-      ogDescription: "ابحث واستكشف كتبًا مختارة في الطب والجمال والتعلم المهني من IASS.",
+      title: "المكتبة الطبية - IASS",
+      description: "تصفح مكتبة واضحة وقابلة للبحث تضم كتبًا طبية ومراجع سريرية وأدلة دراسية.",
+      ogTitle: "المكتبة الطبية من IASS",
+      ogDescription: "استعرض الكتب الطبية والمراجع السريرية ضمن تجربة مكتبة بسيطة ومنظمة.",
     },
-    eyebrow: "مكتبة IASS الرقمية",
-    title: "مكتبة الكتب الطبية",
+    title: "المكتبة الطبية",
     subtitle:
-      "تصفح مجموعة شاملة من الكتب الطبية والمراجع السريرية وأدلة الدراسة، مصممة للطلاب والمهنيين بطريقة واضحة ومنظمة.",
+      "تصفح مجموعة شاملة من الكتب الطبية والمراجع السريرية وأدلة الدراسة، مناسبة للطلاب والمهنيين بطريقة واضحة ومنظمة.",
     searchPlaceholder: "ابحث بالعنوان أو المؤلف أو رقم ISBN...",
     filters: {
       all: "كل الكتب",
     },
-    stats: {
-      books: "كتب مختارة",
-      categories: "تصنيفات مركزة",
-      access: "وصول رقمي",
-    },
     labels: {
-      isbn: "ISBN",
       viewDetails: "عرض التفاصيل",
-      results: "كتاب متاح",
       noResultsTitle: "لا توجد كتب مطابقة",
       noResultsDescription: "جرّب كلمة بحث أخرى أو اختر تصنيفًا مختلفًا.",
     },
@@ -83,7 +67,11 @@ export const booksCatalog: readonly BookCatalogItem[] = [
     price: "$89.99",
     isbn: "978-1-4028-9462-6",
     href: "/books/essential-clinical-anatomy",
-    coverTone: "slate",
+    image: "/images/book-1.png",
+    imageAlt: {
+      en: "Essential Clinical Anatomy book cover",
+      ar: "غلاف كتاب أساسيات التشريح السريري",
+    },
   },
   {
     id: "principles-of-cardiology",
@@ -107,7 +95,11 @@ export const booksCatalog: readonly BookCatalogItem[] = [
     price: "$112.50",
     isbn: "978-0-3217-3561-1",
     href: "/books/principles-of-cardiology",
-    coverTone: "blue",
+    image: "/images/book-2.png",
+    imageAlt: {
+      en: "Principles of Cardiology book cover",
+      ar: "غلاف كتاب مبادئ طب القلب",
+    },
   },
   {
     id: "operative-surgical-techniques",
@@ -131,7 +123,11 @@ export const booksCatalog: readonly BookCatalogItem[] = [
     price: "$145.00",
     isbn: "978-1-5661-9289-4",
     href: "/books/operative-surgical-techniques",
-    coverTone: "teal",
+    image: "/images/book-1.png",
+    imageAlt: {
+      en: "Operative Surgical Techniques book cover",
+      ar: "غلاف كتاب تقنيات الجراحة العملية",
+    },
   },
   {
     id: "fundamentals-of-pediatrics",
@@ -155,55 +151,11 @@ export const booksCatalog: readonly BookCatalogItem[] = [
     price: "$95.00",
     isbn: "978-0-5965-2000-3",
     href: "/books/fundamentals-of-pediatrics",
-    coverTone: "cyan",
-  },
-  {
-    id: "clinical-dermatology-atlas",
-    title: {
-      en: "Clinical Dermatology Atlas",
-      ar: "أطلس الأمراض الجلدية السريري",
+    image: "/images/book-2.png",
+    imageAlt: {
+      en: "Fundamentals of Pediatrics book cover",
+      ar: "غلاف كتاب أساسيات طب الأطفال",
     },
-    author: {
-      en: "IASS Editorial Team",
-      ar: "فريق تحرير IASS",
-    },
-    categoryKey: "dermatology",
-    category: {
-      en: "Dermatology",
-      ar: "الجلدية",
-    },
-    description: {
-      en: "A practical atlas for identifying common skin conditions and connecting observations with safe next steps.",
-      ar: "أطلس عملي يساعد على تمييز الحالات الجلدية الشائعة وربط الملاحظات بالخطوات الآمنة التالية.",
-    },
-    price: "$76.00",
-    isbn: "978-1-8619-7113-1",
-    href: "/books/clinical-dermatology-atlas",
-    coverTone: "violet",
-  },
-  {
-    id: "aesthetic-consultation-handbook",
-    title: {
-      en: "Aesthetic Consultation Handbook",
-      ar: "دليل الاستشارة الجمالية",
-    },
-    author: {
-      en: "IASS Faculty",
-      ar: "هيئة تدريس IASS",
-    },
-    categoryKey: "aesthetics",
-    category: {
-      en: "Aesthetics",
-      ar: "الجماليات",
-    },
-    description: {
-      en: "A concise handbook for professional consultation, service planning, client communication, and safety basics.",
-      ar: "دليل مختصر للاستشارة المهنية، تخطيط الخدمة، التواصل مع العميل، وأساسيات السلامة.",
-    },
-    price: "$68.50",
-    isbn: "978-1-4919-1889-0",
-    href: "/books/aesthetic-consultation-handbook",
-    coverTone: "emerald",
   },
 ];
 
@@ -222,6 +174,7 @@ export function getBooks(locale: Locale): BookItemView[] {
     price: book.price,
     isbn: book.isbn,
     href: book.href,
-    coverTone: book.coverTone,
+    image: book.image,
+    imageAlt: book.imageAlt[locale],
   }));
 }
