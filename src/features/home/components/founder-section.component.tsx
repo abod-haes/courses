@@ -64,7 +64,7 @@ export function FounderSection({ copy }: FounderSectionProps) {
   const arrowHoverClass = isRtl ? "group-hover:-translate-x-0.5" : "group-hover:translate-x-0.5";
 
   return (
-    <section id="founder" className="overflow-hidden bg-[#F7F8FF] py-16 sm:py-20 lg:py-24">
+    <section id="founder" className="overflow-hidden bg-section-bg py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           className="mx-auto max-w-3xl text-center"
@@ -78,10 +78,10 @@ export function FounderSection({ copy }: FounderSectionProps) {
           <p className="mt-4 text-base leading-7 text-foreground/68 sm:text-lg">{founder.subtitle}</p>
         </motion.div>
 
-        <article className="group mt-10 overflow-hidden rounded-[24px] border border-[#E6E8F5] bg-white shadow-[0_18px_48px_rgba(17,24,39,0.06)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(17,24,39,0.08)] sm:mt-12">
+        <article className="group mt-10 overflow-hidden rounded-[24px] border border-border/70 bg-surface shadow-[0_18px_48px_rgba(17,24,39,0.06)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(17,24,39,0.09)] dark:shadow-[0_18px_48px_rgba(0,0,0,0.28)] dark:hover:shadow-[0_24px_64px_rgba(0,0,0,0.34)] sm:mt-12">
           <div className="grid lg:min-h-[460px] lg:grid-cols-[minmax(0,1.04fr)_minmax(0,0.96fr)]">
             <motion.div
-              className="relative min-h-[280px] overflow-hidden rounded-t-[24px] bg-[#EAF0FF] lg:min-h-0 lg:rounded-l-[24px] lg:rounded-tr-none"
+              className="relative min-h-[280px] overflow-hidden rounded-t-[24px] bg-[#EAF0FF] dark:bg-slate-900 lg:min-h-0 lg:rounded-l-[24px] lg:rounded-tr-none"
               initial={shouldReduceMotion ? false : "hidden"}
               whileInView={shouldReduceMotion ? undefined : "visible"}
               variants={imageVariants}
@@ -92,8 +92,8 @@ export function FounderSection({ copy }: FounderSectionProps) {
                 alt={founder.imageAlt}
                 className="absolute inset-0 h-full w-full object-cover object-center transition duration-700 ease-out group-hover:scale-[1.03]"
               />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.06)_0%,rgba(15,23,42,0.14)_100%),linear-gradient(135deg,rgba(29,23,213,0.08)_0%,rgba(29,23,213,0.02)_42%,transparent_72%)]" />
-              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white/18 to-transparent" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.06)_0%,rgba(15,23,42,0.14)_100%),linear-gradient(135deg,rgba(29,23,213,0.08)_0%,rgba(29,23,213,0.02)_42%,transparent_72%)] dark:bg-[linear-gradient(180deg,rgba(2,6,23,0.16)_0%,rgba(2,6,23,0.58)_100%),linear-gradient(135deg,rgba(29,23,213,0.18)_0%,rgba(29,23,213,0.04)_42%,transparent_72%)]" />
+              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white/18 to-transparent dark:from-slate-950/24" />
             </motion.div>
 
             <motion.div

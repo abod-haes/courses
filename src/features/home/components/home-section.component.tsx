@@ -32,10 +32,10 @@ export function HomeSection({ section, title, description, emptyState, items, ct
           href={ctaHref}
           variant="ghost"
           size="sm"
-          className="view-all-button group inline-flex items-center gap-2 rounded-[10px] border border-border/60 bg-white px-4 py-2.5 text-sm font-medium text-primary shadow-[0_6px_16px_rgba(17,24,39,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:bg-primary/5 hover:text-primary-strong hover:shadow-[0_10px_24px_rgba(29,23,213,0.08)]"
+          className="view-all-button group inline-flex items-center gap-2 rounded-[10px] border border-border/60 bg-white px-4 py-2.5 text-sm font-medium text-primary shadow-[0_6px_16px_rgba(17,24,39,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:bg-primary/5 hover:text-primary-strong hover:shadow-[0_10px_24px_rgba(29,23,213,0.08)] dark:border-white/10 dark:bg-slate-900/70 dark:text-[#cdd3ff] dark:shadow-[0_10px_22px_rgba(0,0,0,0.18)] dark:hover:border-primary/30 dark:hover:bg-primary/12 dark:hover:text-white dark:hover:shadow-[0_14px_28px_rgba(0,0,0,0.26)]"
         >
           {ctaLabel}
-          <ArrowRight className="view-all-arrow h-4 w-4 transition duration-200 group-hover:translate-x-1 rtl:rotate-180" aria-hidden="true" />
+          <ArrowRight className="view-all-arrow h-4 w-4 transition duration-200 group-hover:translate-x-1 group-hover:text-primary-strong dark:group-hover:text-white rtl:rotate-180" aria-hidden="true" />
         </Button>
       </Reveal>
 

@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, Globe2, Menu, MoonStar, Search, Settings2, SunMedium } from "lucide-react";
+import { ChevronRight, Globe2, Menu, MoonStar, SunMedium } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePreferences } from "@/components/preferences-provider";
 import { Button } from "@/shared/components/ui/button";
 import type { HomeMessages } from "../home.types";
@@ -15,10 +15,7 @@ type HomeHeaderProps = Readonly<{
 }>;
 
 const panelVariants: Variants = {
-  hidden: (x: string) => ({
-    x,
-    opacity: 0.98,
-  }),
+  hidden: (x: string) => ({ x, opacity: 0.98 }),
   visible: {
     x: 0,
     opacity: 1,
@@ -31,10 +28,7 @@ const panelVariants: Variants = {
   exit: (x: string) => ({
     x,
     opacity: 0.98,
-    transition: {
-      duration: 0.18,
-      ease: [0.4, 0, 0.2, 1],
-    },
+    transition: { duration: 0.18, ease: [0.4, 0, 0.2, 1] },
   }),
 };
 
@@ -57,19 +51,18 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   const panelSideClass = isArabic ? "left-0 border-r" : "right-0 border-l";
   const panelExitX = isArabic ? "-100%" : "100%";
 
-  const navItems = useMemo(
-    () => [
-      { label: copy.navigation.courses, href: "/#courses" },
-      { label: copy.navigation.textbooks, href: "/books" },
-      { label: copy.navigation.articles, href: "/#articles" },
-      { label: copy.navigation.specialties, href: "/#about-us" },
-    ],
-    [copy.navigation.articles, copy.navigation.courses, copy.navigation.specialties, copy.navigation.textbooks],
-  );
+  const navItems = [
+    { label: copy.navigation.courses, href: "/#courses" },
+    { label: copy.navigation.textbooks, href: "/books" },
+    { label: copy.navigation.articles, href: "/#articles" },
+    { label: copy.navigation.specialties, href: "/#about-us" },
+  ];
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
     }
 
     document.addEventListener("keydown", handleKeyDown);
@@ -124,27 +117,11 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
             </nav>
 
             <div className="ml-auto hidden items-center gap-2 sm:gap-3 lg:flex">
-              <label className="hidden h-10 w-[15rem] items-center gap-2 rounded-[8px] border border-border/60 bg-surface/85 px-4 text-sm text-foreground/55 transition duration-200 focus-within:border-primary/25 focus-within:bg-white xl:flex">
-                <Search className="h-4 w-4 shrink-0 text-foreground/35" aria-hidden="true" />
-                <input
-                  type="search"
-                  placeholder={copy.actions.searchPlaceholder}
-                  className="w-full bg-transparent outline-none placeholder:text-foreground/45"
-                />
-              </label>
-
-              <a
-                href="#"
-                className="rounded-[8px] px-3 py-2 text-sm font-medium text-primary transition duration-200 hover:-translate-y-0.5 hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              >
-                {copy.actions.signIn}
-              </a>
-
               <Button href="/#courses" className="rounded-[8px] px-4" variant="primary" size="sm">
                 {copy.actions.getStarted}
               </Button>
 
-              <HomeHeaderControls />
+              <HomeHeaderControls copy={copy.controls} />
             </div>
 
             <div className="ms-auto flex items-center gap-2 lg:hidden">
@@ -209,15 +186,6 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               </div>
 
               <div className="flex-1 overflow-y-auto px-4 py-5">
-                <label className="flex h-11 items-center gap-2 rounded-[8px] border border-border/60 bg-surface/85 px-4 text-sm text-foreground/55 transition duration-200 focus-within:border-primary/25 focus-within:bg-white">
-                  <Search className="h-4 w-4 shrink-0 text-foreground/35" aria-hidden="true" />
-                  <input
-                    type="search"
-                    placeholder={copy.actions.searchPlaceholder}
-                    className="w-full bg-transparent outline-none placeholder:text-foreground/45"
-                  />
-                </label>
-
                 <nav className="mt-5 space-y-2">
                   {navItems.map((item) => (
                     <a
@@ -233,14 +201,6 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                 </nav>
 
                 <div className="mt-6 grid gap-3">
-                  <a
-                    href="#"
-                    onClick={() => setMenuOpen(false)}
-                    className="rounded-[10px] border border-border/60 bg-surface/80 px-4 py-3 text-sm font-medium text-foreground/75 transition duration-200 hover:-translate-y-0.5 hover:border-primary/15 hover:bg-primary/5 hover:text-primary"
-                  >
-                    {copy.actions.signIn}
-                  </a>
-
                   <Button
                     href="/#courses"
                     variant="primary"
@@ -253,14 +213,9 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                 </div>
 
                 <div className="mt-6 rounded-[12px] border border-border/60 bg-surface/80 p-3">
-                  <div className="mb-3 flex items-center gap-2">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-primary/8 text-primary">
-                      <Settings2 className="h-4 w-4" aria-hidden="true" />
-                    </span>
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-foreground/55">
-                      {isArabic ? "الواجهة" : "Interface"}
-                    </p>
-                  </div>
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground/55">
+                    {copy.controls.language} {copy.controls.theme}
+                  </p>
 
                   <button
                     type="button"
@@ -268,19 +223,30 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                       toggleLocale();
                       setMenuOpen(false);
                     }}
-                    className="group flex w-full items-center justify-between rounded-[8px] px-3 py-3 text-left text-sm text-foreground/78 transition duration-200 hover:bg-primary/6 hover:text-foreground"
+                    className="flex w-full items-center justify-between rounded-[8px] px-3 py-2.5 text-left text-sm text-foreground/78 transition duration-200 hover:bg-primary/6 hover:text-foreground"
                   >
                     <span className="flex items-center gap-3">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-[6px] bg-primary/8 text-primary transition duration-200 group-hover:scale-105">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-[6px] bg-primary/8 text-primary">
                         <Globe2 className="h-3.5 w-3.5" aria-hidden="true" />
                       </span>
                       <span>
-                        <span className="block font-medium leading-5">{isArabic ? "اللغة" : "Language"}</span>
-                        <span className="block text-[11px] text-foreground/50">{locale === "en" ? "English" : "العربية"}</span>
+                        <span className="block font-medium leading-5">{copy.controls.language}</span>
+                        <span className="block text-[11px] text-foreground/50">
+                          {locale === "en" ? copy.controls.english : copy.controls.arabic}
+                        </span>
                       </span>
                     </span>
-                    <span className="rounded-[8px] bg-primary/8 px-2.5 py-1 text-[11px] font-semibold text-primary">
-                      {locale === "en" ? "EN" : "AR"}
+                    <span
+                      aria-hidden="true"
+                      className={`relative h-6 w-11 rounded-full border border-border/60 transition duration-200 ${
+                        locale === "en" ? "bg-primary/12" : "bg-surface-soft"
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-[0_4px_10px_rgba(17,24,39,0.12)] transition duration-200 ${
+                          locale === "en" ? "start-5" : "start-0.5"
+                        }`}
+                      />
                     </span>
                   </button>
 
@@ -290,10 +256,10 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                       toggleTheme();
                       setMenuOpen(false);
                     }}
-                    className="group mt-2 flex w-full items-center justify-between rounded-[8px] px-3 py-3 text-left text-sm text-foreground/78 transition duration-200 hover:bg-primary/6 hover:text-foreground"
+                    className="mt-1 flex w-full items-center justify-between rounded-[8px] px-3 py-2.5 text-left text-sm text-foreground/78 transition duration-200 hover:bg-primary/6 hover:text-foreground"
                   >
                     <span className="flex items-center gap-3">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-[6px] bg-primary/8 text-primary transition duration-200 group-hover:scale-105">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-[6px] bg-primary/8 text-primary">
                         {theme === "dark" ? (
                           <SunMedium className="h-3.5 w-3.5" aria-hidden="true" />
                         ) : (
@@ -301,14 +267,23 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                         )}
                       </span>
                       <span>
-                        <span className="block font-medium leading-5">{isArabic ? "المظهر" : "Theme"}</span>
+                        <span className="block font-medium leading-5">{copy.controls.theme}</span>
                         <span className="block text-[11px] text-foreground/50">
-                          {theme === "dark" ? (isArabic ? "داكن" : "Dark") : isArabic ? "فاتح" : "Light"}
+                          {theme === "dark" ? copy.controls.dark : copy.controls.light}
                         </span>
                       </span>
                     </span>
-                    <span className="rounded-[8px] bg-primary/8 px-2.5 py-1 text-[11px] font-semibold text-primary">
-                      {theme === "dark" ? "DARK" : "LIGHT"}
+                    <span
+                      aria-hidden="true"
+                      className={`relative h-6 w-11 rounded-full border border-border/60 transition duration-200 ${
+                        theme === "dark" ? "bg-primary/12" : "bg-surface-soft"
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-[0_4px_10px_rgba(17,24,39,0.12)] transition duration-200 ${
+                          theme === "dark" ? "start-5" : "start-0.5"
+                        }`}
+                      />
                     </span>
                   </button>
                 </div>

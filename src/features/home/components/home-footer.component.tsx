@@ -89,9 +89,9 @@ export function HomeFooter({ copy }: HomeFooterProps) {
                       key={item.label}
                       href={item.href}
                       aria-label={item.label}
-                      className="group inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#E6E8F5] bg-white text-primary transition duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:bg-primary hover:text-white"
+                      className="group inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#E6E8F5] bg-white text-primary transition duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:bg-primary hover:text-white dark:border-white/10 dark:bg-slate-900/70 dark:text-[#cdd3ff] dark:hover:border-primary/30 dark:hover:bg-primary dark:hover:text-white"
                     >
-                      <Icon className="h-5 w-5 transition duration-200 group-hover:scale-105 group-hover:text-white" />
+                      <Icon className="h-5 w-5 transition duration-200 group-hover:scale-105 group-hover:text-white dark:text-current" />
                     </a>
                   );
                 })}

@@ -6,7 +6,7 @@
       "ogTitle": "IASS - Beauty and Skills Academy",
       "ogDescription": "Explore elegant courses, digital books, and articles designed for beauty and skills education."
     },
-    "brand": "IASS ",
+    "brand": "IASS",
     "navigation": {
       "courses": "Courses",
       "textbooks": "Books",
@@ -24,6 +24,17 @@
       "viewDetails": "View Details",
       "readArticle": "Read Article"
     },
+    "controls": {
+      "language": "Language",
+      "theme": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "english": "English",
+      "arabic": "Arabic",
+      "toggleLanguageAria": "Toggle language",
+      "toggleThemeLightAria": "Switch to light mode",
+      "toggleThemeDarkAria": "Switch to dark mode"
+    },
     "hero": {
       "badge": "Beauty and Skills Academy",
       "title": "Build confident skills in beauty science and professional practice",
@@ -34,7 +45,7 @@
       "title": "Meet Our Founder",
       "subtitle": "Guided by world-class clinical experts and researchers.",
       "name": "Dr. Iyas",
-      "description": "A board-certified neurologist with over 15 years of clinical experience, Dr. Iyas founded IASS  to bridge the gap between academic theory and frontline medical practice. He personally oversees and teaches our flagship neuroanatomy courses.",
+      "description": "A board-certified neurologist with over 15 years of clinical experience, Dr. Iyas founded IASS to bridge the gap between academic theory and frontline medical practice. He personally oversees and teaches our flagship neuroanatomy courses.",
       "ctaLabel": "View His Courses",
       "imageAlt": "Medical professionals analyzing data"
     },
@@ -256,10 +267,26 @@
     },
     "aboutUs": {
       "label": "Our Mission",
-      "title": "About IASS ",
+      "title": "About IASS",
       "subtitle": "Empowering the next generation of medical professionals with peer-reviewed, expert-led clinical resources. We believe that accessibility to high-quality education is the cornerstone of better patient outcomes worldwide.",
       "primaryCtaLabel": "Our History",
-      "secondaryCtaLabel": "Impact Report"
+      "secondaryCtaLabel": "Impact Report",
+      "imageSrc": "https://lh3.googleusercontent.com/aida-public/AB6AXuAqY1nYfW3l8mS5e7fP8e8j7G3cV8m0qk1h4w0n1R4Y3oVQ5LJv0Q7ZQ6vV0g0zA8qFJ2dVbqY3mY5G4L4q3V1m0k2Qq0bQ8r3M7tQ5h7m8d1k6s5p0W8n0J3c0k1s3R7h9v2p0Y0",
+      "imageAlt": "Medical professionals reviewing clinical data in a calm modern workspace",
+      "highlights": [
+        {
+          "label": "Peer reviewed",
+          "description": "Carefully curated clinical resources built for trust."
+        },
+        {
+          "label": "Expert guided",
+          "description": "Created with experienced instructors and researchers."
+        },
+        {
+          "label": "Practical learning",
+          "description": "Focused material that connects theory with practice."
+        }
+      ]
     }
   }
 }

@@ -58,6 +58,17 @@ export type HomeMessages = Readonly<{
     viewDetails: string;
     readArticle: string;
   }>;
+  controls: Readonly<{
+    language: string;
+    theme: string;
+    light: string;
+    dark: string;
+    english: string;
+    arabic: string;
+    toggleLanguageAria: string;
+    toggleThemeLightAria: string;
+    toggleThemeDarkAria: string;
+  }>;
   hero: Readonly<{
     badge: string;
     title: string;
@@ -78,6 +89,12 @@ export type HomeMessages = Readonly<{
     subtitle: string;
     primaryCtaLabel: string;
     secondaryCtaLabel: string;
+    imageSrc: string;
+    imageAlt: string;
+    highlights: ReadonlyArray<Readonly<{
+      label: string;
+      description: string;
+    }>>;
   }>;
   visual: Readonly<{
     eyebrow: string;

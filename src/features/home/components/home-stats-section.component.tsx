@@ -3,6 +3,7 @@
 import { Award, BookOpen, Star, Users } from "lucide-react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { useLocale } from "next-intl";
+import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/shared/lib/utils";
 import type { HomeMessages, HomeStatItem } from "../home.types";
 
@@ -26,33 +27,98 @@ const headingVariants: Variants = {
   },
 };
 
+function parseStatValue(value: string) {
+  const match = value.match(/^([\d.,]+)(.*)$/);
+
+  if (!match) {
+    return { number: null as number | null, suffix: value };
+  }
+
+  const number = Number.parseFloat(match[1].replace(/,/g, ""));
+
+  if (Number.isNaN(number)) {
+    return { number: null as number | null, suffix: value };
+  }
+
+  return { number, suffix: match[2] };
+}
+
+function formatStatValue(value: number, locale: string, originalValue: string) {
+  const hasDecimals = originalValue.includes(".");
+
+  return new Intl.NumberFormat(locale, {
+    maximumFractionDigits: hasDecimals ? 1 : 0,
+    minimumFractionDigits: hasDecimals ? 1 : 0,
+  }).format(value);
+}
+
 function StatCard({
   item,
   index,
   isRtl,
+  locale,
   shouldReduceMotion,
   variants,
 }: Readonly<{
   item: HomeStatItem;
   index: number;
   isRtl: boolean;
+  locale: string;
   shouldReduceMotion: boolean;
   variants: Variants;
 }>) {
   const Icon = iconMap[item.icon];
-  const accentClass = index === 0 ? "from-primary/12" : index === 1 ? "from-sky-100" : index === 2 ? "from-indigo-100" : "from-violet-100";
+  const accentClass =
+    index === 0
+      ? "from-primary/12 dark:from-primary/22"
+      : index === 1
+        ? "from-sky-100 dark:from-primary/16"
+        : index === 2
+          ? "from-indigo-100 dark:from-primary/18"
+          : "from-violet-100 dark:from-primary/16";
+  const [hasEnteredView, setHasEnteredView] = useState(false);
+  const [displayValue, setDisplayValue] = useState(item.value);
+  const { number, suffix } = useMemo(() => parseStatValue(item.value), [item.value]);
+
+  useEffect(() => {
+    if (!hasEnteredView || shouldReduceMotion || number === null) {
+      return;
+    }
+
+    const duration = 1200;
+    const startTime = performance.now();
+    let animationFrame = 0;
+
+    const step = (now: number) => {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const currentValue = number * eased;
+
+      setDisplayValue(`${formatStatValue(currentValue, locale, item.value)}${suffix}`);
+
+      if (progress < 1) {
+        animationFrame = window.requestAnimationFrame(step);
+      }
+    };
+
+    animationFrame = window.requestAnimationFrame(step);
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [hasEnteredView, item.value, locale, number, shouldReduceMotion, suffix]);
+
   return (
     <motion.article
-      className="group relative overflow-hidden rounded-[22px] border border-[#E6E8F5] bg-white px-5 py-8 shadow-[0_10px_28px_rgba(17,24,39,0.04)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(17,24,39,0.06)] sm:px-6 sm:py-9"
+      className="group relative overflow-hidden rounded-[22px] border border-border/70 bg-white px-5 py-8 shadow-[0_10px_28px_rgba(17,24,39,0.04)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(17,24,39,0.06)] dark:border-white/10 dark:bg-slate-900/82 dark:shadow-[0_16px_40px_rgba(0,0,0,0.28)] dark:hover:shadow-[0_20px_48px_rgba(0,0,0,0.34)] sm:px-6 sm:py-9"
       custom={index}
       initial={shouldReduceMotion ? false : "hidden"}
       whileInView={shouldReduceMotion ? undefined : "visible"}
       variants={variants}
       viewport={{ once: true, amount: 0.28 }}
+      onViewportEnter={() => setHasEnteredView(true)}
     >
-      <div className={`absolute inset-x-0 top-0 h-24 bg-gradient-to-b ${accentClass} to-transparent opacity-90`} />
+      <div className={`absolute inset-x-0 top-0 h-24 bg-gradient-to-b ${accentClass} to-transparent opacity-90 dark:opacity-28`} />
       <div className="relative flex h-full flex-col items-center justify-between gap-4 text-center">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#E6E8F5] bg-[#F7F8FF] text-primary shadow-[0_6px_14px_rgba(29,23,213,0.06)] transition duration-300 group-hover:scale-105">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border/70 bg-[#F7F8FF] text-primary shadow-[0_6px_14px_rgba(29,23,213,0.06)] transition duration-300 group-hover:scale-105 dark:border-white/10 dark:bg-primary/10 dark:shadow-none">
           <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
 
@@ -63,10 +129,10 @@ function StatCard({
             animate={shouldReduceMotion ? undefined : { y: [0, -2, 0] }}
             transition={shouldReduceMotion ? undefined : { duration: 0.9, ease: "easeOut", delay: 0.1 }}
           >
-            {item.value}
+            {displayValue}
           </motion.div>
           <h3 className="text-[1.02rem] font-semibold tracking-tight text-foreground sm:text-[1.08rem]">{item.label}</h3>
-          <p className="mx-auto max-w-[16rem] text-sm leading-6 text-foreground/65">{item.description}</p>
+          <p className="mx-auto max-w-[16rem] text-sm leading-6 text-foreground/65 dark:text-foreground/72">{item.description}</p>
         </div>
       </div>
     </motion.article>
@@ -97,7 +163,7 @@ export function HomeStatsSection({ copy }: HomeStatsSectionProps) {
   };
 
   return (
-    <section id="stats" className="overflow-hidden  py-12 sm:py-14 lg:py-16">
+    <section id="stats" className="overflow-hidden  py-8 sm:py-10 lg:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           className="mx-auto max-w-4xl text-center"
@@ -108,26 +174,29 @@ export function HomeStatsSection({ copy }: HomeStatsSectionProps) {
         >
           <p className="text-xs font-semibold uppercase tracking-[0.26em] text-primary">{stats.label}</p>
           <h2 className="mt-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-[2.7rem]">{stats.title}</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-foreground/68 sm:text-lg">{stats.subtitle}</p>
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-foreground/68 dark:text-foreground/76 sm:text-lg">{stats.subtitle}</p>
         </motion.div>
 
-        <motion.div
-          className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-4"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          {stats.items.map((item, index) => (
-            <StatCard
-              key={item.label}
-              item={item}
-              index={index}
-              isRtl={isRtl}
-              shouldReduceMotion={shouldReduceMotion}
-              variants={cardVariants}
-            />
-          ))}
-        </motion.div>
+        <div className="mt-8 rounded-[28px] border border-border/70 bg-surface p-4 shadow-[0_18px_48px_rgba(17,24,39,0.05)] dark:border-white/10 dark:bg-slate-900/70 dark:shadow-[0_22px_60px_rgba(0,0,0,0.24)] sm:p-5 lg:p-6">
+          <motion.div
+            className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            {stats.items.map((item, index) => (
+              <StatCard
+                key={item.label}
+                item={item}
+                index={index}
+                isRtl={isRtl}
+                locale={locale}
+                shouldReduceMotion={shouldReduceMotion}
+                variants={cardVariants}
+              />
+            ))}
+          </motion.div>
+        </div>
       </div>
     </section>
   );

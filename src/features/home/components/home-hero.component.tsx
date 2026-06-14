@@ -11,7 +11,7 @@ type HomeHeroProps = Readonly<{
 
 export function HomeHero({ copy }: HomeHeroProps) {
   return (
-    <section className="relative overflow-hidden bg-section-bg py-10 lg:py-14">
+    <section className="relative overflow-hidden bg-section-bg py-10 dark:bg-[#07111f] lg:py-14">
       <div className="pointer-events-none absolute inset-0">
         <img
           alt=""
@@ -19,9 +19,10 @@ export function HomeHero({ copy }: HomeHeroProps) {
           className="absolute inset-0 h-full w-full object-cover opacity-[0.16] mix-blend-multiply dark:opacity-[0.08] dark:mix-blend-normal"
           src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOiocdoc9hqyEo9Sw8iIvDYmOVuQRcnvqe2eFkBEohZqAxId4Y0UdGtDEmiX5WagyVgYyrO-zA5sddVlof2LlVX-HB_rDvNH3J7vZvIbwl3L2uUyxbzv9NLfhDLBHnYzoMQHe265Xv7H_oAPVsf62L7D0A4oss2x08Aqvu6eR1qK5tiHjPtivjqWSlFbkLATvg21qwH39TiBuF0mknu2Y3PrOp0lsk0LWvdRKw9Cvwg2-dTJBUmjERReqHAQ5oQ4y_2b0OWf1ShIU"
         />
-        <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-primary-soft/70 blur-3xl dark:bg-primary-soft/35" />
-        <div className="absolute left-0 top-24 h-64 w-64 rounded-full bg-white blur-3xl dark:bg-slate-950/70" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/30 to-white/80 dark:from-slate-950/92 dark:via-slate-950/80 dark:to-slate-950/96" />
+        <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-primary-soft/70 blur-3xl dark:bg-primary-soft/26" />
+        <div className="absolute left-0 top-24 h-64 w-64 rounded-full bg-white blur-3xl dark:bg-primary/10" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/30 to-white/80 dark:from-[#07111f]/92 dark:via-[#07111f]/84 dark:to-[#07111f]/96" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(29,23,213,0.12),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(148,163,184,0.05),transparent_30%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(29,23,213,0.2),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.04),transparent_30%)]" />
       </div>
 
       <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
