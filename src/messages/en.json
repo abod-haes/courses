@@ -1,0 +1,265 @@
+{
+  "Home": {
+    "meta": {
+      "title": "IASS - Modern Beauty and Skills Academy",
+      "description": "A clean academic platform for beauty sciences, professional skills, and trusted learning content.",
+      "ogTitle": "IASS - Beauty and Skills Academy",
+      "ogDescription": "Explore elegant courses, digital books, and articles designed for beauty and skills education."
+    },
+    "brand": "IASS ",
+    "navigation": {
+      "courses": "Courses",
+      "textbooks": "Books",
+      "articles": "Articles",
+      "specialties": "About Us"
+    },
+    "actions": {
+      "signIn": "Login",
+      "getStarted": "Sign Up",
+      "searchPlaceholder": "Search courses, books...",
+      "browseCourses": "Browse Courses",
+      "exploreBooks": "Explore Books",
+      "viewAll": "View All",
+      "startCourse": "Start Course",
+      "viewDetails": "View Details",
+      "readArticle": "Read Article"
+    },
+    "hero": {
+      "badge": "Beauty and Skills Academy",
+      "title": "Build confident skills in beauty science and professional practice",
+      "subtitle": "Explore structured courses, practical digital books, and focused articles designed for learners in aesthetics, beauty care, and career development."
+    },
+    "founder": {
+      "label": "Founder & Lead Clinical Instructor",
+      "title": "Meet Our Founder",
+      "subtitle": "Guided by world-class clinical experts and researchers.",
+      "name": "Dr. Iyas",
+      "description": "A board-certified neurologist with over 15 years of clinical experience, Dr. Iyas founded IASS  to bridge the gap between academic theory and frontline medical practice. He personally oversees and teaches our flagship neuroanatomy courses.",
+      "ctaLabel": "View His Courses",
+      "imageAlt": "Medical professionals analyzing data"
+    },
+    "visual": {
+      "eyebrow": "IASS learning hub",
+      "title": "Clear learning paths, beautifully presented",
+      "description": "A calm interface for courses, books, and articles that keeps attention on the content.",
+      "resources": {
+        "courses": "Courses",
+        "books": "Books",
+        "articles": "Articles"
+      }
+    },
+    "sections": {
+      "courses": {
+        "title": "Latest Courses",
+        "description": "Structured programs to strengthen beauty knowledge and practical skills.",
+        "emptyState": "No courses are available yet."
+      },
+      "books": {
+        "title": "Digital Books",
+        "description": "Reference material and study guides for focused learning.",
+        "emptyState": "No books are available yet."
+      },
+      "articles": {
+        "title": "Articles and Insights",
+        "description": "Short reads to support continuous learning and professional growth.",
+        "emptyState": "No articles are available yet."
+      }
+    },
+    "trustStrip": [
+      "Focused learning",
+      "Secure checkout",
+      "Instant access",
+      "Trusted content"
+    ],
+    "cards": {
+      "modulesLabel": "Units"
+    },
+    "footer": {
+      "description": "IASS is a modern academic platform for beauty sciences and practical professional skills.",
+      "learn": "Learn",
+      "company": "Company",
+      "support": "Support",
+      "socialTitle": "Follow",
+      "social": [
+        {
+          "label": "Instagram",
+          "href": "#",
+          "icon": "instagram"
+        },
+        {
+          "label": "X",
+          "href": "#",
+          "icon": "x"
+        },
+        {
+          "label": "LinkedIn",
+          "href": "#",
+          "icon": "linkedin"
+        },
+        {
+          "label": "Facebook",
+          "href": "#",
+          "icon": "facebook"
+        }
+      ],
+      "links": {
+        "courses": "Courses",
+        "textbooks": "Books",
+        "articles": "Articles",
+        "about": "About IASS",
+        "faculty": "Instructors",
+        "careers": "Careers",
+        "helpCenter": "Help center",
+        "contact": "Contact",
+        "privacy": "Privacy"
+      },
+      "copyright": "All rights reserved."
+    },
+    "catalog": {
+      "courses": [
+        {
+          "category": "Skin Care",
+          "title": "Skin Analysis and Treatment Foundations",
+          "author": "IASS Faculty",
+          "modules": 12,
+          "description": "Learn how to assess skin type, build routines, and choose safe treatment steps.",
+          "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuAYr8b_8z9htArvyS7lRt7J0Q-_MZIMFnBdI-_ke5bSXbLs0k1GuLqLfOXwXtFTfhvajP2zpzjDWdBfgX-BxrcF0pVk7PPV7fonJvumqrcq5SV-8_RCF6G-ILEJIiHMYUuRerLiHo90E_E7m-8LZw2Aqh_CwVEkX1oyMrA7Yo6Tg0FhEQj-iI5HyIXofTOrgY1oYVd-nm3-LHypogq8Bqk_CSDURDcpI4DdoBZTmv05RXS-8Y_QTVRrMeRcEye-Y39dOkJd-bOl63k",
+          "alt": "Professional beauty treatment workspace with soft lighting and clean surfaces",
+          "href": "/courses/skin-analysis-and-treatment-foundations"
+        },
+        {
+          "category": "Makeup",
+          "title": "Color Theory and Professional Makeup Practice",
+          "author": "IASS Faculty",
+          "modules": 8,
+          "description": "Understand tones, product selection, and application methods for polished results.",
+          "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDNPsO3GVw2xxEO3AwhAgNzhQ0EovWVhch0dDIOT51VOI5Ldiqhq1aHdkWIvUTl1129B6eac07A6f5OtkcFYHAp5oxMdAZbEOxmr204fbnbn6eEngeuziZVlzgxfl-PDJf9xEqgjlxfzhIgBVa4EZZbNTSe982pZrIBVwS-5CwjEsObvPfUxXsc_f9A0EH6RLwIxL8MuuQkJy16WsC1I1NvMOXuX7mneMw78Qo2NLV0RXpgRIZP9ZiRsZvyXEaA2rzFHfttp8xYOaI",
+          "alt": "Elegant makeup tools arranged in a bright professional studio",
+          "href": "/courses/color-theory-and-professional-makeup-practice"
+        },
+        {
+          "category": "Hair Care",
+          "title": "Hair Structure, Care, and Styling Basics",
+          "author": "IASS Faculty",
+          "modules": 10,
+          "description": "Study hair types, maintenance routines, and styling principles for everyday work.",
+          "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCtZEyEpj6BW83055UPxfJ_6c4yPxUltZm7Od3sovOdSvBrX2-vJKnedyYAezp1Kw1MjVaURfF9OyFXxdvEuMYD1g4YM_59mAr8DhRU2f7em3lONtlrFM7WH3pVxuc34MycY-p5mM9AqIpyMuEe_etYmWPxWUoqaeKSN18A8bk0LWrJAP2SopQiyMh0KTyT8jREyRvTJYtsHYcueQj5zwuNxOEfKUiAj8XR1qY92jU0jx020ZD6HJCnv-L-qSNfxPogYSePTUfVH48",
+          "alt": "Neatly arranged professional beauty tools on a clean white surface",
+          "href": "/courses/hair-structure-care-and-styling-basics"
+        },
+        {
+          "category": "Wellness",
+          "title": "Client Consultation and Service Communication",
+          "author": "IASS Faculty",
+          "modules": 6,
+          "description": "Learn how to guide consultations, explain services, and create a confident client journey.",
+          "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCoi-dwcp3emRj4jTA-I2ovgv0tGP5kNri-tA9itfcI5KzrnTHtIYcAsKL3v7WMCE0TkL8_NvPuZzkOQTxO1B6NqtFZQ7kWk0dFqfpoX6ZLWKJ3AASI4kbEnbjW0SZoqp_uPTiq4sS8x9CjbQc6ya0ri--APqyRuI2iK7GUAkZbeB7gHB6sKOpx-ca17CCa_xMkDNI9MKgUmA6GXNROlnG-wJPgu6oiS0O9JX5DZQMv3ps7aV3DQyJdeMqK7cdCuJhmrZLfbS_cO64",
+          "alt": "Modern consultation scene with a professional and clean aesthetic",
+          "href": "/courses/client-consultation-and-service-communication"
+        }
+      ],
+      "books": [
+        {
+          "category": "Reference",
+          "title": "Pocket Guide to Beauty Foundations",
+          "author": "IASS Editorial Team",
+          "modules": 0,
+          "description": "A concise reference for skincare, hygiene, and practical daily techniques.",
+          "image": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80",
+          "alt": "Clean beauty reference book on a neutral background",
+          "href": "/books/pocket-guide-to-beauty-foundations"
+        },
+        {
+          "category": "Study Reference",
+          "title": "Foundations of Professional Aesthetics",
+          "author": "IASS Editorial Team",
+          "modules": 0,
+          "description": "Clear explanations that connect theory with practical beauty work.",
+          "image": "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1200&q=80",
+          "alt": "A stack of professional books arranged on a clean desk",
+          "href": "/books/foundations-of-professional-aesthetics"
+        },
+        {
+          "category": "Salon Skills",
+          "title": "Everyday Service Notes for Professionals",
+          "author": "IASS Editorial Team",
+          "modules": 0,
+          "description": "Focused reading designed for quick revision before practice sessions and exams.",
+          "image": "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=1200&q=80",
+          "alt": "Minimal reference book with soft lighting",
+          "href": "/books/everyday-service-notes-for-professionals"
+        }
+      ],
+      "articles": [
+        {
+          "category": "Study Skills",
+          "title": "How to Build a Sustainable Beauty Study Routine",
+          "author": "Editorial Team",
+          "modules": 0,
+          "description": "A practical article on balancing reading, repetition, and rest while staying consistent.",
+          "image": "https://images.unsplash.com/photo-1492107376256-4026b2b6b8f5?auto=format&fit=crop&w=1200&q=80",
+          "alt": "Open notebook with study notes and pen",
+          "href": "/articles/how-to-build-a-sustainable-beauty-study-routine"
+        },
+        {
+          "category": "Professional Thinking",
+          "title": "Turning Client Needs into a Clear Service Plan",
+          "author": "Editorial Team",
+          "modules": 0,
+          "description": "A simple framework for moving from consultation to action without extra noise.",
+          "image": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1200&q=80",
+          "alt": "Professional workspace with notes and reference pages",
+          "href": "/articles/turning-client-needs-into-a-clear-service-plan"
+        },
+        {
+          "category": "Resource Use",
+          "title": "Choosing the Right Digital Resource for Revision",
+          "author": "Editorial Team",
+          "modules": 0,
+          "description": "Match courses, books, and articles to your current study goal with less friction.",
+          "image": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
+          "alt": "Focused desk setup for digital reading",
+          "href": "/articles/choosing-the-right-digital-resource-for-revision"
+        }
+      ]
+    },
+    "stats": {
+      "label": "Platform impact",
+      "title": "Built for measurable learning outcomes",
+      "subtitle": "A trusted experience that helps learners move from theory to confident practice.",
+      "items": [
+        {
+          "value": "15+",
+          "label": "Years of expertise",
+          "description": "Clinical leadership from seasoned instructors and researchers.",
+          "icon": "award"
+        },
+        {
+          "value": "1.2K+",
+          "label": "Learners guided",
+          "description": "A growing community learning through structured, practical content.",
+          "icon": "users"
+        },
+        {
+          "value": "98%",
+          "label": "Satisfaction rate",
+          "description": "Highly rated sessions, resources, and learner support.",
+          "icon": "star"
+        },
+        {
+          "value": "40+",
+          "label": "Expert-led sessions",
+          "description": "Focused modules designed for modern medical and academic training.",
+          "icon": "book"
+        }
+      ]
+    },
+    "aboutUs": {
+      "label": "Our Mission",
+      "title": "About IASS ",
+      "subtitle": "Empowering the next generation of medical professionals with peer-reviewed, expert-led clinical resources. We believe that accessibility to high-quality education is the cornerstone of better patient outcomes worldwide.",
+      "primaryCtaLabel": "Our History",
+      "secondaryCtaLabel": "Impact Report"
+    }
+  }
+}

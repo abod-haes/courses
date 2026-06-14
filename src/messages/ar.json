@@ -1,0 +1,265 @@
+{
+  "Home": {
+    "meta": {
+      "title": "IASS - أكاديمية حديثة للمهارات والجمال",
+      "description": "منصة أكاديمية أنيقة لمجالات علوم الجمال، والمهارات المهنية، ومحتوى تعليمي موثوق.",
+      "ogTitle": "IASS - أكاديمية الجمال والمهارات",
+      "ogDescription": "اكتشف دورات أنيقة وكتبًا رقمية ومقالات مصممة لتعليم الجمال والمهارات."
+    },
+    "brand": "IASS ",
+    "navigation": {
+      "courses": "الدورات",
+      "textbooks": "الكتب",
+      "articles": "المقالات",
+      "specialties": "من نحن"
+    },
+    "actions": {
+      "signIn": "تسجيل الدخول",
+      "getStarted": "إنشاء حساب",
+      "searchPlaceholder": "ابحث في الدورات والكتب...",
+      "browseCourses": "تصفح الدورات",
+      "exploreBooks": "استكشف الكتب",
+      "viewAll": "عرض الكل",
+      "startCourse": "ابدأ الدورة",
+      "viewDetails": "عرض التفاصيل",
+      "readArticle": "اقرأ المقال"
+    },
+    "hero": {
+      "badge": "أكاديمية الجمال والمهارات",
+      "title": "ابنِ مهارات واثقة في علوم الجمال والممارسة المهنية",
+      "subtitle": "استكشف دورات منظمة وكتبًا رقمية عملية ومقالات مركزة، مصممة للمتعلمين في التجميل والعناية الجمالية وتطوير المسار المهني."
+    },
+    "founder": {
+      "label": "المؤسسة والمدربة السريرية الرئيسية",
+      "title": "تعرفي على المؤسسة",
+      "subtitle": "بإشراف خبراء وباحثين سريريين من مستوى عالمي.",
+      "name": "د. إياس",
+      "description": "طبيب معتمد بخبرة سريرية تزيد عن 15 عامًا، أسس د. إياس IASS  لسد الفجوة بين النظرية الأكاديمية والممارسة الطبية المباشرة. ويشرف بنفسه على دوراتنا الرائدة ويقوم بتدريسها.",
+      "ctaLabel": "عرض دوراته",
+      "imageAlt": "أطباء يحللون بيانات طبية"
+    },
+    "visual": {
+      "eyebrow": "مركز تعلم IASS",
+      "title": "مسارات تعلم واضحة بتصميم أنيق",
+      "description": "واجهة هادئة للدورات والكتب والمقالات تضع التركيز بالكامل على المحتوى.",
+      "resources": {
+        "courses": "الدورات",
+        "books": "الكتب",
+        "articles": "المقالات"
+      }
+    },
+    "sections": {
+      "courses": {
+        "title": "أحدث الدورات",
+        "description": "برامج منظمة لتعزيز المعرفة الجمالية والمهارات العملية.",
+        "emptyState": "لا توجد دورات متاحة حالياً."
+      },
+      "books": {
+        "title": "الكتب الرقمية",
+        "description": "مواد مرجعية وأدلة دراسة للتعلم المركّز.",
+        "emptyState": "لا توجد كتب متاحة حالياً."
+      },
+      "articles": {
+        "title": "المقالات والرؤى",
+        "description": "قراءات قصيرة تدعم التعلم المستمر والنمو المهني.",
+        "emptyState": "لا توجد مقالات متاحة حالياً."
+      }
+    },
+    "trustStrip": [
+      "تعلم مركّز",
+      "دفع آمن",
+      "وصول فوري",
+      "محتوى موثوق"
+    ],
+    "cards": {
+      "modulesLabel": "وحدات"
+    },
+    "footer": {
+      "description": "IASS منصة أكاديمية حديثة لعلوم الجمال والمهارات المهنية العملية.",
+      "learn": "التعلم",
+      "company": "الشركة",
+      "support": "الدعم",
+      "socialTitle": "تابعنا",
+      "social": [
+        {
+          "label": "إنستغرام",
+          "href": "#",
+          "icon": "instagram"
+        },
+        {
+          "label": "إكس",
+          "href": "#",
+          "icon": "x"
+        },
+        {
+          "label": "لينكدإن",
+          "href": "#",
+          "icon": "linkedin"
+        },
+        {
+          "label": "فيسبوك",
+          "href": "#",
+          "icon": "facebook"
+        }
+      ],
+      "links": {
+        "courses": "الدورات",
+        "textbooks": "الكتب",
+        "articles": "المقالات",
+        "about": "عن IASS",
+        "faculty": "المدربون",
+        "careers": "الوظائف",
+        "helpCenter": "مركز المساعدة",
+        "contact": "تواصل معنا",
+        "privacy": "الخصوصية"
+      },
+      "copyright": "جميع الحقوق محفوظة."
+    },
+    "catalog": {
+      "courses": [
+        {
+          "category": "العناية بالبشرة",
+          "title": "أساسيات تحليل البشرة والعلاج",
+          "author": "هيئة تدريس IASS",
+          "modules": 12,
+          "description": "تعلم كيفية تقييم نوع البشرة، وبناء الروتين المناسب، واختيار خطوات العلاج الآمنة.",
+          "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuAYr8b_8z9htArvyS7lRt7J0Q-_MZIMFnBdI-_ke5bSXbLs0k1GuLqLfOXwXtFTfhvajP2zpzjDWdBfgX-BxrcF0pVk7PPV7fonJvumqrcq5SV-8_RCF6G-ILEJIiHMYUuRerLiHo90E_E7m-8LZw2Aqh_CwVEkX1oyMrA7Yo6Tg0FhEQj-iI5HyIXofTOrgY1oYVd-nm3-LHypogq8Bqk_CSDURDcpI4DdoBZTmv05RXS-8Y_QTVRrMeRcEye-Y39dOkJd-bOl63k",
+          "alt": "مساحة عمل احترافية لعلاج البشرة بإضاءة ناعمة وأسطح نظيفة",
+          "href": "/courses/skin-analysis-and-treatment-foundations"
+        },
+        {
+          "category": "المكياج",
+          "title": "نظرية الألوان والممارسة الاحترافية للمكياج",
+          "author": "هيئة تدريس IASS",
+          "modules": 8,
+          "description": "افهمي درجات الألوان، واختيار المنتجات، وطرق التطبيق للحصول على نتائج متقنة.",
+          "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDNPsO3GVw2xxEO3AwhAgNzhQ0EovWVhch0dDIOT51VOI5Ldiqhq1aHdkWIvUTl1129B6eac07A6f5OtkcFYHAp5oxMdAZbEOxmr204fbnbn6eEngeuziZVlzgxfl-PDJf9xEqgjlxfzhIgBVa4EZZbNTSe982pZrIBVwS-5CwjEsObvPfUxXsc_f9A0EH6RLwIxL8MuuQkJy16WsC1I1NvMOXuX7mneMw78Qo2NLV0RXpgRIZP9ZiRsZvyXEaA2rzFHfttp8xYOaI",
+          "alt": "أدوات مكياج أنيقة مرتبة داخل استوديو احترافي مضاء بإتقان",
+          "href": "/courses/color-theory-and-professional-makeup-practice"
+        },
+        {
+          "category": "العناية بالشعر",
+          "title": "بنية الشعر والعناية به وأساسيات التصفيف",
+          "author": "هيئة تدريس IASS",
+          "modules": 10,
+          "description": "ادرس أنواع الشعر، وروتين العناية، ومبادئ التصفيف للعمل اليومي.",
+          "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCtZEyEpj6BW83055UPxfJ_6c4yPxUltZm7Od3sovOdSvBrX2-vJKnedyYAezp1Kw1MjVaURfF9OyFXxdvEuMYD1g4YM_59mAr8DhRU2f7em3lONtlrFM7WH3pVxuc34MycY-p5mM9AqIpyMuEe_etYmWPxWUoqaeKSN18A8bk0LWrJAP2SopQiyMh0KTyT8jREyRvTJYtsHYcueQj5zwuNxOEfKUiAj8XR1qY92jU0jx020ZD6HJCnv-L-qSNfxPogYSePTUfVH48",
+          "alt": "أدوات عناية مهنية بالشعر مرتبة بدقة على سطح أبيض نظيف",
+          "href": "/courses/hair-structure-care-and-styling-basics"
+        },
+        {
+          "category": "العافية",
+          "title": "استشارة العميل والتواصل الخدمي",
+          "author": "هيئة تدريس IASS",
+          "modules": 6,
+          "description": "تعلم كيفية إدارة الاستشارات، وشرح الخدمات، وصنع تجربة عميل واثقة.",
+          "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCoi-dwcp3emRj4jTA-I2ovgv0tGP5kNri-tA9itfcI5KzrnTHtIYcAsKL3v7WMCE0TkL8_NvPuZzkOQTxO1B6NqtFZQ7kWk0dFqfpoX6ZLWKJ3AASI4kbEnbjW0SZoqp_uPTiq4sS8x9CjbQc6ya0ri--APqyRuI2iK7GUAkZbeB7gHB6sKOpx-ca17CCa_xMkDNI9MKgUmA6GXNROlnG-wJPgu6oiS0O9JX5DZQMv3ps7aV3DQyJdeMqK7cdCuJhmrZLfbS_cO64",
+          "alt": "مشهد استشارة حديث بأجواء احترافية ونظيفة",
+          "href": "/courses/client-consultation-and-service-communication"
+        }
+      ],
+      "books": [
+        {
+          "category": "مرجع",
+          "title": "دليل الجيب لأساسيات الجمال",
+          "author": "فريق تحرير IASS",
+          "modules": 0,
+          "description": "مرجع مختصر للعناية بالبشرة، والنظافة، والتقنيات اليومية العملية.",
+          "image": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80",
+          "alt": "كتاب مرجعي نظيف للجمال على خلفية محايدة",
+          "href": "/books/pocket-guide-to-beauty-foundations"
+        },
+        {
+          "category": "مرجع دراسي",
+          "title": "أساسيات الجماليات الاحترافية",
+          "author": "فريق تحرير IASS",
+          "modules": 0,
+          "description": "شروحات واضحة تربط النظرية بالممارسة العملية في مجال الجمال.",
+          "image": "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1200&q=80",
+          "alt": "مجموعة كتب احترافية مرتبة على مكتب نظيف",
+          "href": "/books/foundations-of-professional-aesthetics"
+        },
+        {
+          "category": "مهارات الصالون",
+          "title": "ملاحظات الخدمة اليومية للمحترفين",
+          "author": "فريق تحرير IASS",
+          "modules": 0,
+          "description": "قراءة مركزة مصممة للمراجعة السريعة قبل جلسات التطبيق والاختبارات.",
+          "image": "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=1200&q=80",
+          "alt": "كتاب مرجعي بسيط بإضاءة ناعمة",
+          "href": "/books/everyday-service-notes-for-professionals"
+        }
+      ],
+      "articles": [
+        {
+          "category": "مهارات الدراسة",
+          "title": "كيف تبنين روتينًا مستدامًا لدراسة الجمال",
+          "author": "الفريق التحريري",
+          "modules": 0,
+          "description": "مقال عملي عن الموازنة بين القراءة والتكرار والراحة مع الحفاظ على الاستمرارية.",
+          "image": "https://images.unsplash.com/photo-1492107376256-4026b2b6b8f5?auto=format&fit=crop&w=1200&q=80",
+          "alt": "دفتر مفتوح مع ملاحظات دراسية وقلم",
+          "href": "/articles/how-to-build-a-sustainable-beauty-study-routine"
+        },
+        {
+          "category": "تفكير مهني",
+          "title": "تحويل احتياجات العميل إلى خطة خدمة واضحة",
+          "author": "الفريق التحريري",
+          "modules": 0,
+          "description": "إطار بسيط للانتقال من الاستشارة إلى التنفيذ بدون تعقيد.",
+          "image": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1200&q=80",
+          "alt": "مساحة عمل احترافية مع ملاحظات وصفحات مرجعية",
+          "href": "/articles/turning-client-needs-into-a-clear-service-plan"
+        },
+        {
+          "category": "استخدام الموارد",
+          "title": "اختيار المورد الرقمي المناسب للمراجعة",
+          "author": "الفريق التحريري",
+          "modules": 0,
+          "description": "مواءمة الدورات والكتب والمقالات مع هدفك الدراسي الحالي بسهولة أكبر.",
+          "image": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
+          "alt": "إعداد مكتب هادئ ومركّز للقراءة الرقمية",
+          "href": "/articles/choosing-the-right-digital-resource-for-revision"
+        }
+      ]
+    },
+    "stats": {
+      "label": "أثر المنصة",
+      "title": "مصممة لنتائج تعلم قابلة للقياس",
+      "subtitle": "تجربة موثوقة تساعد المتعلمين على الانتقال من النظرية إلى الممارسة بثقة.",
+      "items": [
+        {
+          "value": "15+",
+          "label": "سنوات خبرة",
+          "description": "قيادة سريرية من مدربين وباحثين ذوي خبرة.",
+          "icon": "award"
+        },
+        {
+          "value": "1.2K+",
+          "label": "متعلمون",
+          "description": "مجتمع متنامٍ يتعلم عبر محتوى منظم وعملي.",
+          "icon": "users"
+        },
+        {
+          "value": "98%",
+          "label": "نسبة الرضا",
+          "description": "جلسات وموارد ودعم للمتعلمين بتقييمات عالية.",
+          "icon": "star"
+        },
+        {
+          "value": "40+",
+          "label": "جلسة بقيادة خبراء",
+          "description": "وحدات مركزة مصممة للتدريب الطبي والأكاديمي الحديث.",
+          "icon": "book"
+        }
+      ]
+    },
+    "aboutUs": {
+      "label": "رسالتنا",
+      "title": "عن IASS ",
+      "subtitle": "تمكين الجيل القادم من المهنيين الطبيين عبر موارد سريرية عالية الجودة يراجعها الخبراء ويقدمها متخصصون. نؤمن بأن الوصول إلى تعليم عالي الجودة هو أساس تحسين نتائج المرضى حول العالم.",
+      "primaryCtaLabel": "تاريخنا",
+      "secondaryCtaLabel": "تقرير الأثر"
+    }
+  }
+}
