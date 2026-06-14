@@ -59,10 +59,10 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
   const navItems = useMemo(
     () => [
-      { label: copy.navigation.courses, href: "#courses" },
-      { label: copy.navigation.textbooks, href: "#books" },
-      { label: copy.navigation.articles, href: "#articles" },
-      { label: copy.navigation.specialties, href: "#about-us" },
+      { label: copy.navigation.courses, href: "/#courses" },
+      { label: copy.navigation.textbooks, href: "/books" },
+      { label: copy.navigation.articles, href: "/#articles" },
+      { label: copy.navigation.specialties, href: "/#about-us" },
     ],
     [copy.navigation.articles, copy.navigation.courses, copy.navigation.specialties, copy.navigation.textbooks],
   );
@@ -92,73 +92,73 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
       <div className="motion-safe:animate-[fade-up_420ms_ease-out_both]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex min-h-16 items-center gap-3 py-2">
-          <Link
-            href="/"
-            className="flex shrink-0 items-center transition duration-200 ease-out hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            <span className="relative block h-10 w-[9.5rem] sm:h-11 sm:w-[10.5rem]">
-              <Image
-                alt={`${copy.brand} logo`}
-                src="/images/logo-blue.png"
-                fill
-                priority
-                sizes="(max-width: 640px) 152px, 168px"
-                className="object-contain object-left"
-              />
-            </span>
-            <span className="sr-only">{copy.brand}</span>
-          </Link>
+            <Link
+              href="/"
+              className="flex shrink-0 items-center transition duration-200 ease-out hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <span className="relative block h-10 w-[9.5rem] sm:h-11 sm:w-[10.5rem]">
+                <Image
+                  alt={`${copy.brand} logo`}
+                  src="/images/logo-blue.png"
+                  fill
+                  priority
+                  sizes="(max-width: 640px) 152px, 168px"
+                  className="object-contain object-left"
+                />
+              </span>
+              <span className="sr-only">{copy.brand}</span>
+            </Link>
 
-          <nav className="hidden flex-1 items-center justify-center gap-8 xl:flex">
-            {navItems.map((item) => (
+            <nav className="hidden flex-1 items-center justify-center gap-8 xl:flex">
+              {navItems.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className="group relative flex items-center gap-1.5 px-0.5 py-2 text-sm font-medium text-foreground/68 transition duration-200 ease-out hover:-translate-y-0.5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                >
+                  <span>{item.label}</span>
+                  <ChevronRight className="h-3 w-3 opacity-0 transition duration-200 group-hover:translate-x-0.5 group-hover:opacity-100 rtl:rotate-180" aria-hidden="true" />
+                  <span className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-primary transition duration-200 group-hover:scale-x-100" />
+                </a>
+              ))}
+            </nav>
+
+            <div className="ml-auto hidden items-center gap-2 sm:gap-3 lg:flex">
+              <label className="hidden h-10 w-[15rem] items-center gap-2 rounded-[8px] border border-border/60 bg-surface/85 px-4 text-sm text-foreground/55 transition duration-200 focus-within:border-primary/25 focus-within:bg-white xl:flex">
+                <Search className="h-4 w-4 shrink-0 text-foreground/35" aria-hidden="true" />
+                <input
+                  type="search"
+                  placeholder={copy.actions.searchPlaceholder}
+                  className="w-full bg-transparent outline-none placeholder:text-foreground/45"
+                />
+              </label>
+
               <a
-                key={item.label}
-                href={item.href}
-                className="group relative flex items-center gap-1.5 px-0.5 py-2 text-sm font-medium text-foreground/68 transition duration-200 ease-out hover:-translate-y-0.5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                href="#"
+                className="rounded-[8px] px-3 py-2 text-sm font-medium text-primary transition duration-200 hover:-translate-y-0.5 hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                <span>{item.label}</span>
-                <ChevronRight className="h-3 w-3 opacity-0 transition duration-200 group-hover:translate-x-0.5 group-hover:opacity-100 rtl:rotate-180" aria-hidden="true" />
-                <span className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-primary transition duration-200 group-hover:scale-x-100" />
+                {copy.actions.signIn}
               </a>
-            ))}
-          </nav>
 
-          <div className="ml-auto hidden items-center gap-2 sm:gap-3 lg:flex">
-            <label className="hidden h-10 w-[15rem] items-center gap-2 rounded-[8px] border border-border/60 bg-surface/85 px-4 text-sm text-foreground/55 transition duration-200 focus-within:border-primary/25 focus-within:bg-white xl:flex">
-              <Search className="h-4 w-4 shrink-0 text-foreground/35" aria-hidden="true" />
-              <input
-                type="search"
-                placeholder={copy.actions.searchPlaceholder}
-                className="w-full bg-transparent outline-none placeholder:text-foreground/45"
-              />
-            </label>
+              <Button href="/#courses" className="rounded-[8px] px-4" variant="primary" size="sm">
+                {copy.actions.getStarted}
+              </Button>
 
-            <a
-              href="#"
-              className="rounded-[8px] px-3 py-2 text-sm font-medium text-primary transition duration-200 hover:-translate-y-0.5 hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            >
-              {copy.actions.signIn}
-            </a>
+              <HomeHeaderControls />
+            </div>
 
-            <Button href="#courses" className="rounded-[8px] px-4" variant="primary" size="sm">
-              {copy.actions.getStarted}
-            </Button>
-
-            <HomeHeaderControls />
-          </div>
-
-          <div className="ms-auto flex items-center gap-2 lg:hidden">
-            <button
-              type="button"
-              onClick={() => setMenuOpen(true)}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-[8px] border border-primary/15 bg-white text-primary transition duration-200 hover:-translate-y-0.5 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              aria-expanded={menuOpen}
-              aria-controls="mobile-navigation"
-              aria-label={isArabic ? "فتح القائمة" : "Open menu"}
-            >
-              <Menu className="h-4 w-4" aria-hidden="true" />
-            </button>
-          </div>
+            <div className="ms-auto flex items-center gap-2 lg:hidden">
+              <button
+                type="button"
+                onClick={() => setMenuOpen(true)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-[8px] border border-primary/15 bg-white text-primary transition duration-200 hover:-translate-y-0.5 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                aria-expanded={menuOpen}
+                aria-controls="mobile-navigation"
+                aria-label={isArabic ? "فتح القائمة" : "Open menu"}
+              >
+                <Menu className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -242,7 +242,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                   </a>
 
                   <Button
-                    href="#courses"
+                    href="/#courses"
                     variant="primary"
                     size="sm"
                     className="w-full rounded-[8px]"
