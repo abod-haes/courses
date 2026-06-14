@@ -1,6 +1,6 @@
 import type { Locale } from "@/shared/lib/types";
 
-export type BookCategoryKey = "anatomy" | "cardiology" | "surgery" | "pediatrics" | "dermatology" | "aesthetics";
+export type BookCategoryKey = "anatomy" | "cardiology" | "surgery" | "pediatrics";
 
 type LocalizedText = Readonly<Record<Locale, string>>;
 
@@ -14,7 +14,8 @@ export type BookCatalogItem = Readonly<{
   price: string;
   isbn: string;
   href: string;
-  coverTone: "blue" | "cyan" | "teal" | "slate" | "violet" | "emerald";
+  image: string;
+  imageAlt: LocalizedText;
 }>;
 
 export type BookItemView = Readonly<{
@@ -27,7 +28,8 @@ export type BookItemView = Readonly<{
   price: string;
   isbn: string;
   href: string;
-  coverTone: BookCatalogItem["coverTone"];
+  image: string;
+  imageAlt: string;
 }>;
 
 export type BooksPageCopy = Readonly<{
@@ -37,22 +39,14 @@ export type BooksPageCopy = Readonly<{
     ogTitle: string;
     ogDescription: string;
   }>;
-  eyebrow: string;
   title: string;
   subtitle: string;
   searchPlaceholder: string;
   filters: Readonly<{
     all: string;
   }>;
-  stats: Readonly<{
-    books: string;
-    categories: string;
-    access: string;
-  }>;
   labels: Readonly<{
-    isbn: string;
     viewDetails: string;
-    results: string;
     noResultsTitle: string;
     noResultsDescription: string;
   }>;
