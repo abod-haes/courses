@@ -48,9 +48,9 @@ export function BooksToolbar({
               type="button"
               onClick={() => onCategoryChange(category.key)}
               className={[
-                "rounded-full px-4 py-2 text-xs font-bold transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                "rounded-full px-4 py-2  !leading-none font-bold transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 isActive
-                  ? "bg-primary text-white shadow-[0_10px_22px_rgba(29,23,213,0.18)]"
+                  ? "bg-primary text-white shadow-[0_8px_18px_rgba(29,23,213,0.16)]"
                   : "border border-border bg-surface text-foreground/72 hover:-translate-y-0.5 hover:border-primary/20 hover:bg-primary/5 hover:text-primary",
               ].join(" ")}
             >
