@@ -48,5 +48,5 @@ export async function BooksPage() {
   const copy = getBooksPageCopy(locale);
   const books = getBooks(locale);
 
-  return <BooksLibrary locale={locale} copy={copy} books={books} />;
+  return <BooksLibrary copy={copy} books={books} />;
 }
