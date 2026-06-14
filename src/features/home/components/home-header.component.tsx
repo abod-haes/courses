@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ChevronRight, Globe2, Menu, MoonStar, SunMedium } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -47,6 +48,8 @@ const backdropVariants: Variants = {
 export function HomeHeader({ copy }: HomeHeaderProps) {
   const { locale, theme, toggleLocale, toggleTheme } = usePreferences();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [currentHash, setCurrentHash] = useState("");
+  const pathname = usePathname();
   const isArabic = locale === "ar";
   const panelSideClass = isArabic ? "left-0 border-r" : "right-0 border-l";
   const panelExitX = isArabic ? "-100%" : "100%";
@@ -58,6 +61,20 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
     { label: copy.navigation.specialties, href: "/#about-us" },
   ];
 
+  const resolveNavState = (href: string) => {
+    const [path, hash = ""] = href.split("#");
+
+    if (path === "/books") {
+      return pathname === "/books";
+    }
+
+    if (path === "/" || path === "") {
+      return pathname === "/" && currentHash === `#${hash}`;
+    }
+
+    return pathname === path && currentHash === `#${hash}`;
+  };
+
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -67,6 +84,21 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    function syncHash() {
+      setCurrentHash(window.location.hash);
+    }
+
+    syncHash();
+    window.addEventListener("hashchange", syncHash);
+    window.addEventListener("popstate", syncHash);
+
+    return () => {
+      window.removeEventListener("hashchange", syncHash);
+      window.removeEventListener("popstate", syncHash);
+    };
   }, []);
 
   useEffect(() => {
@@ -104,15 +136,31 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
             <nav className="hidden flex-1 items-center justify-center gap-8 xl:flex">
               {navItems.map((item) => (
-                <a
+                <Link
                   key={item.label}
                   href={item.href}
-                  className="group relative flex items-center gap-1.5 px-0.5 py-2 text-sm font-medium text-foreground/68 transition duration-200 ease-out hover:-translate-y-0.5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  aria-current={resolveNavState(item.href) ? "page" : undefined}
+                  className={`group relative flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition duration-200 ease-out hover:-translate-y-0.5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                    resolveNavState(item.href)
+                      ? "bg-primary/8 text-primary shadow-[0_6px_18px_rgba(29,23,213,0.08)]"
+                      : "text-foreground/68"
+                  }`}
                 >
                   <span>{item.label}</span>
-                  <ChevronRight className="h-3 w-3 opacity-0 transition duration-200 group-hover:translate-x-0.5 group-hover:opacity-100 rtl:rotate-180" aria-hidden="true" />
-                  <span className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-primary transition duration-200 group-hover:scale-x-100" />
-                </a>
+                  <ChevronRight
+                    className={`h-3 w-3 transition duration-200 rtl:rotate-180 ${
+                      resolveNavState(item.href)
+                        ? "translate-x-0.5 opacity-100"
+                        : "opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100"
+                    }`}
+                    aria-hidden="true"
+                  />
+                  <span
+                    className={`absolute inset-x-3 -bottom-0.5 h-px origin-left bg-primary transition duration-200 ${
+                      resolveNavState(item.href) ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                    }`}
+                  />
+                </Link>
               ))}
             </nav>
 
@@ -188,15 +236,27 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               <div className="flex-1 overflow-y-auto px-4 py-5">
                 <nav className="mt-5 space-y-2">
                   {navItems.map((item) => (
-                    <a
+                    <Link
                       key={item.label}
                       href={item.href}
                       onClick={() => setMenuOpen(false)}
-                      className="group flex items-center justify-between rounded-[10px] border border-border/60 bg-surface/80 px-4 py-3 text-sm font-medium text-foreground/75 transition duration-200 hover:-translate-y-0.5 hover:border-primary/15 hover:bg-primary/5 hover:text-primary"
+                      aria-current={resolveNavState(item.href) ? "page" : undefined}
+                      className={`group flex items-center justify-between rounded-[10px] border px-4 py-3 text-sm font-medium transition duration-200 hover:-translate-y-0.5 ${
+                        resolveNavState(item.href)
+                          ? "border-primary/20 bg-primary/8 text-primary shadow-[0_8px_20px_rgba(29,23,213,0.08)]"
+                          : "border-border/60 bg-surface/80 text-foreground/75 hover:border-primary/15 hover:bg-primary/5 hover:text-primary"
+                      }`}
                     >
                       <span>{item.label}</span>
-                      <ChevronRight className="h-4 w-4 text-primary/45 transition duration-200 group-hover:translate-x-1 group-hover:text-primary rtl:rotate-180" aria-hidden="true" />
-                    </a>
+                      <ChevronRight
+                        className={`h-4 w-4 transition duration-200 rtl:rotate-180 ${
+                          resolveNavState(item.href)
+                            ? "translate-x-1 text-primary"
+                            : "text-primary/45 group-hover:translate-x-1 group-hover:text-primary"
+                        }`}
+                        aria-hidden="true"
+                      />
+                    </Link>
                   ))}
                 </nav>
 
