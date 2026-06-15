@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Activity, BookOpen, GraduationCap, Stethoscope } from "lucide-react";
+import { LoadingMotionStyles } from "./loading-motion-styles.component";
 
 const defaultMessages = [
   "Preparing your medical learning experience...",
@@ -45,6 +46,8 @@ export function MedicalPageLoader({ messages = defaultMessages, label = "IASS" }
       aria-live="polite"
       aria-label={messages[messageIndex]}
     >
+      <LoadingMotionStyles />
+
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="animate-medical-blob absolute -left-24 top-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
         <div className="animate-medical-blob-reverse absolute -right-24 top-28 h-80 w-80 rounded-full bg-success/10 blur-3xl" />
