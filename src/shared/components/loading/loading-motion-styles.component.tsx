@@ -54,6 +54,12 @@ export function LoadingMotionStyles() {
         to { opacity: 1; transform: translateY(0); }
       }
 
+      @keyframes routeProgressFill {
+        0% { transform: translateX(-70%) scaleX(0.32); }
+        48% { transform: translateX(-18%) scaleX(0.72); }
+        100% { transform: translateX(105%) scaleX(0.34); }
+      }
+
       .animate-medical-blob { animation: medicalBlob 8s ease-in-out infinite; }
       .animate-medical-blob-reverse { animation: medicalBlobReverse 9s ease-in-out infinite; }
       .animate-medical-float { animation: medicalFloat 4.8s ease-in-out infinite; }
@@ -63,6 +69,7 @@ export function LoadingMotionStyles() {
       .animate-loader-dot { animation: loaderDot 1.1s ease-in-out infinite; }
       .medical-ecg-path { stroke-dasharray: 160 260; animation: medicalEcgDash 1.8s linear infinite; }
       .animate-skeleton-card { animation: skeletonCard 420ms ease-out both; }
+      .route-progress-fill { width: 70%; transform-origin: left center; animation: routeProgressFill 1.1s ease-in-out infinite; }
       .loading-shimmer {
         background-image: linear-gradient(110deg, rgba(148, 163, 184, 0.12) 0%, rgba(29, 23, 213, 0.14) 18%, rgba(148, 163, 184, 0.12) 36%);
         background-size: 220% 100%;
@@ -79,6 +86,7 @@ export function LoadingMotionStyles() {
         .animate-loader-dot,
         .medical-ecg-path,
         .animate-skeleton-card,
+        .route-progress-fill,
         .loading-shimmer {
           animation: none !important;
         }
