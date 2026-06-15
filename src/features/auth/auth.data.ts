@@ -33,6 +33,7 @@ export const authCopyByLocale: AuthCopyByLocale = {
         switchPrompt: "New to IASS?",
         switchLabel: "Create an account",
         switchHref: "/register",
+        homeLabel: "Home page",
       },
       register: {
         meta: {
@@ -54,6 +55,7 @@ export const authCopyByLocale: AuthCopyByLocale = {
         switchPrompt: "Already have an account?",
         switchLabel: "Sign in",
         switchHref: "/login",
+        homeLabel: "Home page",
       },
       "forgot-password": {
         meta: {
@@ -71,6 +73,7 @@ export const authCopyByLocale: AuthCopyByLocale = {
         switchPrompt: "Remembered your password?",
         switchLabel: "Back to login",
         switchHref: "/login",
+        homeLabel: "Home page",
       },
     },
   },
@@ -106,6 +109,7 @@ export const authCopyByLocale: AuthCopyByLocale = {
         switchPrompt: "ليس لديك حساب؟",
         switchLabel: "إنشاء حساب",
         switchHref: "/register",
+        homeLabel: "الصفحة الرئيسية",
       },
       register: {
         meta: {
@@ -127,6 +131,7 @@ export const authCopyByLocale: AuthCopyByLocale = {
         switchPrompt: "لديك حساب مسبقاً؟",
         switchLabel: "تسجيل الدخول",
         switchHref: "/login",
+        homeLabel: "الصفحة الرئيسية",
       },
       "forgot-password": {
         meta: {
@@ -144,6 +149,7 @@ export const authCopyByLocale: AuthCopyByLocale = {
         switchPrompt: "تذكرت كلمة المرور؟",
         switchLabel: "العودة لتسجيل الدخول",
         switchHref: "/login",
+        homeLabel: "الصفحة الرئيسية",
       },
     },
   },
