@@ -1,4 +1,7 @@
+"use client";
+
 import { ArrowRight } from "lucide-react";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { Button } from "@/shared/components/ui/button";
 import { Reveal } from "@/shared/components/animation/reveal.component";
 import { StaggerList } from "@/shared/components/animation/stagger-list.component";
@@ -16,14 +19,50 @@ type HomeSectionProps = Readonly<{
   copy: HomeMessages;
 }>;
 
+const headingVariants: Variants = {
+  hidden: { opacity: 0, y: 16, filter: "blur(6px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.52, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const dividerVariants: Variants = {
+  hidden: { scaleX: 0, opacity: 0 },
+  visible: {
+    scaleX: 1,
+    opacity: 1,
+    transition: { duration: 0.72, ease: [0.22, 1, 0.36, 1], delay: 0.12 },
+  },
+};
+
 export function HomeSection({ section, title, description, emptyState, items, ctaLabel, ctaHref, copy }: HomeSectionProps) {
+  const shouldReduceMotion = Boolean(useReducedMotion());
   const anchorId = section === "books" ? "books" : section === "articles" ? "articles" : "courses";
   const visibleItems = section === "courses" ? items.slice(0, 3) : items;
 
   return (
-    <section id={anchorId} className="scroll-mt-24 py-12 lg:py-16">
-      <Reveal preset="fadeUp" className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <section id={anchorId} className="relative scroll-mt-24 py-12 lg:py-16">
+      <div className="pointer-events-none absolute inset-x-0 top-8 hidden h-32 bg-[radial-gradient(circle_at_center,rgba(29,23,213,0.06),transparent_62%)] lg:block dark:bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.08),transparent_62%)]" />
+
+      <motion.div
+        className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
+        initial={shouldReduceMotion ? false : "hidden"}
+        whileInView={shouldReduceMotion ? undefined : "visible"}
+        viewport={{ once: true, amount: 0.28 }}
+        variants={headingVariants}
+      >
         <div className="max-w-2xl">
+          <div className="mb-3 flex items-center gap-3">
+            <motion.span
+              className="h-px w-10 origin-left bg-gradient-to-r from-primary to-transparent"
+              variants={dividerVariants}
+              aria-hidden="true"
+            />
+            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-primary/80">{anchorId}</span>
+          </div>
           <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{title}</h2>
           <p className="mt-3 text-base leading-7 text-foreground/70">{description}</p>
         </div>
@@ -37,10 +76,10 @@ export function HomeSection({ section, title, description, emptyState, items, ct
           {ctaLabel}
           <ArrowRight className="view-all-arrow h-4 w-4 transition duration-200 group-hover:translate-x-1 group-hover:text-primary-strong dark:group-hover:text-white rtl:rotate-180" aria-hidden="true" />
         </Button>
-      </Reveal>
+      </motion.div>
 
       {visibleItems.length > 0 ? (
-        <StaggerList className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <StaggerList className="relative mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {visibleItems.map((item) => (
             <div key={item.title} className="h-full">
               <HomeCard item={item} section={section} copy={copy} />
