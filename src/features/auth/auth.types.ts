@@ -24,6 +24,7 @@ export type AuthModeCopy = Readonly<{
   switchPrompt: string;
   switchLabel: string;
   switchHref: string;
+  homeLabel: string;
   termsLabel?: string;
   helperText?: string;
 }>;
