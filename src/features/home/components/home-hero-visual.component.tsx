@@ -26,7 +26,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
         >
           <Image
             alt={copy.visual.title}
-            src="/hero.jpg"
+            src="/images/hero.jpg"
             fill
             priority
             sizes="(max-width: 640px) 88vw, (max-width: 1024px) 72vw, 42vw"
