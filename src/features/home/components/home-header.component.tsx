@@ -50,7 +50,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   const isArabic = locale === "ar";
 
   const navItems = [
-    { label: isArabic ? "الرئيسية" : "Home", href: "/" },
+    { label: copy.navigation.home, href: "/" },
     { label: copy.navigation.courses, href: "/courses" },
     { label: copy.navigation.textbooks, href: "/books" },
     { label: copy.navigation.articles, href: "/articles" },
