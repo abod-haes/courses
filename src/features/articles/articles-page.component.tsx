@@ -13,12 +13,6 @@ import { ArticleRichContent } from "./components/article-rich-content.component"
 import { ArticlesLibrary } from "./components/articles-library.component";
 import { getArticleBySlug, getArticlePageCopy, getArticles } from "./articles.data";
 
-type ArticlesSearchParams = Readonly<{
-  q?: string | string[];
-  category?: string | string[];
-  sort?: string | string[];
-}>;
-
 type ArticleDetailsParams = Readonly<{
   slug: string;
 }>;
@@ -79,7 +73,7 @@ export async function generateArticleDetailsMetadata({ params }: { params: Promi
   };
 }
 
-export async function ArticlesPage({ searchParams: _searchParams }: { searchParams?: Promise<ArticlesSearchParams> }) {
+export async function ArticlesPage() {
   const locale = await getCurrentLocale();
   const copy = getArticlePageCopy(locale);
   const articles = getArticles(locale);
