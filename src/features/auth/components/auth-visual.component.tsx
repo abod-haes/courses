@@ -10,9 +10,9 @@ type AuthVisualProps = Readonly<{
 }>;
 
 const floatingCards = [
-  { icon: ShieldCheck, className: "left-6 bottom-10", delay: 0 },
-  { icon: BookOpenCheck, className: "right-8 bottom-14", delay: 0.14 },
-  { icon: Sparkles, className: "top-0 left-16", delay: 0.28 },
+  { icon: ShieldCheck, className: "left-6 bottom-12", delay: 0 },
+  { icon: BookOpenCheck, className: "right-8 bottom-16", delay: 0.14 },
+  { icon: Sparkles, className: "left-12 top-2", delay: 0.28 },
 ];
 
 export function AuthVisual({ copy }: AuthVisualProps) {
@@ -28,9 +28,12 @@ export function AuthVisual({ copy }: AuthVisualProps) {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.18),transparent_28%),radial-gradient(circle_at_80%_70%,rgba(255,255,255,0.14),transparent_26%)]" />
 
       <div className="relative z-10">
+        <span className="inline-flex items-center gap-2 rounded-full border border-white/18 bg-white/12 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-white/80 backdrop-blur">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
+          {copy.brandLine}
+        </span>
 
-
-        <h2 className="mt-8 max-w-lg text-[2.6rem] font-black leading-[1.06] tracking-[-0.04em]">
+        <h2 className="mt-7 max-w-lg text-[2.45rem] font-black leading-[1.06] tracking-[-0.04em]">
           {copy.title}
         </h2>
         <p className="mt-5 max-w-md text-sm leading-7 text-white/72">
@@ -42,15 +45,15 @@ export function AuthVisual({ copy }: AuthVisualProps) {
         <motion.div
           animate={{ y: [0, -10, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          className="relative flex h-56 w-56 items-center justify-center rounded-[2rem] border border-white/18 bg-white/12 shadow-[0_24px_70px_rgba(0,0,0,0.22)] backdrop-blur-xl"
+          className="relative flex h-48 w-48 items-center justify-center rounded-[1.6rem] border border-white/18 bg-white/12 shadow-[0_24px_70px_rgba(0,0,0,0.22)] backdrop-blur-xl"
         >
-          <div className="absolute inset-5 rounded-[1.5rem] border border-white/14" />
-          <span className="relative block h-20 w-44">
+          <div className="absolute inset-4 rounded-[1.25rem] border border-white/14" />
+          <span className="relative block h-14 w-32">
             <Image
               src="/images/logo-blue.png"
               alt="IASS logo"
               fill
-              sizes="176px"
+              sizes="128px"
               className="object-contain brightness-0 invert"
               priority
             />
