@@ -50,13 +50,14 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   const isArabic = locale === "ar";
 
   const navItems = [
+    { label: isArabic ? "الرئيسية" : "Home", href: "/" },
     { label: copy.navigation.courses, href: "/courses" },
     { label: copy.navigation.textbooks, href: "/books" },
     { label: copy.navigation.articles, href: "/articles" },
     { label: copy.navigation.specialties, href: "/about-us" },
   ];
 
-  const resolveNavState = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const resolveNavState = (href: string) => pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
 
   return (
     <motion.header
@@ -105,7 +106,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                   <Link
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
-                    className={`group relative inline-flex min-w-[6.1rem] items-center justify-center rounded-[1.05rem] px-4 py-2 text-sm font-extrabold transition duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                    className={`group relative inline-flex min-w-[5.4rem] items-center justify-center rounded-[1.05rem] px-3.5 py-2 text-sm font-extrabold transition duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                       isActive
                         ? "bg-primary text-white shadow-[0_12px_28px_rgba(29,23,213,0.2)]"
                         : "text-foreground/72 hover:-translate-y-0.5 hover:bg-white/74 hover:text-primary hover:shadow-[0_10px_22px_rgba(15,23,42,0.06)] dark:hover:bg-white/10"
