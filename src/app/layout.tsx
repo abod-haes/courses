@@ -6,7 +6,7 @@ import { Providers } from "@/components/providers";
 import { localeCookieName, themeCookieName } from "@/shared/lib/preferences";
 import { messagesByLocale } from "@/shared/lib/messages";
 import { getLocaleDirection, resolveLocale, resolveTheme } from "@/shared/lib/helpers/locale.helper";
-import type { HomeMessages } from "@/features/home/home.types";
+import { getHomeMessages } from "@/features/home/home.data";
 import { HomeFooter } from "@/features/home/components/home-footer.component";
 import { HomeHeader } from "@/features/home/components/home-header.component";
 import "./globals.css";
@@ -59,7 +59,7 @@ export default async function RootLayout({
   const themeCookie = cookieStore.get(themeCookieName)?.value;
   const locale = resolveLocale(localeCookie);
   const theme = resolveTheme(themeCookie);
-  const copy = messagesByLocale[locale].Home as HomeMessages;
+  const copy = getHomeMessages(locale);
 
   return (
     <html
