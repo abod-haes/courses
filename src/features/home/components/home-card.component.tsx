@@ -41,13 +41,13 @@ export function HomeCard({ item, section, copy }: HomeCardProps) {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
         <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-primary/7 blur-3xl transition duration-500 group-hover:scale-110 group-hover:bg-primary/10 dark:bg-primary/12" />
 
-        <div className="p-4 pb-0">
+        <div className="p-3 pb-0 sm:p-4 sm:pb-0">
           <div className="relative overflow-hidden rounded-[14px] border border-border/60 bg-surface-soft dark:border-white/10">
             <div className={`absolute inset-0 bg-gradient-to-br ${sectionAccents[section]}`} />
             <img
               alt={item.alt}
               src={item.image}
-              className="relative h-[180px] w-full object-cover transition duration-700 ease-out group-hover:scale-[1.035] motion-reduce:transition-none sm:h-[200px]"
+              className="relative h-[160px] w-full object-cover transition duration-700 ease-out group-hover:scale-[1.035] motion-reduce:transition-none sm:h-[190px] lg:h-[200px]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/28 via-transparent to-transparent" />
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent" />
@@ -59,17 +59,17 @@ export function HomeCard({ item, section, copy }: HomeCardProps) {
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col justify-between px-5 pb-5 pt-4 sm:px-6 sm:pb-6">
+        <div className="flex flex-1 flex-col justify-between px-4 pb-4 pt-4 sm:px-6 sm:pb-6">
           <div className="min-w-0">
-            <h3 className="text-[1.02rem] font-semibold leading-7 tracking-tight text-foreground transition duration-200 group-hover:text-primary sm:text-[1.05rem]">
+            <h3 className="text-base font-semibold leading-6 tracking-tight text-foreground transition duration-200 group-hover:text-primary sm:text-[1.05rem] sm:leading-7">
               {item.title}
             </h3>
-            <p className="mt-2 text-sm leading-6 text-foreground/70">{item.description ?? item.author}</p>
+            <p className="mt-2 line-clamp-3 text-sm leading-6 text-foreground/70">{item.description ?? item.author}</p>
           </div>
 
           <div className="mt-4 flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center rounded-[8px] border border-border/60 bg-surface-soft px-3 py-1 text-[11px] font-medium text-foreground/68 dark:border-white/10 dark:bg-white/5">
-              {item.author}
+            <span className="inline-flex min-w-0 items-center rounded-[8px] border border-border/60 bg-surface-soft px-3 py-1 text-[11px] font-medium text-foreground/68 dark:border-white/10 dark:bg-white/5">
+              <span className="truncate">{item.author}</span>
             </span>
             {item.modules > 0 ? (
               <span className="inline-flex items-center rounded-[8px] border border-primary/10 bg-primary/5 px-3 py-1 text-[11px] font-semibold text-primary dark:bg-primary/12">
@@ -79,7 +79,7 @@ export function HomeCard({ item, section, copy }: HomeCardProps) {
           </div>
 
           <div className="mt-5">
-            <Button href={item.href} variant="primary" size="sm" className="group/button w-full">
+            <Button href={item.href} variant="primary" size="sm" className="group/button w-full rounded-[10px]">
               {actionLabel}
               <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover/button:translate-x-0.5 group-hover/button:-translate-y-0.5 rtl:rotate-[-90deg]" aria-hidden="true" />
             </Button>
