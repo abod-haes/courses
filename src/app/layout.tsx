@@ -70,7 +70,7 @@ export default async function RootLayout({
     >
       <body className="h-screen overflow-hidden bg-background text-foreground">
         <NextIntlClientProvider locale={locale} messages={messagesByLocale[locale]}>
-          <Providers>
+          <Providers initialLocale={locale} initialTheme={theme}>
             <div className="flex h-full flex-col bg-background text-foreground">
               <HomeHeader copy={copy} />
               <div className="relative z-0 flex-1 overflow-y-auto">

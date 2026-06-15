@@ -91,7 +91,10 @@ export async function generateArticleDetailsMetadata({ params }: { params: Promi
 }
 
 export async function ArticlesPage({ searchParams }: { searchParams?: Promise<ArticlesSearchParams> }) {
-  const [locale, resolvedSearchParams] = await Promise.all([getCurrentLocale(), searchParams ?? Promise.resolve({})]);
+  const [locale, resolvedSearchParams] = await Promise.all([
+    getCurrentLocale(),
+    searchParams ?? Promise.resolve<ArticlesSearchParams>({}),
+  ]);
   const copy = getArticlePageCopy(locale);
   const search = firstParam(resolvedSearchParams.q)?.trim();
   const category = firstParam(resolvedSearchParams.category)?.trim();

@@ -10,9 +10,9 @@ type AuthVisualProps = Readonly<{
 }>;
 
 const floatingCards = [
-  { icon: ShieldCheck, className: "left-6 top-20", delay: 0 },
-  { icon: BookOpenCheck, className: "right-8 top-44", delay: 0.14 },
-  { icon: Sparkles, className: "bottom-24 left-16", delay: 0.28 },
+  { icon: ShieldCheck, className: "left-6 bottom-10", delay: 0 },
+  { icon: BookOpenCheck, className: "right-8 bottom-14", delay: 0.14 },
+  { icon: Sparkles, className: "top-0 left-16", delay: 0.28 },
 ];
 
 export function AuthVisual({ copy }: AuthVisualProps) {
@@ -21,19 +21,16 @@ export function AuthVisual({ copy }: AuthVisualProps) {
       initial={{ opacity: 0, x: -24 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-      className="relative hidden min-h-[42rem] overflow-hidden rounded-[2rem] border border-primary/10 bg-gradient-to-br from-primary via-primary-strong to-[#080b4f] p-8 text-white shadow-[0_24px_70px_rgba(29,23,213,0.22)] lg:flex lg:flex-col lg:justify-between"
+      className="relative hidden min-h-[36rem] overflow-hidden rounded-[2rem] border border-primary/10 bg-gradient-to-br from-primary via-primary-strong to-[#080b4f] p-7 text-white shadow-[0_24px_70px_rgba(29,23,213,0.22)] lg:flex lg:flex-col lg:justify-between"
     >
       <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/18 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-28 left-10 h-80 w-80 rounded-full bg-cyan-300/20 blur-3xl" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.18),transparent_28%),radial-gradient(circle_at_80%_70%,rgba(255,255,255,0.14),transparent_26%)]" />
 
       <div className="relative z-10">
-        <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/12 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white/86 backdrop-blur">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
-          {copy.brandLine}
-        </span>
 
-        <h2 className="mt-8 max-w-lg font-display text-[2.6rem] font-black leading-[1.06] tracking-[-0.04em]">
+
+        <h2 className="mt-8 max-w-lg text-[2.6rem] font-black leading-[1.06] tracking-[-0.04em]">
           {copy.title}
         </h2>
         <p className="mt-5 max-w-md text-sm leading-7 text-white/72">
@@ -41,7 +38,7 @@ export function AuthVisual({ copy }: AuthVisualProps) {
         </p>
       </div>
 
-      <div className="relative z-10 my-10 flex min-h-[19rem] items-center justify-center">
+      <div className="relative z-10 my-8 flex min-h-[16rem] items-center justify-center">
         <motion.div
           animate={{ y: [0, -10, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}

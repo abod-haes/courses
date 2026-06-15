@@ -66,7 +66,7 @@ export default async function Page(props: PageProps) {
               ) : null}
             </div>
 
-            <h1 className="mt-4 max-w-4xl font-display text-[2rem] font-black leading-tight tracking-[-0.04em] text-foreground sm:text-[2.45rem]">
+            <h1 className="mt-4 max-w-4xl text-[2rem] font-black leading-tight tracking-[-0.04em] text-foreground sm:text-[2.45rem]">
               {course.title}
             </h1>
             <p className="mt-3 text-[1.05rem] font-black text-primary">{course.price}</p>

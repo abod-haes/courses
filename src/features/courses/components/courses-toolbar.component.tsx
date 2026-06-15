@@ -1,5 +1,6 @@
 import { Search } from "lucide-react";
 import type { CourseCategoryKey } from "../courses.types";
+import { CategoryPills } from "@/shared/components/category-pills.component";
 
 export type CoursesCategoryFilter = CourseCategoryKey | "all";
 
@@ -38,27 +39,11 @@ export function CoursesToolbar({
         />
       </label>
 
-      <div className="flex flex-wrap items-center gap-2 md:justify-end">
-        {categoryOptions.map((category) => {
-          const isActive = activeCategory === category.key;
-
-          return (
-            <button
-              key={category.key}
-              type="button"
-              onClick={() => onCategoryChange(category.key)}
-              className={[
-                "rounded-full px-4 py-2 text-[0.72rem] font-bold transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                isActive
-                  ? "bg-primary text-white shadow-[0_10px_22px_rgba(29,23,213,0.18)]"
-                  : "border border-border bg-surface text-primary/78 hover:-translate-y-0.5 hover:border-primary/20 hover:bg-primary/5 hover:text-primary",
-              ].join(" ")}
-            >
-              {category.label}
-            </button>
-          );
-        })}
-      </div>
+      <CategoryPills
+        activeKey={activeCategory}
+        onSelect={(key) => onCategoryChange(key as CoursesCategoryFilter)}
+        items={categoryOptions.map((category) => ({ key: category.key, label: category.label }))}
+      />
     </div>
   );
 }

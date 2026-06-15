@@ -41,7 +41,7 @@ function AuthInput({ field, config }: Readonly<{ field: AuthFieldCopy; config: F
 
   return (
     <label className={cn("block", config.className)}>
-      <span className="mb-2 block text-xs font-black uppercase tracking-[0.12em] text-foreground/55">
+      <span className="mb-2 block text-start text-xs font-black uppercase tracking-[0.12em] text-foreground/55">
         {field.label}
       </span>
       <span className="flex h-12 items-center gap-3 rounded-[10px] border border-border bg-background px-4 text-foreground/72 shadow-[0_6px_18px_rgba(17,24,39,0.03)] transition duration-200 focus-within:border-primary/35 focus-within:ring-4 focus-within:ring-primary/10">
@@ -73,8 +73,8 @@ export function AuthFormCard({ mode, copy }: AuthFormCardProps) {
       <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-primary/8 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-24 left-12 h-56 w-56 rounded-full bg-cyan-400/10 blur-3xl" />
 
-      <div className="relative z-10">
-        <Link href="/" className="mb-8 inline-flex items-center transition duration-200 hover:-translate-y-0.5 hover:opacity-90">
+      <div className="relative z-10 text-start sm:text-center">
+        <Link href="/" className=" mx-auto inline-flex items-center transition duration-200 hover:-translate-y-0.5 hover:opacity-90">
           <span className="relative block h-11 w-36">
             <Image
               src="/images/logo-blue.png"
@@ -87,12 +87,9 @@ export function AuthFormCard({ mode, copy }: AuthFormCardProps) {
           </span>
         </Link>
 
-        <span className="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-primary/6 px-3 py-1.5 text-[0.7rem] font-black uppercase tracking-[0.14em] text-primary">
-          <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-          {copy.eyebrow}
-        </span>
 
-        <h1 className="mt-5 font-display text-[2rem] font-black leading-tight tracking-[-0.04em] text-foreground sm:text-[2.4rem]">
+
+        <h1 className="mt-5 text-[2rem] font-black leading-tight tracking-[-0.04em] text-foreground sm:text-[2.4rem]">
           {copy.title}
         </h1>
         <p className="mt-3 max-w-md text-sm leading-6 text-foreground/62">
@@ -126,20 +123,15 @@ export function AuthFormCard({ mode, copy }: AuthFormCardProps) {
           ) : null}
 
           {isRegister && copy.termsLabel ? (
-            <label className="mt-5 flex items-start gap-3 rounded-[12px] border border-border/70 bg-background/70 p-3 text-xs leading-5 text-foreground/62">
+            <label className="mt-5 flex items-start gap-3 text-start rounded-[12px] border border-border/70 bg-background/70 p-3 text-xs leading-5 text-foreground/62">
               <input
                 type="checkbox"
                 className="mt-0.5 h-4 w-4 rounded border-border text-primary accent-[var(--primary)]"
               />
-              <span>{copy.termsLabel}</span>
+              <span className="text-start">{copy.termsLabel}</span>
             </label>
           ) : null}
 
-          {copy.helperText ? (
-            <p className="mt-5 rounded-[12px] border border-primary/10 bg-primary/6 p-3 text-xs leading-5 text-foreground/62">
-              {copy.helperText}
-            </p>
-          ) : null}
 
           <Button type="submit" className="mt-6 h-12 w-full rounded-[10px] text-sm font-black" size="md">
             {copy.submitLabel}

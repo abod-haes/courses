@@ -40,7 +40,7 @@ export function BookDetailHero({ book, copy }: BookDetailHeroProps) {
             {book.category}
           </span>
 
-          <h1 className="mt-2 max-w-4xl font-display text-[2rem] font-black leading-tight tracking-[-0.035em] text-foreground sm:text-[2.5rem] lg:text-[2.85rem]">
+          <h1 className="mt-2 max-w-4xl text-[2rem] font-black leading-tight tracking-[-0.035em] text-foreground sm:text-[2.5rem] lg:text-[2.85rem]">
             {book.title}
           </h1>
 

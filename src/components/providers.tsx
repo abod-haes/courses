@@ -2,9 +2,16 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import type { Locale, ThemeMode } from "@/shared/lib/types";
 import { PreferencesProvider } from "./preferences-provider";
 
-export function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
+type ProvidersProps = Readonly<{
+  children: React.ReactNode;
+  initialLocale: Locale;
+  initialTheme: ThemeMode;
+}>;
+
+export function Providers({ children, initialLocale, initialTheme }: ProvidersProps) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -20,7 +27,9 @@ export function Providers({ children }: Readonly<{ children: React.ReactNode }>)
 
   return (
     <QueryClientProvider client={queryClient}>
-      <PreferencesProvider>{children}</PreferencesProvider>
+      <PreferencesProvider initialLocale={initialLocale} initialTheme={initialTheme}>
+        {children}
+      </PreferencesProvider>
     </QueryClientProvider>
   );
 }

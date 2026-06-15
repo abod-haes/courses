@@ -13,7 +13,7 @@ export function EmptyState({ title, description, actionLabel, actionHref, icon }
   return (
     <div className="rounded-[18px] border border-border bg-surface p-8 text-center shadow-[0_24px_80px_rgba(17,24,39,0.08)]">
       {icon ? <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[16px] bg-brand-soft text-primary">{icon}</div> : null}
-      <h3 className="font-display text-xl font-semibold text-foreground">{title}</h3>
+      <h3 className="text-xl font-semibold text-foreground">{title}</h3>
       <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-foreground/70">{description}</p>
       {actionLabel && actionHref ? (
         <div className="mt-6">

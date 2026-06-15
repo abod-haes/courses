@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useState, useTransition } from "react";
 import type { Locale, ThemeMode } from "@/shared/lib/types";
-import { defaultLocale, defaultTheme, localeCookieName, readCookieValue, themeCookieName } from "@/shared/lib/preferences";
-import { getLocaleDirection, resolveLocale, resolveTheme } from "@/shared/lib/helpers/locale.helper";
+import { localeCookieName, themeCookieName } from "@/shared/lib/preferences";
+import { getLocaleDirection } from "@/shared/lib/helpers/locale.helper";
 
 type PreferencesContextValue = {
   locale: Locale;
@@ -17,11 +17,17 @@ type PreferencesContextValue = {
 
 const PreferencesContext = createContext<PreferencesContextValue | null>(null);
 
-export function PreferencesProvider({ children }: Readonly<{ children: React.ReactNode }>) {
+type PreferencesProviderProps = Readonly<{
+  children: React.ReactNode;
+  initialLocale: Locale;
+  initialTheme: ThemeMode;
+}>;
+
+export function PreferencesProvider({ children, initialLocale, initialTheme }: PreferencesProviderProps) {
   const router = useRouter();
   const [, startTransition] = useTransition();
-  const [locale, setLocaleState] = useState<Locale>(() => readStoredLocale());
-  const [theme, setThemeState] = useState<ThemeMode>(() => readStoredTheme());
+  const [locale, setLocaleState] = useState<Locale>(initialLocale);
+  const [theme, setThemeState] = useState<ThemeMode>(initialTheme);
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -61,28 +67,6 @@ export function PreferencesProvider({ children }: Readonly<{ children: React.Rea
   );
 
   return <PreferencesContext.Provider value={value}>{children}</PreferencesContext.Provider>;
-}
-
-function readStoredLocale(): Locale {
-  if (typeof window === "undefined") {
-    return defaultLocale;
-  }
-
-  const storedLocale =
-    readCookieValue(window.document.cookie, localeCookieName) ?? window.localStorage.getItem(localeCookieName);
-
-  return resolveLocale(storedLocale);
-}
-
-function readStoredTheme(): ThemeMode {
-  if (typeof window === "undefined") {
-    return defaultTheme;
-  }
-
-  const storedTheme =
-    readCookieValue(window.document.cookie, themeCookieName) ?? window.localStorage.getItem(themeCookieName);
-
-  return resolveTheme(storedTheme);
 }
 
 function persistPreference(name: string, value: string) {

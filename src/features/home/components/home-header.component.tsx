@@ -55,10 +55,10 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   const panelExitX = isArabic ? "-100%" : "100%";
 
   const navItems = [
-    { label: copy.navigation.courses, href: "/#courses" },
+    { label: copy.navigation.courses, href: "/courses" },
     { label: copy.navigation.textbooks, href: "/books" },
-    { label: copy.navigation.articles, href: "/#articles" },
-    { label: copy.navigation.specialties, href: "/#about-us" },
+    { label: copy.navigation.articles, href: "/articles" },
+    { label: copy.navigation.specialties, href: "/about-us" },
   ];
 
   const resolveNavState = (href: string) => {
@@ -140,25 +140,22 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                   key={item.label}
                   href={item.href}
                   aria-current={resolveNavState(item.href) ? "page" : undefined}
-                  className={`group relative flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition duration-200 ease-out hover:-translate-y-0.5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-                    resolveNavState(item.href)
+                  className={`group relative flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition duration-200 ease-out hover:-translate-y-0.5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${resolveNavState(item.href)
                       ? "bg-primary/8 text-primary shadow-[0_6px_18px_rgba(29,23,213,0.08)]"
                       : "text-foreground/68"
-                  }`}
+                    }`}
                 >
                   <span>{item.label}</span>
                   <ChevronRight
-                    className={`h-3 w-3 transition duration-200 rtl:rotate-180 ${
-                      resolveNavState(item.href)
+                    className={`h-3 w-3 transition duration-200 rtl:rotate-180 ${resolveNavState(item.href)
                         ? "translate-x-0.5 opacity-100"
                         : "opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100"
-                    }`}
+                      }`}
                     aria-hidden="true"
                   />
                   <span
-                    className={`absolute inset-x-3 -bottom-0.5 h-px origin-left bg-primary transition duration-200 ${
-                      resolveNavState(item.href) ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
-                    }`}
+                    className={`absolute inset-x-3 -bottom-0.5 h-px origin-left bg-primary transition duration-200 ${resolveNavState(item.href) ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                      }`}
                   />
                 </Link>
               ))}
@@ -241,19 +238,17 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                       href={item.href}
                       onClick={() => setMenuOpen(false)}
                       aria-current={resolveNavState(item.href) ? "page" : undefined}
-                      className={`group flex items-center justify-between rounded-[10px] border px-4 py-3 text-sm font-medium transition duration-200 hover:-translate-y-0.5 ${
-                        resolveNavState(item.href)
+                      className={`group flex items-center justify-between rounded-[10px] border px-4 py-3 text-sm font-medium transition duration-200 hover:-translate-y-0.5 ${resolveNavState(item.href)
                           ? "border-primary/20 bg-primary/8 text-primary shadow-[0_8px_20px_rgba(29,23,213,0.08)]"
                           : "border-border/60 bg-surface/80 text-foreground/75 hover:border-primary/15 hover:bg-primary/5 hover:text-primary"
-                      }`}
+                        }`}
                     >
                       <span>{item.label}</span>
                       <ChevronRight
-                        className={`h-4 w-4 transition duration-200 rtl:rotate-180 ${
-                          resolveNavState(item.href)
+                        className={`h-4 w-4 transition duration-200 rtl:rotate-180 ${resolveNavState(item.href)
                             ? "translate-x-1 text-primary"
                             : "text-primary/45 group-hover:translate-x-1 group-hover:text-primary"
-                        }`}
+                          }`}
                         aria-hidden="true"
                       />
                     </Link>
@@ -298,14 +293,12 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                     </span>
                     <span
                       aria-hidden="true"
-                      className={`relative h-6 w-11 rounded-full border border-border/60 transition duration-200 ${
-                        locale === "en" ? "bg-primary/12" : "bg-surface-soft"
-                      }`}
+                      className={`relative h-6 w-11 rounded-full border border-border/60 transition duration-200 ${locale === "en" ? "bg-primary/12" : "bg-surface-soft"
+                        }`}
                     >
                       <span
-                        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-[0_4px_10px_rgba(17,24,39,0.12)] transition duration-200 ${
-                          locale === "en" ? "start-5" : "start-0.5"
-                        }`}
+                        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-[0_4px_10px_rgba(17,24,39,0.12)] transition duration-200 ${locale === "en" ? "start-5" : "start-0.5"
+                          }`}
                       />
                     </span>
                   </button>
@@ -335,14 +328,12 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                     </span>
                     <span
                       aria-hidden="true"
-                      className={`relative h-6 w-11 rounded-full border border-border/60 transition duration-200 ${
-                        theme === "dark" ? "bg-primary/12" : "bg-surface-soft"
-                      }`}
+                      className={`relative h-6 w-11 rounded-full border border-border/60 transition duration-200 ${theme === "dark" ? "bg-primary/12" : "bg-surface-soft"
+                        }`}
                     >
                       <span
-                        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-[0_4px_10px_rgba(17,24,39,0.12)] transition duration-200 ${
-                          theme === "dark" ? "start-5" : "start-0.5"
-                        }`}
+                        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-[0_4px_10px_rgba(17,24,39,0.12)] transition duration-200 ${theme === "dark" ? "start-5" : "start-0.5"
+                          }`}
                       />
                     </span>
                   </button>
