@@ -16,7 +16,7 @@ type HomeHeaderProps = Readonly<{
 }>;
 
 const headerVariants: Variants = {
-  hidden: { opacity: 0, y: -18, filter: "blur(10px)" },
+  hidden: { opacity: 0, y: -16, filter: "blur(8px)" },
   visible: {
     opacity: 1,
     y: 0,
@@ -60,32 +60,38 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
   return (
     <motion.header
-      className="sticky top-0 z-50 shrink-0 border-b border-border/70 bg-background/92 shadow-[0_8px_26px_rgba(15,23,42,0.04)] backdrop-blur-2xl dark:bg-slate-950/88 dark:shadow-[0_8px_28px_rgba(0,0,0,0.18)]"
+      className="sticky top-0 z-50 shrink-0 overflow-hidden border-b border-primary/10 bg-[linear-gradient(100deg,rgba(238,242,255,0.94)_0%,rgba(255,255,255,0.78)_42%,rgba(236,253,245,0.88)_100%)] shadow-[0_12px_40px_rgba(15,23,42,0.055)] backdrop-blur-2xl dark:border-white/10 dark:bg-[linear-gradient(100deg,rgba(15,23,42,0.94)_0%,rgba(2,6,23,0.86)_50%,rgba(12,47,44,0.72)_100%)] dark:shadow-[0_16px_44px_rgba(0,0,0,0.22)]"
       variants={headerVariants}
       initial="hidden"
       animate="visible"
     >
-      <div className="mx-auto grid h-[72px] max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 sm:px-6 lg:px-8">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute -right-24 top-1/2 h-40 w-40 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl dark:bg-primary/18" />
+        <div className="absolute -left-20 top-1/2 h-36 w-36 -translate-y-1/2 rounded-full bg-teal-300/20 blur-3xl dark:bg-teal-400/12" />
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/22 to-transparent" />
+      </div>
+
+      <div className="relative mx-auto flex h-[76px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="group flex shrink-0 items-center rounded-2xl px-1 py-1 transition duration-300 ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="group flex shrink-0 items-center rounded-[1.35rem] border border-white/60 bg-white/62 px-3 py-2 shadow-[0_12px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl transition duration-300 ease-out hover:-translate-y-0.5 hover:bg-white/82 hover:shadow-[0_16px_38px_rgba(29,23,213,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-white/8 dark:hover:bg-white/12"
           aria-label={isArabic ? "العودة للصفحة الرئيسية" : "Go to homepage"}
         >
-          <span className="relative block h-10 w-[8.6rem] sm:h-11 sm:w-[9.8rem]">
+          <span className="relative block h-9 w-[8.25rem] sm:h-10 sm:w-[9.6rem]">
             <Image
               alt={`${copy.brand} logo`}
               src="/images/logo-blue.png"
               fill
               priority
-              sizes="(max-width: 640px) 138px, 156px"
+              sizes="(max-width: 640px) 132px, 154px"
               className="object-contain object-left rtl:object-right"
             />
           </span>
           <span className="sr-only">{copy.brand}</span>
         </Link>
 
-        <nav className="hidden justify-center lg:flex" aria-label={isArabic ? "التنقل الرئيسي" : "Primary navigation"}>
-          <div className="flex items-center rounded-full border border-border/70 bg-surface-soft/72 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-xl dark:bg-white/5">
+        <nav className="hidden min-w-0 flex-1 justify-center lg:flex" aria-label={isArabic ? "التنقل الرئيسي" : "Primary navigation"}>
+          <div className="inline-flex items-center gap-1 rounded-[1.4rem] border border-white/62 bg-white/52 p-1.5 shadow-[0_14px_34px_rgba(15,23,42,0.055),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-xl dark:border-white/10 dark:bg-white/7">
             {navItems.map((item, index) => {
               const isActive = resolveNavState(item.href);
 
@@ -99,16 +105,16 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                   <Link
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
-                    className={`group relative inline-flex items-center rounded-full px-5 py-2 text-sm font-bold transition duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                    className={`group relative inline-flex min-w-[6.1rem] items-center justify-center rounded-[1.05rem] px-4 py-2 text-sm font-extrabold transition duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                       isActive
-                        ? "bg-white text-primary shadow-[0_10px_24px_rgba(29,23,213,0.1)] dark:bg-white/12 dark:text-[#d8ddff]"
-                        : "text-foreground/70 hover:-translate-y-0.5 hover:bg-white/78 hover:text-primary hover:shadow-[0_8px_18px_rgba(15,23,42,0.05)] dark:hover:bg-white/10"
+                        ? "bg-primary text-white shadow-[0_12px_28px_rgba(29,23,213,0.2)]"
+                        : "text-foreground/72 hover:-translate-y-0.5 hover:bg-white/74 hover:text-primary hover:shadow-[0_10px_22px_rgba(15,23,42,0.06)] dark:hover:bg-white/10"
                     }`}
                   >
                     <span>{item.label}</span>
                     <span
-                      className={`absolute inset-x-5 -bottom-0.5 h-0.5 origin-center rounded-full bg-primary transition duration-300 ${
-                        isActive ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-100"
+                      className={`absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full transition duration-300 ${
+                        isActive ? "scale-100 bg-white opacity-90" : "scale-0 bg-primary opacity-0 group-hover:scale-100 group-hover:opacity-80"
                       }`}
                     />
                   </Link>
@@ -118,10 +124,10 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
           </div>
         </nav>
 
-        <div className="hidden items-center justify-end gap-2 lg:flex">
+        <div className="hidden shrink-0 items-center justify-end gap-2 lg:flex">
           <Button
             href="/#courses"
-            className="group h-10 rounded-full px-5 shadow-[0_12px_28px_rgba(29,23,213,0.15)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(29,23,213,0.2)]"
+            className="group h-10 rounded-[1.05rem] px-5 shadow-[0_14px_30px_rgba(29,23,213,0.18)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(29,23,213,0.24)]"
             variant="primary"
             size="sm"
           >
@@ -135,7 +141,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
           <button
             type="button"
             onClick={() => setMenuOpen((value) => !value)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/70 bg-white/90 text-primary shadow-[0_10px_24px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-0.5 hover:border-primary/20 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:bg-white/8"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-[1.1rem] border border-white/62 bg-white/70 text-primary shadow-[0_12px_26px_rgba(15,23,42,0.08)] backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:bg-white/86 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-white/8"
             aria-expanded={menuOpen}
             aria-controls="mobile-navigation"
             aria-label={menuOpen ? (isArabic ? "إغلاق القائمة" : "Close menu") : isArabic ? "فتح القائمة" : "Open menu"}
@@ -149,7 +155,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
         {menuOpen ? (
           <motion.div
             id="mobile-navigation"
-            className="absolute inset-x-0 top-full border-b border-border/70 bg-background/96 px-4 py-4 shadow-[0_22px_55px_rgba(15,23,42,0.12)] backdrop-blur-2xl lg:hidden dark:bg-slate-950/96 dark:shadow-[0_22px_55px_rgba(0,0,0,0.3)]"
+            className="absolute inset-x-0 top-full border-b border-primary/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(238,242,255,0.94),rgba(236,253,245,0.92))] px-4 py-4 shadow-[0_22px_55px_rgba(15,23,42,0.12)] backdrop-blur-2xl lg:hidden dark:border-white/10 dark:bg-[linear-gradient(135deg,rgba(15,23,42,0.98),rgba(2,6,23,0.96))] dark:shadow-[0_22px_55px_rgba(0,0,0,0.3)]"
             variants={mobileMenuVariants}
             initial="hidden"
             animate="visible"
@@ -170,21 +176,21 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                       href={item.href}
                       onClick={() => setMenuOpen(false)}
                       aria-current={isActive ? "page" : undefined}
-                      className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-bold transition duration-300 hover:-translate-y-0.5 ${
+                      className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-extrabold transition duration-300 hover:-translate-y-0.5 ${
                         isActive
-                          ? "border-primary/20 bg-primary/8 text-primary shadow-[0_12px_28px_rgba(29,23,213,0.08)]"
-                          : "border-border/60 bg-surface/80 text-foreground/75 hover:border-primary/15 hover:bg-primary/5 hover:text-primary"
+                          ? "border-primary/22 bg-primary text-white shadow-[0_12px_28px_rgba(29,23,213,0.14)]"
+                          : "border-white/70 bg-white/68 text-foreground/76 shadow-[0_8px_22px_rgba(15,23,42,0.04)] hover:border-primary/18 hover:bg-white/88 hover:text-primary dark:border-white/10 dark:bg-white/8"
                       }`}
                     >
                       <span>{item.label}</span>
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary/70" />
+                      <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-white" : "bg-primary/70"}`} />
                     </Link>
                   </motion.div>
                 );
               })}
 
-              <div className="mt-3 grid gap-3 rounded-[1.25rem] border border-border/60 bg-surface/78 p-3 shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
-                <Button href="/#courses" variant="primary" size="sm" className="w-full rounded-full" onClick={() => setMenuOpen(false)}>
+              <div className="mt-3 grid gap-3 rounded-[1.25rem] border border-white/70 bg-white/58 p-3 shadow-[0_12px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl dark:border-white/10 dark:bg-white/8">
+                <Button href="/#courses" variant="primary" size="sm" className="w-full rounded-[1.05rem]" onClick={() => setMenuOpen(false)}>
                   {copy.actions.getStarted}
                 </Button>
                 <HomeHeaderControls copy={copy.controls} />
