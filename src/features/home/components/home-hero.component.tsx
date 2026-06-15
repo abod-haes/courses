@@ -21,7 +21,6 @@ export function HomeHero({ copy }: HomeHeroProps) {
         />
         <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-primary-soft/70 blur-3xl dark:bg-primary-soft/26" />
         <div className="absolute left-0 top-24 h-64 w-64 rounded-full bg-white blur-3xl dark:bg-primary/10" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/30 to-white/80 dark:from-[#07111f]/92 dark:via-[#07111f]/84 dark:to-[#07111f]/96" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(29,23,213,0.12),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(148,163,184,0.05),transparent_30%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(29,23,213,0.2),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.04),transparent_30%)]" />
       </div>
 
