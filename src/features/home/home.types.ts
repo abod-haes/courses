@@ -42,6 +42,7 @@ export type HomeMessages = Readonly<{
   }>;
   brand: string;
   navigation: Readonly<{
+    home: string;
     courses: string;
     textbooks: string;
     articles: string;
