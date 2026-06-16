@@ -16,21 +16,23 @@ type HomeHeaderProps = Readonly<{
 }>;
 
 const panelVariants: Variants = {
-  hidden: (x: string) => ({ x, opacity: 0.98 }),
+  hidden: { y: -16, opacity: 0, scale: 0.98 },
   visible: {
-    x: 0,
+    y: 0,
     opacity: 1,
+    scale: 1,
     transition: {
       type: "spring",
       stiffness: 420,
-      damping: 36,
+      damping: 34,
     },
   },
-  exit: (x: string) => ({
-    x,
-    opacity: 0.98,
+  exit: {
+    y: -10,
+    opacity: 0,
+    scale: 0.98,
     transition: { duration: 0.18, ease: [0.4, 0, 0.2, 1] },
-  }),
+  },
 };
 
 const backdropVariants: Variants = {
@@ -57,8 +59,6 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   const pathname = usePathname();
   const isArabic = locale === "ar";
   const isDark = theme === "dark";
-  const panelSideClass = isArabic ? "left-0 border-r" : "right-0 border-l";
-  const panelExitX = isArabic ? "-100%" : "100%";
   const languageLabel = locale === "ar" ? "AR" : "EN";
 
   const navItems = [
@@ -153,15 +153,17 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                     key={item.label}
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
-                    className={`group relative flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition duration-200 ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background ${isActive
+                    className={`group relative flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition duration-200 ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                      isActive
                         ? "bg-primary text-white shadow-[0_10px_26px_rgba(29,23,213,0.18)] dark:bg-white dark:text-slate-950 dark:shadow-[0_10px_30px_rgba(255,255,255,0.12)]"
                         : "text-foreground/68 hover:bg-white/72 hover:text-primary hover:shadow-[0_8px_20px_rgba(15,23,42,0.06)] dark:text-white/68 dark:hover:bg-white/12 dark:hover:text-white"
-                      }`}
+                    }`}
                   >
                     <span>{item.label}</span>
                     <ChevronRight
-                      className={`h-3 w-3 transition duration-200 rtl:rotate-180 ${isActive ? "translate-x-0.5 opacity-100" : "opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100"
-                        }`}
+                      className={`h-3 w-3 transition duration-200 rtl:rotate-180 ${
+                        isActive ? "translate-x-0.5 opacity-100" : "opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100"
+                      }`}
                       aria-hidden="true"
                     />
                   </Link>
@@ -180,13 +182,13 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
             <div className="ms-auto flex items-center gap-2 lg:hidden">
               <button
                 type="button"
-                onClick={() => setMenuOpen(true)}
+                onClick={() => setMenuOpen((value) => !value)}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/78 text-primary shadow-[0_10px_26px_rgba(15,23,42,0.08)] ring-1 ring-primary/14 transition duration-200 hover:-translate-y-0.5 hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:bg-white/12 dark:text-white dark:ring-white/14 dark:hover:bg-white dark:hover:text-slate-950"
                 aria-expanded={menuOpen}
                 aria-controls="mobile-navigation"
-                aria-label={isArabic ? "فتح القائمة" : "Open menu"}
+                aria-label={menuOpen ? (isArabic ? "إغلاق القائمة" : "Close menu") : isArabic ? "فتح القائمة" : "Open menu"}
               >
-                <Menu className="h-4 w-4" aria-hidden="true" />
+                {menuOpen ? <X className="h-4 w-4" aria-hidden="true" /> : <Menu className="h-4 w-4" aria-hidden="true" />}
               </button>
             </div>
           </div>
@@ -198,7 +200,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
           <div className="fixed inset-0 z-[90] lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
             <motion.button
               type="button"
-              className="absolute inset-0 bg-slate-950/34 backdrop-blur-[3px]"
+              className="absolute inset-0 bg-slate-950/28 backdrop-blur-[2px]"
               aria-label={isArabic ? "إغلاق القائمة" : "Close menu"}
               onClick={() => setMenuOpen(false)}
               variants={backdropVariants}
@@ -207,39 +209,30 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               exit="exit"
             />
 
-            <motion.aside
+            <motion.div
               id="mobile-navigation"
-              className={`fixed top-0 flex h-[100dvh] w-[min(88vw,21rem)] flex-col overflow-hidden border-border/60 bg-background shadow-[0_18px_50px_rgba(15,23,42,0.18)] dark:border-white/12 dark:bg-slate-950 dark:shadow-[0_18px_60px_rgba(0,0,0,0.45)] ${panelSideClass}`}
+              className="fixed inset-x-3 top-[4.75rem] max-h-[calc(100dvh-5.5rem)] overflow-hidden rounded-[1.75rem] border border-white/65 bg-background/96 shadow-[0_22px_60px_rgba(15,23,42,0.2)] ring-1 ring-slate-200/70 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/96 dark:ring-white/12 dark:shadow-[0_22px_70px_rgba(0,0,0,0.46)]"
               variants={panelVariants}
-              custom={panelExitX}
               initial="hidden"
               animate="visible"
               exit="exit"
               style={{ willChange: "transform, opacity" }}
             >
-              <div className="flex shrink-0 items-center justify-between border-b border-border/60 px-4 py-4">
-                <span className="relative block h-9 w-[8.25rem]">
-                  <Image
-                    alt={`${copy.brand} logo`}
-                    src="/images/logo-blue.png"
-                    fill
-                    sizes="144px"
-                    className="object-contain object-left dark:brightness-0 dark:invert"
-                  />
-                </span>
+              <div className="flex items-center justify-between border-b border-border/60 bg-white/55 px-4 py-3 dark:border-white/10 dark:bg-white/6">
+                <span className="text-sm font-bold text-foreground dark:text-white">{copy.brand}</span>
 
                 <button
                   type="button"
                   onClick={() => setMenuOpen(false)}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/86 text-foreground/72 shadow-[0_8px_20px_rgba(15,23,42,0.08)] ring-1 ring-border/60 transition duration-200 hover:-translate-y-0.5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 dark:bg-white/12 dark:text-white/82 dark:ring-white/12 dark:hover:bg-white dark:hover:text-slate-950"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/86 text-foreground/72 shadow-[0_8px_20px_rgba(15,23,42,0.08)] ring-1 ring-border/60 transition duration-200 hover:-translate-y-0.5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 dark:bg-white/12 dark:text-white/82 dark:ring-white/12 dark:hover:bg-white dark:hover:text-slate-950"
                   aria-label={isArabic ? "إغلاق القائمة" : "Close menu"}
                 >
                   <X className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-4 py-5">
-                <nav className="mt-5 space-y-2">
+              <div className="max-h-[calc(100dvh-10rem)] overflow-y-auto px-3 py-4">
+                <nav className="grid gap-2">
                   {navItems.map((item) => {
                     const isActive = resolveNavState(item.href);
 
@@ -249,15 +242,17 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                         href={item.href}
                         onClick={() => setMenuOpen(false)}
                         aria-current={isActive ? "page" : undefined}
-                        className={`group flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 ${isActive
+                        className={`group flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 ${
+                          isActive
                             ? "bg-primary text-white shadow-[0_12px_26px_rgba(29,23,213,0.18)] dark:bg-white dark:text-slate-950"
                             : "bg-white/70 text-foreground/75 shadow-[0_8px_18px_rgba(15,23,42,0.04)] ring-1 ring-border/55 hover:bg-primary/8 hover:text-primary dark:bg-white/8 dark:text-white/74 dark:ring-white/10 dark:hover:bg-white/14 dark:hover:text-white"
-                          }`}
+                        }`}
                       >
                         <span>{item.label}</span>
                         <ChevronRight
-                          className={`h-4 w-4 transition duration-200 rtl:rotate-180 ${isActive ? "translate-x-1" : "opacity-55 group-hover:translate-x-1 group-hover:opacity-100"
-                            }`}
+                          className={`h-4 w-4 transition duration-200 rtl:rotate-180 ${
+                            isActive ? "translate-x-1" : "opacity-55 group-hover:translate-x-1 group-hover:opacity-100"
+                          }`}
                           aria-hidden="true"
                         />
                       </Link>
@@ -265,7 +260,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                   })}
                 </nav>
 
-                <div className="mt-6 grid gap-3">
+                <div className="mt-4 grid gap-3">
                   <Button
                     href="/#courses"
                     variant="primary"
@@ -277,7 +272,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                   </Button>
                 </div>
 
-                <div className="mt-6 rounded-3xl bg-white/70 p-2 shadow-[0_12px_30px_rgba(15,23,42,0.06)] ring-1 ring-slate-200/70 backdrop-blur-xl dark:bg-white/8 dark:ring-white/12">
+                <div className="mt-4 rounded-3xl bg-white/72 p-2 shadow-[0_12px_30px_rgba(15,23,42,0.06)] ring-1 ring-slate-200/70 backdrop-blur-xl dark:bg-white/8 dark:ring-white/12">
                   <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.14em] text-foreground/52 dark:text-white/50">
                     {copy.controls.language} / {copy.controls.theme}
                   </p>
@@ -288,7 +283,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                       toggleLocale();
                       setMenuOpen(false);
                     }}
-                    className="flex w-full items-center justify-between rounded-2xl px-3 py-3 text-left text-sm text-foreground/80 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/82 dark:hover:bg-white/12 dark:hover:text-white"
+                    className="flex w-full items-center justify-between rounded-2xl px-3 py-3 text-start text-sm text-foreground/80 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/82 dark:hover:bg-white/12 dark:hover:text-white"
                   >
                     <span className="flex items-center gap-3">
                       <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary shadow-[0_8px_18px_rgba(29,23,213,0.08)] dark:bg-white/14 dark:text-white">
@@ -303,12 +298,13 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                     </span>
                     <span
                       aria-hidden="true"
-                      className="relative flex h-8 w-14 items-center rounded-full bg-slate-900/[0.06] p-1 dark:bg-white/16"
+                      className="relative flex h-8 w-14 items-center justify-start rounded-full bg-slate-900/[0.06] p-1 dark:bg-white/16"
                       dir="ltr"
                     >
                       <span
-                        className={`flex h-6 w-6 items-center justify-center rounded-full bg-white text-[10px] font-bold text-primary shadow-[0_5px_14px_rgba(15,23,42,0.14)] transition duration-200 dark:text-slate-950 ${locale === "en" ? "translate-x-6" : "translate-x-0"
-                          }`}
+                        className={`flex h-6 w-6 items-center justify-center rounded-full bg-white text-[10px] font-bold text-primary shadow-[0_5px_14px_rgba(15,23,42,0.14)] transition duration-200 dark:text-slate-950 ${
+                          locale === "en" ? "translate-x-6" : "translate-x-0"
+                        }`}
                       >
                         {languageLabel}
                       </span>
@@ -321,7 +317,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                       toggleTheme();
                       setMenuOpen(false);
                     }}
-                    className="mt-1 flex w-full items-center justify-between rounded-2xl px-3 py-3 text-left text-sm text-foreground/80 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/82 dark:hover:bg-white/12 dark:hover:text-white"
+                    className="mt-1 flex w-full items-center justify-between rounded-2xl px-3 py-3 text-start text-sm text-foreground/80 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/82 dark:hover:bg-white/12 dark:hover:text-white"
                   >
                     <span className="flex items-center gap-3">
                       <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary shadow-[0_8px_18px_rgba(29,23,213,0.08)] dark:bg-white/14 dark:text-white">
@@ -336,12 +332,13 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                     </span>
                     <span
                       aria-hidden="true"
-                      className="relative flex h-8 w-14 items-center rounded-full bg-slate-900/[0.06] p-1 dark:bg-white/16"
+                      className="relative flex h-8 w-14 items-center justify-start rounded-full bg-slate-900/[0.06] p-1 dark:bg-white/16"
                       dir="ltr"
                     >
                       <span
-                        className={`flex h-6 w-6 items-center justify-center rounded-full shadow-[0_5px_14px_rgba(15,23,42,0.14)] transition duration-200 ${isDark ? "translate-x-6 bg-white text-slate-950" : "translate-x-0 bg-primary text-white"
-                          }`}
+                        className={`flex h-6 w-6 items-center justify-center rounded-full shadow-[0_5px_14px_rgba(15,23,42,0.14)] transition duration-200 ${
+                          isDark ? "translate-x-6 bg-white text-slate-950" : "translate-x-0 bg-primary text-white"
+                        }`}
                       >
                         {isDark ? <SunMedium className="h-3.5 w-3.5" aria-hidden="true" /> : <MoonStar className="h-3.5 w-3.5" aria-hidden="true" />}
                       </span>
@@ -349,7 +346,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                   </button>
                 </div>
               </div>
-            </motion.aside>
+            </motion.div>
           </div>
         ) : null}
       </AnimatePresence>
