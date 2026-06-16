@@ -20,12 +20,21 @@ type HomeSectionProps = Readonly<{
 }>;
 
 const headingVariants: Variants = {
-  hidden: { opacity: 0, y: 18, filter: "blur(8px)" },
+  hidden: { opacity: 0, y: 14 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.56, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.42, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const iconVariants: Variants = {
+  hidden: { opacity: 0, scale: 0.94, y: 8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.34, ease: [0.22, 1, 0.36, 1], delay: 0.08 },
   },
 };
 
@@ -34,7 +43,7 @@ const dividerVariants: Variants = {
   visible: {
     scaleX: 1,
     opacity: 1,
-    transition: { duration: 0.72, ease: [0.22, 1, 0.36, 1], delay: 0.12 },
+    transition: { duration: 0.48, ease: [0.22, 1, 0.36, 1], delay: 0.1 },
   },
 };
 
@@ -71,10 +80,10 @@ export function HomeSection({ section, title, description, emptyState, items, ct
       <div className={`pointer-events-none absolute inset-x-0 top-6 h-40 rounded-[999px] bg-gradient-to-r ${meta.glow} blur-3xl`} />
 
       <motion.div
-        className="relative overflow-hidden rounded-[28px] border border-slate-200/75 bg-white/[0.82] p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.045] dark:shadow-[0_18px_70px_rgba(0,0,0,0.24)] sm:p-5 lg:p-6"
+        className="relative overflow-hidden rounded-[28px] border border-slate-200/75 bg-white/[0.82] p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)] backdrop-blur-xl will-change-transform dark:border-white/10 dark:bg-white/[0.045] dark:shadow-[0_18px_70px_rgba(0,0,0,0.24)] sm:p-5 lg:p-6"
         initial={shouldReduceMotion ? false : "hidden"}
         whileInView={shouldReduceMotion ? undefined : "visible"}
-        viewport={{ once: true, amount: 0.28 }}
+        viewport={{ once: true, amount: 0.22, margin: "0px 0px -12% 0px" }}
         variants={headingVariants}
       >
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(37,99,235,0.075),transparent_38%,rgba(13,148,136,0.055))] dark:bg-[linear-gradient(135deg,rgba(96,165,250,0.13),transparent_38%,rgba(45,212,191,0.08))]" />
@@ -84,9 +93,9 @@ export function HomeSection({ section, title, description, emptyState, items, ct
         <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex max-w-3xl items-start gap-4">
             <motion.span
-              className={`mt-1 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl shadow-lg ${meta.iconClass}`}
+              className={`mt-1 inline-flex h-12 w-12 shrink-0 transform-gpu items-center justify-center rounded-2xl shadow-lg will-change-transform ${meta.iconClass}`}
               aria-hidden="true"
-              variants={dividerVariants}
+              variants={iconVariants}
             >
               <SectionIcon className="h-5 w-5" />
             </motion.span>
@@ -94,7 +103,7 @@ export function HomeSection({ section, title, description, emptyState, items, ct
             <div className="min-w-0">
               <div className="mb-2 flex items-center gap-3">
                 <motion.span
-                  className="h-px w-8 origin-left bg-gradient-to-r from-primary to-transparent sm:w-10"
+                  className="h-px w-8 origin-left transform-gpu bg-gradient-to-r from-primary to-transparent sm:w-10"
                   variants={dividerVariants}
                   aria-hidden="true"
                 />
