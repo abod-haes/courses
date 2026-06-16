@@ -63,8 +63,8 @@ const sectionMeta = {
   articles: {
     icon: Newspaper,
     eyebrow: "Articles",
-    glow: "from-sky-500/[0.14] via-primary/[0.06] to-transparent dark:from-sky-300/[0.16] dark:via-blue-300/[0.08]",
-    iconClass: "bg-sky-600 text-white shadow-sky-500/25 dark:bg-sky-600 dark:text-white dark:shadow-sky-300/20",
+    glow: "from-primary/[0.14] via-blue-500/[0.06] to-transparent dark:from-blue-400/[0.16] dark:via-blue-400/[0.08]",
+    iconClass: "bg-primary text-white shadow-primary/25 dark:bg-primary dark:text-white dark:shadow-blue-400/20",
   },
 } satisfies Record<"courses" | "books" | "articles", { icon: typeof GraduationCap; eyebrow: string; glow: string; iconClass: string }>;
 
