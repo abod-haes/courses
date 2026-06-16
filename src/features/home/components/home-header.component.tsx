@@ -41,9 +41,10 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   const isDark = theme === "dark";
   const languageLabel = locale === "ar" ? "AR" : "EN";
   const sidebarInitialX = isArabic ? "105%" : "-105%";
+  const homeLabel = copy.navigation.home ?? (isArabic ? "الرئيسية" : "Home");
 
   const navItems = [
-    { label: copy.navigation.home, href: "/" },
+    { label: homeLabel, href: "/" },
     { label: copy.navigation.courses, href: "/courses" },
     { label: copy.navigation.textbooks, href: "/books" },
     { label: copy.navigation.articles, href: "/articles" },
@@ -133,7 +134,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
                 return (
                   <Link
-                    key={item.label}
+                    key={item.href}
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
                     className={`group relative flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition duration-200 ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
@@ -231,7 +232,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
                     return (
                       <motion.div
-                        key={item.label}
+                        key={item.href}
                         initial={{ opacity: 0, x: isArabic ? 18 : -18 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.28, delay: 0.08 + index * 0.04, ease: [0.22, 1, 0.36, 1] }}
