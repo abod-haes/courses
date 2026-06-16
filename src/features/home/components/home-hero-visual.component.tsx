@@ -100,8 +100,8 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
               const Icon = resourceIcons[index] ?? BookOpen;
 
               return (
-                <div key={resource} className="rounded-2xl border border-slate-200/80 bg-white/76 p-2.5 shadow-[0_8px_24px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-white/6">
-                  <span className="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-primary/8 text-primary dark:bg-primary/18">
+                <div key={resource} className="rounded-2xl flex items-center gap-4 border border-slate-200/80 bg-white/76 p-2.5 shadow-[0_8px_24px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-white/6">
+                  <span className=" flex h-8 w-8 items-center justify-center rounded-xl bg-primary/8 text-primary dark:bg-primary/18">
                     <Icon className="h-4 w-4" aria-hidden="true" />
                   </span>
                   <p className="line-clamp-2 text-[11px] font-semibold leading-4 text-slate-700 dark:text-slate-100">{resource}</p>
