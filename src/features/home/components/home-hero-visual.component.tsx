@@ -17,13 +17,26 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
 
   return (
     <div className="relative mx-auto w-full max-w-[31rem] motion-safe:animate-[soft-scale_600ms_ease-out_both] sm:max-w-[34rem] lg:max-w-none">
-      <div className="relative overflow-visible  sm:p-2">
+      <div className="relative overflow-visible sm:p-2">
         <motion.div
           className="relative aspect-[0.96] min-h-[23rem] overflow-hidden rounded-[1.45rem] bg-transparent sm:min-h-[30rem] sm:rounded-[2.1rem] md:min-h-[34rem] lg:min-h-[36rem]"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 18, scale: 0.98 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
+          <div className="pointer-events-none absolute inset-x-1 bottom-1 top-6 z-0 opacity-80 sm:inset-x-2 sm:bottom-0 sm:top-8">
+            <Image
+              alt=""
+              src="/images/hero-blue.png"
+              fill
+              sizes="(max-width: 640px) 88vw, (max-width: 1024px) 72vw, 42vw"
+              className="scale-[1.08] object-contain object-bottom opacity-[0.18] blur-[18px] saturate-150 dark:opacity-[0.13] sm:blur-[22px]"
+              aria-hidden="true"
+            />
+          </div>
+
+          <div className="pointer-events-none absolute inset-x-8 bottom-8 top-16 z-[1] rounded-full bg-primary/8 blur-3xl dark:bg-white/8" aria-hidden="true" />
+
           <Image
             alt={copy.visual.title}
             src="/images/hero-blue.png"
@@ -100,8 +113,8 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
               const Icon = resourceIcons[index] ?? BookOpen;
 
               return (
-                <div key={resource} className="rounded-2xl flex items-center gap-4 border border-slate-200/80 bg-white/76 p-2.5 shadow-[0_8px_24px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-white/6">
-                  <span className=" flex h-8 w-8 items-center justify-center rounded-xl bg-primary/8 text-primary dark:bg-primary/18">
+                <div key={resource} className="flex items-center gap-4 rounded-2xl border border-slate-200/80 bg-white/76 p-2.5 shadow-[0_8px_24px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-white/6">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/8 text-primary dark:bg-primary/18">
                     <Icon className="h-4 w-4" aria-hidden="true" />
                   </span>
                   <p className="line-clamp-2 text-[11px] font-semibold leading-4 text-slate-700 dark:text-slate-100">{resource}</p>
