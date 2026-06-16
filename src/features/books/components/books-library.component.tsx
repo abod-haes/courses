@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { StaggerList } from "@/shared/components/animation/stagger-list.component";
 import { InfiniteScrollSentinel } from "@/shared/components/infinite-scroll-sentinel.component";
 import { LoadMoreSkeleton } from "@/shared/components/load-more-skeleton.component";
+import { SiteContainer } from "@/shared/components/layout/site-container";
 import { nextPageFrom } from "@/shared/api/paging";
 import type { PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
@@ -80,12 +81,12 @@ export function BooksLibrary({ copy, initialPage, locale }: BooksLibraryProps) {
   return (
     <div className="min-h-full bg-section-bg">
       <section className="border-b border-border/60 bg-section-bg">
-        <div className="mx-auto max-w-7xl px-4 pb-7 pt-7 sm:px-6 lg:px-8 lg:pb-8 lg:pt-8">
+        <SiteContainer className="pb-7 pt-7 lg:pb-8 lg:pt-8">
           <BooksHero copy={copy} />
-        </div>
+        </SiteContainer>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+      <SiteContainer as="section" className="py-8 lg:py-10">
         <BooksToolbar
           searchTerm={searchTerm}
           searchPlaceholder={copy.searchPlaceholder}
@@ -96,7 +97,7 @@ export function BooksLibrary({ copy, initialPage, locale }: BooksLibraryProps) {
         />
 
         {books.length > 0 ? (
-          <StaggerList className="mt-7 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          <StaggerList className="mt-7 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
             {books.map((book) => (
               <BookCard key={book.id} book={book} viewDetailsLabel={copy.labels.viewDetails} />
             ))}
@@ -107,7 +108,7 @@ export function BooksLibrary({ copy, initialPage, locale }: BooksLibraryProps) {
         {showEmpty ? <BooksEmptyState title={copy.labels.noResultsTitle} description={copy.labels.noResultsDescription} /> : null}
         {query.isFetchingNextPage ? <LoadMoreSkeleton /> : null}
         <InfiniteScrollSentinel enabled={Boolean(query.hasNextPage && !query.isFetchingNextPage)} onLoadMore={handleLoadMore} />
-      </section>
+      </SiteContainer>
     </div>
   );
 }
