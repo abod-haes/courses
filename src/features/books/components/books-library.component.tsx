@@ -1,7 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { StaggerList } from "@/shared/components/animation/stagger-list.component";
+import { InfiniteScrollSentinel } from "@/shared/components/infinite-scroll-sentinel.component";
+import { LoadMoreSkeleton } from "@/shared/components/load-more-skeleton.component";
+import { nextPageFrom } from "@/shared/api/paging";
+import type { PaginatedEnvelope } from "@/shared/api/types";
+import type { Locale } from "@/shared/lib/types";
+import { getBooks } from "../api/books.api";
 import type { BookCategoryKey, BookItemView, BooksPageCopy } from "../books.types";
 import { BookCard } from "./book-card.component";
 import { BooksEmptyState } from "./books-empty-state.component";
@@ -10,17 +17,48 @@ import { BooksToolbar, type BooksCategoryFilter, type BooksCategoryOption } from
 
 type BooksLibraryProps = Readonly<{
   copy: BooksPageCopy;
-  books: BookItemView[];
+  initialPage: PaginatedEnvelope<BookItemView>;
+  locale: Locale;
 }>;
 
-export function BooksLibrary({ copy, books }: BooksLibraryProps) {
+function useDebouncedValue(value: string, delay = 300): string {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setDebouncedValue(value), delay);
+    return () => window.clearTimeout(timeout);
+  }, [delay, value]);
+
+  return debouncedValue;
+}
+
+export function BooksLibrary({ copy, initialPage, locale }: BooksLibraryProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState<BooksCategoryFilter>("all");
+  const debouncedSearch = useDebouncedValue(searchTerm.trim());
+  const isInitialQuery = debouncedSearch.length === 0 && activeCategory === "all";
+
+  const query = useInfiniteQuery({
+    queryKey: ["books", locale, debouncedSearch, activeCategory],
+    queryFn: ({ pageParam }) =>
+      getBooks({
+        locale,
+        page: pageParam,
+        perPage: initialPage.meta.perPage,
+        search: debouncedSearch,
+        category: activeCategory === "all" ? undefined : activeCategory,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: nextPageFrom,
+    initialData: isInitialQuery ? { pages: [initialPage], pageParams: [1] } : undefined,
+  });
+
+  const books = useMemo(() => query.data?.pages.flatMap((page) => page.data) ?? [], [query.data]);
 
   const categoryOptions = useMemo<BooksCategoryOption[]>(() => {
     const categories = new Map<BookCategoryKey, string>();
 
-    books.forEach((book) => {
+    initialPage.data.forEach((book) => {
       categories.set(book.categoryKey, book.category);
     });
 
@@ -28,23 +66,16 @@ export function BooksLibrary({ copy, books }: BooksLibraryProps) {
       { key: "all", label: copy.filters.all },
       ...Array.from(categories.entries()).map(([key, label]) => ({ key, label })),
     ];
-  }, [books, copy.filters.all]);
+  }, [initialPage.data, copy.filters.all]);
 
-  const filteredBooks = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase();
+  const handleLoadMore = useCallback(() => {
+    if (query.hasNextPage && !query.isFetchingNextPage) {
+      void query.fetchNextPage();
+    }
+  }, [query]);
 
-    return books.filter((book) => {
-      const matchesCategory = activeCategory === "all" || book.categoryKey === activeCategory;
-      const matchesSearch =
-        normalizedSearch.length === 0 ||
-        [book.title, book.author, book.category, book.description, book.isbn]
-          .join(" ")
-          .toLowerCase()
-          .includes(normalizedSearch);
-
-      return matchesCategory && matchesSearch;
-    });
-  }, [activeCategory, books, searchTerm]);
+  const showInitialLoading = query.isFetching && !query.isFetchingNextPage && books.length === 0;
+  const showEmpty = !showInitialLoading && books.length === 0;
 
   return (
     <div className="min-h-full bg-section-bg">
@@ -64,15 +95,18 @@ export function BooksLibrary({ copy, books }: BooksLibraryProps) {
           onCategoryChange={setActiveCategory}
         />
 
-        {filteredBooks.length > 0 ? (
+        {books.length > 0 ? (
           <StaggerList className="mt-7 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            {filteredBooks.map((book) => (
+            {books.map((book) => (
               <BookCard key={book.id} book={book} viewDetailsLabel={copy.labels.viewDetails} />
             ))}
           </StaggerList>
-        ) : (
-          <BooksEmptyState title={copy.labels.noResultsTitle} description={copy.labels.noResultsDescription} />
-        )}
+        ) : null}
+
+        {showInitialLoading ? <LoadMoreSkeleton /> : null}
+        {showEmpty ? <BooksEmptyState title={copy.labels.noResultsTitle} description={copy.labels.noResultsDescription} /> : null}
+        {query.isFetchingNextPage ? <LoadMoreSkeleton /> : null}
+        <InfiniteScrollSentinel enabled={Boolean(query.hasNextPage && !query.isFetchingNextPage)} onLoadMore={handleLoadMore} />
       </section>
     </div>
   );
