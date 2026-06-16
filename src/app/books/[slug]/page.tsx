@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { cookies } from "next/headers";
@@ -9,10 +10,42 @@ import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
 import { localeCookieName } from "@/shared/lib/preferences";
+import { createSeoMetadata } from "@/shared/lib/seo";
+import type { Locale } from "@/shared/lib/types";
 
 type PageProps = Readonly<{
   params: Promise<{ slug: string }>;
 }>;
+
+async function getCurrentLocale(): Promise<Locale> {
+  const cookieStore = await cookies();
+  return resolveLocale(cookieStore.get(localeCookieName)?.value);
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const [{ slug }, locale] = await Promise.all([params, getCurrentLocale()]);
+  const book = await getBookBySlug(slug, locale);
+
+  if (!book) {
+    return createSeoMetadata({
+      title: locale === "ar" ? "الكتاب غير موجود | IASS" : "Book not found | IASS",
+      description: locale === "ar" ? "الكتاب المطلوب غير متاح حاليًا." : "The requested book is not available right now.",
+      path: "/books",
+      locale,
+      noIndex: true,
+    });
+  }
+
+  return createSeoMetadata({
+    title: `${book.title} | IASS Books`,
+    description: book.description,
+    path: book.href,
+    locale,
+    image: book.image,
+    imageAlt: book.imageAlt,
+    keywords: [book.title, book.category, book.author],
+  });
+}
 
 export default async function Page(props: PageProps) {
   const { slug } = await props.params;
