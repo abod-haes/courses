@@ -115,18 +115,18 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
       <div className="motion-safe:animate-[fade-up_420ms_ease-out_both]">
         <SiteContainer>
-          <div className="flex min-h-14 items-center gap-1.5 py-2 min-[1500px]:gap-3">
+          <div className="flex min-h-[3.25rem] items-center gap-1 py-1.5 min-[1500px]:gap-2.5 min-[1500px]:py-2">
             <Link
               href="/"
               className="flex shrink-0 items-center transition duration-200 ease-out hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              <span className="relative block h-9 w-[7.9rem] sm:w-[8.35rem] min-[1500px]:h-10 min-[1500px]:w-[9.25rem]">
+              <span className="relative block h-8 w-[7.25rem] sm:w-[7.75rem] min-[1500px]:h-9 min-[1500px]:w-[8.75rem]">
                 <Image
                   alt={`${copy.brand} logo`}
                   src="/images/logo-blue.png"
                   fill
                   priority
-                  sizes="(max-width: 640px) 136px, (max-width: 1500px) 134px, 156px"
+                  sizes="(max-width: 640px) 118px, (max-width: 1500px) 124px, 140px"
                   className="object-contain object-left drop-shadow-[0_8px_18px_rgba(15,23,42,0.06)] dark:brightness-0 dark:invert"
                 />
               </span>
@@ -142,7 +142,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                     key={item.href}
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
-                    className={`group relative flex items-center gap-1 rounded-full px-2 py-2 text-[0.75rem] font-semibold leading-none transition duration-200 ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background min-[1280px]:text-[0.8125rem] min-[1500px]:gap-1.5 min-[1500px]:px-3.5 min-[1500px]:text-sm ${
+                    className={`group relative flex items-center gap-0.5 rounded-full px-1.5 py-1.5 text-[0.7rem] font-semibold leading-none transition duration-200 ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background min-[1280px]:px-2 min-[1280px]:text-[0.76rem] min-[1500px]:gap-1.5 min-[1500px]:px-3.5 min-[1500px]:py-2 min-[1500px]:text-sm ${
                       isActive
                         ? "bg-primary !text-white shadow-[0_10px_26px_rgba(29,23,213,0.18)] hover:!text-white dark:bg-primary dark:!text-white dark:shadow-[0_10px_30px_rgba(0,74,198,0.22)]"
                         : "text-foreground/68 hover:bg-white/72 hover:text-primary hover:shadow-[0_8px_20px_rgba(15,23,42,0.06)] dark:text-white/68 dark:hover:bg-white/12 dark:hover:text-white"
@@ -150,7 +150,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                   >
                     <span className="whitespace-nowrap">{item.label}</span>
                     <ChevronRight
-                      className={`h-3 w-3 transition duration-200 rtl:rotate-180 ${
+                      className={`hidden h-3 w-3 transition duration-200 rtl:rotate-180 min-[1500px]:block ${
                         isActive ? "translate-x-0.5 opacity-100" : "opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100"
                       }`}
                       aria-hidden="true"
@@ -160,8 +160,13 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               })}
             </nav>
 
-            <div className="ms-auto hidden shrink-0 items-center gap-2 min-[1120px]:flex min-[1500px]:gap-3">
-              <Button href="/#courses" className="hidden rounded-full px-3 shadow-[0_10px_24px_rgba(29,23,213,0.16)] min-[1500px]:inline-flex" variant="primary" size="sm">
+            <div className="ms-auto hidden shrink-0 items-center gap-1.5 min-[1120px]:flex min-[1500px]:gap-3">
+              <Button
+                href="/#courses"
+                className="hidden rounded-full px-2.5 text-[0.7rem] shadow-[0_10px_24px_rgba(29,23,213,0.16)] min-[1220px]:inline-flex min-[1500px]:px-3 min-[1500px]:text-sm"
+                variant="primary"
+                size="sm"
+              >
                 {copy.actions.getStarted}
               </Button>
 
