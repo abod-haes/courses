@@ -1,6 +1,6 @@
 import type { Locale } from "@/shared/lib/types";
 
-export type BookCategoryKey = "anatomy" | "cardiology" | "surgery" | "pediatrics";
+export type BookCategoryKey = string;
 
 type LocalizedText = Readonly<Record<Locale, string>>;
 type LocalizedTextList = Readonly<Record<Locale, readonly string[]>>;
