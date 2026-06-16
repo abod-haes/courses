@@ -45,6 +45,11 @@ const backdropVariants: Variants = {
   },
 };
 
+function normalizePath(value: string) {
+  const pathWithoutQuery = value.split("?")[0]?.replace(/\/+$/, "") ?? "";
+  return pathWithoutQuery === "" ? "/" : pathWithoutQuery;
+}
+
 export function HomeHeader({ copy }: HomeHeaderProps) {
   const { locale, theme, toggleLocale, toggleTheme } = usePreferences();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -63,17 +68,19 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   ];
 
   const resolveNavState = (href: string) => {
-    const [path, hash = ""] = href.split("#");
+    const [rawPath = "/", hash] = href.split("#");
+    const itemPath = normalizePath(rawPath || "/");
+    const activePath = normalizePath(pathname || "/");
 
-    if (path === "/books") {
-      return pathname === "/books";
+    if (hash) {
+      return activePath === itemPath && currentHash === `#${hash}`;
     }
 
-    if (path === "/" || path === "") {
-      return pathname === "/" && currentHash === `#${hash}`;
+    if (itemPath === "/") {
+      return activePath === "/" && currentHash === "";
     }
 
-    return pathname === path && currentHash === `#${hash}`;
+    return activePath === itemPath || activePath.startsWith(`${itemPath}/`);
   };
 
   useEffect(() => {
@@ -136,33 +143,35 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
             </Link>
 
             <nav className="hidden flex-1 items-center justify-center gap-8 xl:flex">
-              {navItems.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  aria-current={resolveNavState(item.href) ? "page" : undefined}
-                  className={`group relative flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition duration-200 ease-out hover:-translate-y-0.5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-                    resolveNavState(item.href)
-                      ? "bg-primary/8 text-primary shadow-[0_6px_18px_rgba(29,23,213,0.08)]"
-                      : "text-foreground/68"
-                  }`}
-                >
-                  <span>{item.label}</span>
-                  <ChevronRight
-                    className={`h-3 w-3 transition duration-200 rtl:rotate-180 ${
-                      resolveNavState(item.href)
-                        ? "translate-x-0.5 opacity-100"
-                        : "opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100"
+              {navItems.map((item) => {
+                const isActive = resolveNavState(item.href);
+
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`group relative flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition duration-200 ease-out hover:-translate-y-0.5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                      isActive
+                        ? "bg-primary/8 text-primary shadow-[0_6px_18px_rgba(29,23,213,0.08)]"
+                        : "text-foreground/68"
                     }`}
-                    aria-hidden="true"
-                  />
-                  <span
-                    className={`absolute inset-x-3 -bottom-0.5 h-px origin-left bg-primary transition duration-200 ${
-                      resolveNavState(item.href) ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
-                    }`}
-                  />
-                </Link>
-              ))}
+                  >
+                    <span>{item.label}</span>
+                    <ChevronRight
+                      className={`h-3 w-3 transition duration-200 rtl:rotate-180 ${
+                        isActive ? "translate-x-0.5 opacity-100" : "opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100"
+                      }`}
+                      aria-hidden="true"
+                    />
+                    <span
+                      className={`absolute inset-x-3 -bottom-0.5 h-px origin-left bg-primary transition duration-200 ${
+                        isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                      }`}
+                    />
+                  </Link>
+                );
+              })}
             </nav>
 
             <div className="ms-auto hidden items-center gap-2 sm:gap-3 lg:flex">
@@ -236,29 +245,31 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
               <div className="flex-1 overflow-y-auto px-4 py-5">
                 <nav className="mt-5 space-y-2">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.label}
-                      href={item.href}
-                      onClick={() => setMenuOpen(false)}
-                      aria-current={resolveNavState(item.href) ? "page" : undefined}
-                      className={`group flex items-center justify-between rounded-[10px] border px-4 py-3 text-sm font-medium transition duration-200 hover:-translate-y-0.5 ${
-                        resolveNavState(item.href)
-                          ? "border-primary/20 bg-primary/8 text-primary shadow-[0_8px_20px_rgba(29,23,213,0.08)]"
-                          : "border-border/60 bg-surface/80 text-foreground/75 hover:border-primary/15 hover:bg-primary/5 hover:text-primary"
-                      }`}
-                    >
-                      <span>{item.label}</span>
-                      <ChevronRight
-                        className={`h-4 w-4 transition duration-200 rtl:rotate-180 ${
-                          resolveNavState(item.href)
-                            ? "translate-x-1 text-primary"
-                            : "text-primary/45 group-hover:translate-x-1 group-hover:text-primary"
+                  {navItems.map((item) => {
+                    const isActive = resolveNavState(item.href);
+
+                    return (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        onClick={() => setMenuOpen(false)}
+                        aria-current={isActive ? "page" : undefined}
+                        className={`group flex items-center justify-between rounded-[10px] border px-4 py-3 text-sm font-medium transition duration-200 hover:-translate-y-0.5 ${
+                          isActive
+                            ? "border-primary/20 bg-primary/8 text-primary shadow-[0_8px_20px_rgba(29,23,213,0.08)]"
+                            : "border-border/60 bg-surface/80 text-foreground/75 hover:border-primary/15 hover:bg-primary/5 hover:text-primary"
                         }`}
-                        aria-hidden="true"
-                      />
-                    </Link>
-                  ))}
+                      >
+                        <span>{item.label}</span>
+                        <ChevronRight
+                          className={`h-4 w-4 transition duration-200 rtl:rotate-180 ${
+                            isActive ? "translate-x-1 text-primary" : "text-primary/45 group-hover:translate-x-1 group-hover:text-primary"
+                          }`}
+                          aria-hidden="true"
+                        />
+                      </Link>
+                    );
+                  })}
                 </nav>
 
                 <div className="mt-6 grid gap-3">
