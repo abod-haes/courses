@@ -16,10 +16,10 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
   const resources = [copy.visual.resources.courses, copy.visual.resources.books, copy.visual.resources.articles];
 
   return (
-    <div className="relative mx-auto w-full max-w-[27rem] motion-safe:animate-[soft-scale_600ms_ease-out_both] sm:max-w-[29rem] lg:max-w-[31rem] xl:max-w-[34rem]">
+    <div className="relative mx-auto w-full max-w-[25.5rem] motion-safe:animate-[soft-scale_600ms_ease-out_both] sm:max-w-[27rem] lg:max-w-[28rem] xl:max-w-[31rem]">
       <div className="relative overflow-visible sm:p-1">
         <motion.div
-          className="relative h-[min(55vh,29rem)] min-h-[19rem] overflow-hidden rounded-[1.35rem] bg-transparent sm:h-[min(57vh,31rem)] sm:min-h-[22rem] sm:rounded-[1.9rem] lg:h-[min(58vh,33rem)] lg:min-h-[25rem]"
+          className="relative h-[min(52vh,26rem)] min-h-[18rem] overflow-hidden rounded-[1.35rem] bg-transparent sm:h-[min(52vh,28rem)] sm:min-h-[20rem] sm:rounded-[1.9rem] lg:h-[min(54vh,30rem)] lg:min-h-[22rem] xl:h-[min(56vh,32rem)]"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 16, scale: 0.98 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
@@ -29,7 +29,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
               alt=""
               src="/images/hero-blue.png"
               fill
-              sizes="(max-width: 640px) 88vw, (max-width: 1024px) 70vw, 34vw"
+              sizes="(max-width: 640px) 88vw, (max-width: 1024px) 70vw, 31vw"
               className="scale-[1.04] object-contain object-bottom opacity-[0.14] blur-[14px] saturate-150 dark:opacity-[0.11] sm:blur-[18px]"
               aria-hidden="true"
             />
@@ -42,7 +42,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
             src="/images/hero-blue.png"
             fill
             priority
-            sizes="(max-width: 640px) 88vw, (max-width: 1024px) 70vw, 34vw"
+            sizes="(max-width: 640px) 88vw, (max-width: 1024px) 70vw, 31vw"
             className="relative z-10 object-contain object-bottom drop-shadow-[0_18px_24px_rgba(15,23,42,0.18)] transition duration-700 ease-out hover:scale-[1.01] motion-reduce:transition-none sm:drop-shadow-[0_22px_30px_rgba(15,23,42,0.2)]"
           />
         </motion.div>
@@ -92,7 +92,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
             <CheckCircle2 className="h-5 w-5 shrink-0 text-primary sm:h-6 sm:w-6" aria-hidden="true" />
           </div>
 
-          <div className="relative h-8 overflow-hidden rounded-2xl border border-border/60 bg-slate-50 dark:border-white/10 dark:bg-white/5 sm:h-9">
+          <div className="relative h-7 overflow-hidden rounded-2xl border border-border/60 bg-slate-50 dark:border-white/10 dark:bg-white/5 sm:h-8">
             <svg className="absolute inset-0 h-full w-full text-primary/85" viewBox="0 0 320 48" fill="none" aria-hidden="true">
               <path
                 className="motion-safe:animate-[ecg-draw_2.8s_ease-in-out_infinite]"
@@ -113,7 +113,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
               const Icon = resourceIcons[index] ?? BookOpen;
 
               return (
-                <div key={resource} className="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/76 p-2 shadow-[0_8px_24px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-white/6">
+                <div key={resource} className="flex items-center gap-2 rounded-2xl border border-slate-200/80 bg-white/76 p-2 shadow-[0_8px_24px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-white/6">
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary dark:bg-primary/18">
                     <Icon className="h-3.5 w-3.5" aria-hidden="true" />
                   </span>
