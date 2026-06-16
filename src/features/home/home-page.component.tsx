@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
+import { SiteContainer } from "@/shared/components/layout/site-container";
 import { createJsonLdScript } from "@/shared/lib/helpers/jsonld.helper";
 import { localeCookieName } from "@/shared/lib/preferences";
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
@@ -74,7 +75,7 @@ export async function HomePage() {
       <AboutUsSection copy={copy} />
       <FounderSection copy={copy} />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <SiteContainer>
         <HomeSection
           section="courses"
           title={copy.sections.courses.title}
@@ -108,7 +109,7 @@ export async function HomePage() {
           ctaHref="/articles"
           copy={copy}
         />
-      </div>
+      </SiteContainer>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: createJsonLdScript(jsonLd) }} />
     </div>
   );
