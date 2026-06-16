@@ -11,13 +11,16 @@ import { CoursePurchasePanel } from "@/features/courses/components/course-purcha
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
 import { localeCookieName } from "@/shared/lib/preferences";
 import { breadcrumbJsonLd, courseJsonLd, createSeoMetadata } from "@/shared/lib/seo";
+import type { CourseItemView } from "@/features/courses/courses.types";
 import type { Locale } from "@/shared/lib/types";
 
 type PageProps = Readonly<{
   params: Promise<{ slug: string }>;
 }>;
 
-const fallbackCurriculumByLocale = {
+type CourseCurriculumItem = CourseItemView["curriculum"][number];
+
+const fallbackCurriculumByLocale: Readonly<Record<Locale, ReadonlyArray<CourseCurriculumItem>>> = {
   en: [
     { title: "Module 1: Foundations and Orientation", description: "Overview of core concepts and learning expectations.", duration: "18:00" },
     { title: "Module 2: Guided Case Analysis", description: "Build a step-by-step way to analyze cases and key findings.", duration: "38:20", locked: true },
@@ -28,7 +31,7 @@ const fallbackCurriculumByLocale = {
     { title: "الوحدة 2: تحليل الحالات بإشراف", description: "بناء طريقة خطوة بخطوة لتحليل الحالات والنتائج الأساسية.", duration: "38:20", locked: true },
     { title: "الوحدة 3: مراجعة تطبيقية", description: "تدريب على التفكير المنظم من خلال سيناريوهات تعليمية واقعية.", duration: "49:00", locked: true },
   ],
-} as const;
+};
 
 async function getCurrentLocale(): Promise<Locale> {
   const cookieStore = await cookies();
@@ -70,7 +73,7 @@ export default async function Page(props: PageProps) {
     notFound();
   }
 
-  const modules = course.curriculum.length > 0 ? course.curriculum : fallbackCurriculumByLocale[locale];
+  const modules: ReadonlyArray<CourseCurriculumItem> = course.curriculum.length > 0 ? course.curriculum : fallbackCurriculumByLocale[locale];
   const hoursLabel = locale === "ar" ? "ساعة" : "Hours";
 
   return (
