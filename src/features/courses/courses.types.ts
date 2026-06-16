@@ -1,15 +1,6 @@
 import type { Locale } from "@/shared/lib/types";
 
-export type CourseCategoryKey =
-  | "cardiology"
-  | "neurology"
-  | "pediatrics"
-  | "surgery"
-  | "pharmacology"
-  | "emergency"
-  | "nephrology"
-  | "genetics"
-  | "neuroanatomy";
+export type CourseCategoryKey = string;
 
 type LocalizedText = Readonly<Record<Locale, string>>;
 
