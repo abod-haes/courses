@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight, Globe2, Menu, MoonStar, SunMedium } from "lucide-react";
+import { ChevronRight, Globe2, Menu, MoonStar, SunMedium, X } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { useEffect, useState } from "react";
 import { usePreferences } from "@/components/preferences-provider";
@@ -56,8 +56,10 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   const [currentHash, setCurrentHash] = useState("");
   const pathname = usePathname();
   const isArabic = locale === "ar";
+  const isDark = theme === "dark";
   const panelSideClass = isArabic ? "left-0 border-r" : "right-0 border-l";
   const panelExitX = isArabic ? "-100%" : "100%";
+  const languageLabel = locale === "ar" ? "AR" : "EN";
 
   const navItems = [
     { label: copy.navigation.home, href: "/" },
@@ -119,15 +121,15 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   }, [menuOpen]);
 
   return (
-    <header className="relative z-50 shrink-0 border-b border-border/60 bg-background/96">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent opacity-70" />
+    <header className="relative z-50 shrink-0 bg-gradient-to-b from-background via-background/96 to-background/90 shadow-[0_1px_0_rgba(15,23,42,0.06)] backdrop-blur-xl dark:from-slate-950 dark:via-slate-950/96 dark:to-slate-950/90 dark:shadow-[0_1px_0_rgba(255,255,255,0.08)]">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-80 dark:via-white/14" />
 
       <div className="motion-safe:animate-[fade-up_420ms_ease-out_both]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex min-h-16 items-center gap-3 py-2">
             <Link
               href="/"
-              className="flex shrink-0 items-center transition duration-200 ease-out hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="flex shrink-0 items-center transition duration-200 ease-out hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <span className="relative block h-10 w-[9.5rem] sm:h-11 sm:w-[10.5rem]">
                 <Image
@@ -136,13 +138,13 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                   fill
                   priority
                   sizes="(max-width: 640px) 152px, 168px"
-                  className="object-contain object-left"
+                  className="object-contain object-left drop-shadow-[0_8px_18px_rgba(15,23,42,0.06)] dark:brightness-0 dark:invert"
                 />
               </span>
               <span className="sr-only">{copy.brand}</span>
             </Link>
 
-            <nav className="hidden flex-1 items-center justify-center gap-8 xl:flex">
+            <nav className="hidden flex-1 items-center justify-center gap-1 rounded-full bg-white/58 p-1 shadow-[0_10px_30px_rgba(15,23,42,0.05)] ring-1 ring-slate-200/60 backdrop-blur-xl dark:bg-white/8 dark:ring-white/12 xl:flex">
               {navItems.map((item) => {
                 const isActive = resolveNavState(item.href);
 
@@ -151,10 +153,10 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                     key={item.label}
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
-                    className={`group relative flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition duration-200 ease-out hover:-translate-y-0.5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                    className={`group relative flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition duration-200 ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                       isActive
-                        ? "bg-primary/8 text-primary shadow-[0_6px_18px_rgba(29,23,213,0.08)]"
-                        : "text-foreground/68"
+                        ? "bg-primary text-white shadow-[0_10px_26px_rgba(29,23,213,0.18)] dark:bg-white dark:text-slate-950 dark:shadow-[0_10px_30px_rgba(255,255,255,0.12)]"
+                        : "text-foreground/68 hover:bg-white/72 hover:text-primary hover:shadow-[0_8px_20px_rgba(15,23,42,0.06)] dark:text-white/68 dark:hover:bg-white/12 dark:hover:text-white"
                     }`}
                   >
                     <span>{item.label}</span>
@@ -164,18 +166,13 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                       }`}
                       aria-hidden="true"
                     />
-                    <span
-                      className={`absolute inset-x-3 -bottom-0.5 h-px origin-left bg-primary transition duration-200 ${
-                        isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
-                      }`}
-                    />
                   </Link>
                 );
               })}
             </nav>
 
             <div className="ms-auto hidden items-center gap-2 sm:gap-3 lg:flex">
-              <Button href="/#courses" className="rounded-[8px] px-4" variant="primary" size="sm">
+              <Button href="/#courses" className="rounded-full px-4 shadow-[0_10px_24px_rgba(29,23,213,0.16)]" variant="primary" size="sm">
                 {copy.actions.getStarted}
               </Button>
 
@@ -186,7 +183,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               <button
                 type="button"
                 onClick={() => setMenuOpen(true)}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-[8px] border border-primary/15 bg-white text-primary transition duration-200 hover:-translate-y-0.5 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/78 text-primary shadow-[0_10px_26px_rgba(15,23,42,0.08)] ring-1 ring-primary/14 transition duration-200 hover:-translate-y-0.5 hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:bg-white/12 dark:text-white dark:ring-white/14 dark:hover:bg-white dark:hover:text-slate-950"
                 aria-expanded={menuOpen}
                 aria-controls="mobile-navigation"
                 aria-label={isArabic ? "فتح القائمة" : "Open menu"}
@@ -203,7 +200,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
           <div className="fixed inset-0 z-[90] lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
             <motion.button
               type="button"
-              className="absolute inset-0 bg-slate-950/28 backdrop-blur-[2px]"
+              className="absolute inset-0 bg-slate-950/34 backdrop-blur-[3px]"
               aria-label={isArabic ? "إغلاق القائمة" : "Close menu"}
               onClick={() => setMenuOpen(false)}
               variants={backdropVariants}
@@ -214,7 +211,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
             <motion.aside
               id="mobile-navigation"
-              className={`fixed top-0 flex h-[100dvh] w-[min(88vw,21rem)] flex-col overflow-hidden border-border/60 bg-background shadow-[0_18px_40px_rgba(29,23,213,0.08)] ${panelSideClass}`}
+              className={`fixed top-0 flex h-[100dvh] w-[min(88vw,21rem)] flex-col overflow-hidden border-border/60 bg-background shadow-[0_18px_50px_rgba(15,23,42,0.18)] dark:border-white/12 dark:bg-slate-950 dark:shadow-[0_18px_60px_rgba(0,0,0,0.45)] ${panelSideClass}`}
               variants={panelVariants}
               custom={panelExitX}
               initial="hidden"
@@ -222,24 +219,24 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               exit="exit"
               style={{ willChange: "transform, opacity" }}
             >
-              <div className="flex shrink-0 items-center justify-between border-b border-border/60 px-4 py-4">
+              <div className="flex shrink-0 items-center justify-between border-b border-border/60 px-4 py-4 dark:border-white/10">
                 <span className="relative block h-10 w-[9rem]">
                   <Image
                     alt={`${copy.brand} logo`}
                     src="/images/logo-blue.png"
                     fill
                     sizes="144px"
-                    className="object-contain object-left"
+                    className="object-contain object-left dark:brightness-0 dark:invert"
                   />
                 </span>
 
                 <button
                   type="button"
                   onClick={() => setMenuOpen(false)}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-[8px] border border-border/60 bg-white text-foreground/70 transition duration-200 hover:-translate-y-0.5 hover:border-primary/15 hover:text-primary"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/86 text-foreground/72 shadow-[0_8px_20px_rgba(15,23,42,0.08)] ring-1 ring-border/60 transition duration-200 hover:-translate-y-0.5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 dark:bg-white/12 dark:text-white/82 dark:ring-white/12 dark:hover:bg-white dark:hover:text-slate-950"
                   aria-label={isArabic ? "إغلاق القائمة" : "Close menu"}
                 >
-                  <span aria-hidden="true">×</span>
+                  <X className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
 
@@ -254,16 +251,16 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                         href={item.href}
                         onClick={() => setMenuOpen(false)}
                         aria-current={isActive ? "page" : undefined}
-                        className={`group flex items-center justify-between rounded-[10px] border px-4 py-3 text-sm font-medium transition duration-200 hover:-translate-y-0.5 ${
+                        className={`group flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 ${
                           isActive
-                            ? "border-primary/20 bg-primary/8 text-primary shadow-[0_8px_20px_rgba(29,23,213,0.08)]"
-                            : "border-border/60 bg-surface/80 text-foreground/75 hover:border-primary/15 hover:bg-primary/5 hover:text-primary"
+                            ? "bg-primary text-white shadow-[0_12px_26px_rgba(29,23,213,0.18)] dark:bg-white dark:text-slate-950"
+                            : "bg-white/70 text-foreground/75 shadow-[0_8px_18px_rgba(15,23,42,0.04)] ring-1 ring-border/55 hover:bg-primary/8 hover:text-primary dark:bg-white/8 dark:text-white/74 dark:ring-white/10 dark:hover:bg-white/14 dark:hover:text-white"
                         }`}
                       >
                         <span>{item.label}</span>
                         <ChevronRight
                           className={`h-4 w-4 transition duration-200 rtl:rotate-180 ${
-                            isActive ? "translate-x-1 text-primary" : "text-primary/45 group-hover:translate-x-1 group-hover:text-primary"
+                            isActive ? "translate-x-1" : "opacity-55 group-hover:translate-x-1 group-hover:opacity-100"
                           }`}
                           aria-hidden="true"
                         />
@@ -277,16 +274,16 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                     href="/#courses"
                     variant="primary"
                     size="sm"
-                    className="w-full rounded-[8px]"
+                    className="w-full rounded-full"
                     onClick={() => setMenuOpen(false)}
                   >
                     {copy.actions.getStarted}
                   </Button>
                 </div>
 
-                <div className="mt-6 rounded-[12px] border border-border/60 bg-surface/80 p-3">
-                  <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-foreground/55">
-                    {copy.controls.language} {copy.controls.theme}
+                <div className="mt-6 rounded-3xl bg-white/70 p-2 shadow-[0_12px_30px_rgba(15,23,42,0.06)] ring-1 ring-slate-200/70 backdrop-blur-xl dark:bg-white/8 dark:ring-white/12">
+                  <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.14em] text-foreground/52 dark:text-white/50">
+                    {copy.controls.language} / {copy.controls.theme}
                   </p>
 
                   <button
@@ -295,30 +292,31 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                       toggleLocale();
                       setMenuOpen(false);
                     }}
-                    className="flex w-full items-center justify-between rounded-[8px] px-3 py-2.5 text-left text-sm text-foreground/78 transition duration-200 hover:bg-primary/6 hover:text-foreground"
+                    className="flex w-full items-center justify-between rounded-2xl px-3 py-3 text-left text-sm text-foreground/80 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/82 dark:hover:bg-white/12 dark:hover:text-white"
                   >
                     <span className="flex items-center gap-3">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-[6px] bg-primary/8 text-primary">
-                        <Globe2 className="h-3.5 w-3.5" aria-hidden="true" />
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary shadow-[0_8px_18px_rgba(29,23,213,0.08)] dark:bg-white/14 dark:text-white">
+                        <Globe2 className="h-4 w-4" aria-hidden="true" />
                       </span>
                       <span>
-                        <span className="block font-medium leading-5">{copy.controls.language}</span>
-                        <span className="block text-[11px] text-foreground/50">
+                        <span className="block font-semibold leading-5">{copy.controls.language}</span>
+                        <span className="block text-[11px] text-foreground/50 dark:text-white/48">
                           {locale === "en" ? copy.controls.english : copy.controls.arabic}
                         </span>
                       </span>
                     </span>
                     <span
                       aria-hidden="true"
-                      className={`relative h-6 w-11 rounded-full border border-border/60 transition duration-200 ${
-                        locale === "en" ? "bg-primary/12" : "bg-surface-soft"
-                      }`}
+                      className="relative flex h-8 w-14 items-center rounded-full bg-slate-900/[0.06] p-1 dark:bg-white/16"
+                      dir="ltr"
                     >
                       <span
-                        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-[0_4px_10px_rgba(17,24,39,0.12)] transition duration-200 ${
-                          locale === "en" ? "start-5" : "start-0.5"
+                        className={`flex h-6 w-6 items-center justify-center rounded-full bg-white text-[10px] font-bold text-primary shadow-[0_5px_14px_rgba(15,23,42,0.14)] transition duration-200 dark:text-slate-950 ${
+                          locale === "en" ? "translate-x-6" : "translate-x-0"
                         }`}
-                      />
+                      >
+                        {languageLabel}
+                      </span>
                     </span>
                   </button>
 
@@ -328,34 +326,31 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                       toggleTheme();
                       setMenuOpen(false);
                     }}
-                    className="mt-1 flex w-full items-center justify-between rounded-[8px] px-3 py-2.5 text-left text-sm text-foreground/78 transition duration-200 hover:bg-primary/6 hover:text-foreground"
+                    className="mt-1 flex w-full items-center justify-between rounded-2xl px-3 py-3 text-left text-sm text-foreground/80 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/82 dark:hover:bg-white/12 dark:hover:text-white"
                   >
                     <span className="flex items-center gap-3">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-[6px] bg-primary/8 text-primary">
-                        {theme === "dark" ? (
-                          <SunMedium className="h-3.5 w-3.5" aria-hidden="true" />
-                        ) : (
-                          <MoonStar className="h-3.5 w-3.5" aria-hidden="true" />
-                        )}
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary shadow-[0_8px_18px_rgba(29,23,213,0.08)] dark:bg-white/14 dark:text-white">
+                        {isDark ? <SunMedium className="h-4 w-4" aria-hidden="true" /> : <MoonStar className="h-4 w-4" aria-hidden="true" />}
                       </span>
                       <span>
-                        <span className="block font-medium leading-5">{copy.controls.theme}</span>
-                        <span className="block text-[11px] text-foreground/50">
-                          {theme === "dark" ? copy.controls.dark : copy.controls.light}
+                        <span className="block font-semibold leading-5">{copy.controls.theme}</span>
+                        <span className="block text-[11px] text-foreground/50 dark:text-white/48">
+                          {isDark ? copy.controls.dark : copy.controls.light}
                         </span>
                       </span>
                     </span>
                     <span
                       aria-hidden="true"
-                      className={`relative h-6 w-11 rounded-full border border-border/60 transition duration-200 ${
-                        theme === "dark" ? "bg-primary/12" : "bg-surface-soft"
-                      }`}
+                      className="relative flex h-8 w-14 items-center rounded-full bg-slate-900/[0.06] p-1 dark:bg-white/16"
+                      dir="ltr"
                     >
                       <span
-                        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-[0_4px_10px_rgba(17,24,39,0.12)] transition duration-200 ${
-                          theme === "dark" ? "start-5" : "start-0.5"
+                        className={`flex h-6 w-6 items-center justify-center rounded-full shadow-[0_5px_14px_rgba(15,23,42,0.14)] transition duration-200 ${
+                          isDark ? "translate-x-6 bg-white text-slate-950" : "translate-x-0 bg-primary text-white"
                         }`}
-                      />
+                      >
+                        {isDark ? <SunMedium className="h-3.5 w-3.5" aria-hidden="true" /> : <MoonStar className="h-3.5 w-3.5" aria-hidden="true" />}
+                      </span>
                     </span>
                   </button>
                 </div>
