@@ -111,8 +111,8 @@ export function HomeSection({ section, title, description, emptyState, items, ct
                   {meta.eyebrow}
                 </span>
               </div>
-              <h2 className="text-[1.65rem] font-semibold tracking-tight text-slate-950 dark:text-white sm:text-3xl">{title}</h2>
-              <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300 sm:text-base">{description}</p>
+              <h2 className="text-[1.35rem] font-semibold leading-tight tracking-tight text-slate-950 dark:text-white sm:text-2xl lg:text-[1.65rem]">{title}</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300 sm:text-[0.95rem]">{description}</p>
             </div>
           </div>
 
