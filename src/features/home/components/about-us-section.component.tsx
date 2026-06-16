@@ -2,6 +2,7 @@
 
 import { BookOpen, ClipboardList, ShieldCheck, Users2 } from "lucide-react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { SiteContainer } from "@/shared/components/layout/site-container";
 import type { HomeMessages } from "../home.types";
 
 type AboutUsSectionProps = Readonly<{
@@ -37,10 +38,10 @@ export function AboutUsSection({ copy }: AboutUsSectionProps) {
   const highlightIcons = [ShieldCheck, Users2, BookOpen];
 
   return (
-    <section id="about-us" className="overflow-hidden bg-section-bg py-14 sm:py-18 lg:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section id="about-us" className="overflow-hidden bg-section-bg py-12 sm:py-16 lg:py-20">
+      <SiteContainer>
         <motion.div
-          className="relative overflow-hidden rounded-[32px] border border-border/70 bg-surface p-5 shadow-[0_16px_44px_rgba(17,24,39,0.05)] dark:border-white/10 dark:bg-slate-900/72 dark:shadow-[0_22px_60px_rgba(0,0,0,0.28)] sm:p-6 lg:p-8"
+          className="relative overflow-hidden rounded-[28px] border border-border/70 bg-surface p-5 shadow-[0_16px_44px_rgba(17,24,39,0.05)] dark:border-white/10 dark:bg-slate-900/72 dark:shadow-[0_22px_60px_rgba(0,0,0,0.28)] sm:p-6 lg:p-8"
           initial={shouldReduceMotion ? false : "hidden"}
           whileInView={shouldReduceMotion ? undefined : "visible"}
           variants={containerVariants}
@@ -56,11 +57,11 @@ export function AboutUsSection({ copy }: AboutUsSectionProps) {
               {about.label}
             </motion.div>
 
-            <motion.h2 variants={itemVariants} className="mt-4 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl lg:text-[2.8rem] dark:text-slate-50">
+            <motion.h2 variants={itemVariants} className="mt-4 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl lg:text-[2.25rem] dark:text-slate-50">
               {about.title}
             </motion.h2>
 
-            <motion.p variants={itemVariants} className="mt-4 max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg sm:leading-8">
+            <motion.p variants={itemVariants} className="mt-4 max-w-3xl text-[0.95rem] leading-7 text-slate-600 dark:text-slate-300 sm:text-base sm:leading-8">
               {about.subtitle}
             </motion.p>
 
@@ -88,7 +89,7 @@ export function AboutUsSection({ copy }: AboutUsSectionProps) {
             </motion.div>
           </div>
         </motion.div>
-      </div>
+      </SiteContainer>
     </section>
   );
 }
