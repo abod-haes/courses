@@ -16,34 +16,34 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
   const resources = [copy.visual.resources.courses, copy.visual.resources.books, copy.visual.resources.articles];
 
   return (
-    <div className="relative mx-auto w-full max-w-[26.25rem] motion-safe:animate-[soft-scale_600ms_ease-out_both] sm:max-w-[28rem] lg:max-w-[30rem] xl:max-w-[32.5rem]">
+    <div className="relative mx-auto w-full max-w-[27.5rem] motion-safe:animate-[soft-scale_600ms_ease-out_both] sm:max-w-[30rem] lg:max-w-[33.5rem] xl:max-w-[36.5rem]">
       <div className="relative overflow-visible sm:p-1">
         <motion.div
-          className="relative h-[min(52vh,26.5rem)] min-h-[18.25rem] overflow-hidden rounded-[1.35rem] bg-transparent sm:h-[min(54vh,28rem)] sm:min-h-[20rem] sm:rounded-[1.9rem] lg:h-[min(55vh,31rem)] lg:min-h-[22rem] xl:h-[min(56vh,32.5rem)]"
+          className="relative h-[min(55vh,28rem)] min-h-[19rem] overflow-hidden rounded-[1.35rem] bg-transparent sm:h-[min(57vh,30rem)] sm:min-h-[21rem] sm:rounded-[1.9rem] lg:h-[min(59vh,34rem)] lg:min-h-[24rem] xl:h-[min(60vh,35.5rem)]"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 16, scale: 0.98 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className="pointer-events-none absolute inset-x-1 bottom-1 top-6 z-0 opacity-70 sm:inset-x-2 sm:bottom-0 sm:top-8">
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 top-4 z-0 opacity-80 sm:inset-x-1 sm:bottom-0 sm:top-6">
             <Image
               alt=""
               src="/images/hero-blue.png"
               fill
-              sizes="(max-width: 640px) 90vw, (max-width: 1024px) 74vw, 32vw"
-              className="scale-[1.04] object-contain object-bottom opacity-[0.14] blur-[14px] saturate-150 dark:opacity-[0.11] sm:blur-[18px]"
+              sizes="(max-width: 640px) 94vw, (max-width: 1024px) 78vw, (max-width: 1500px) 42vw, 38vw"
+              className="scale-[1.08] object-contain object-bottom opacity-[0.16] blur-[12px] saturate-150 dark:opacity-[0.12] sm:blur-[16px]"
               aria-hidden="true"
             />
           </div>
 
-          <div className="pointer-events-none absolute inset-x-10 bottom-10 top-16 z-[1] rounded-full bg-primary/7 blur-3xl dark:bg-white/7" aria-hidden="true" />
+          <div className="pointer-events-none absolute inset-x-8 bottom-8 top-12 z-[1] rounded-full bg-primary/7 blur-3xl dark:bg-white/7" aria-hidden="true" />
 
           <Image
             alt={copy.visual.title}
             src="/images/hero-blue.png"
             fill
             priority
-            sizes="(max-width: 640px) 90vw, (max-width: 1024px) 74vw, 32vw"
-            className="relative z-10 object-contain object-bottom drop-shadow-[0_18px_24px_rgba(15,23,42,0.18)] transition duration-700 ease-out hover:scale-[1.01] motion-reduce:transition-none sm:drop-shadow-[0_22px_30px_rgba(15,23,42,0.2)]"
+            sizes="(max-width: 640px) 94vw, (max-width: 1024px) 78vw, (max-width: 1500px) 42vw, 38vw"
+            className="relative z-10 scale-[1.03] object-contain object-bottom drop-shadow-[0_18px_24px_rgba(15,23,42,0.18)] transition duration-700 ease-out hover:scale-[1.045] motion-reduce:transition-none sm:drop-shadow-[0_22px_30px_rgba(15,23,42,0.2)]"
           />
         </motion.div>
 
