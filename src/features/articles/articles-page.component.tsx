@@ -98,7 +98,7 @@ export async function ArticleDetailsPage({ params }: { params: Promise<ArticleDe
     <div className="bg-background">
       <section className="relative overflow-hidden border-b border-border/70 bg-gradient-to-b from-medical-blue via-background to-background">
         <div className="absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_top,rgba(29,23,213,0.12),transparent_58%)]" />
-        <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+        <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
           <Reveal preset="fadeUp">
             <Link href="/articles" className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition hover:text-primary-strong">
               {backIcon}
@@ -111,8 +111,8 @@ export async function ArticleDetailsPage({ params }: { params: Promise<ArticleDe
               <span className="inline-flex rounded-full border border-primary/15 bg-primary/8 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                 {article.category}
               </span>
-              <h1 className="mt-5 text-hero-lg-mobile font-bold tracking-[-0.02em] text-foreground sm:text-hero-lg">{article.title}</h1>
-              <p className="mt-5 max-w-2xl text-base leading-8 text-foreground/72 sm:text-lg">{article.excerpt}</p>
+              <h1 className="mt-5 text-[1.75rem] font-bold leading-tight tracking-[-0.02em] text-foreground sm:text-[2.35rem] lg:text-[2.5rem]">{article.title}</h1>
+              <p className="mt-5 max-w-2xl text-sm leading-7 text-foreground/72 sm:text-base sm:leading-8">{article.excerpt}</p>
             </Reveal>
 
             <Reveal preset="softScale" className="overflow-hidden rounded-[24px] border border-border/70 bg-surface p-3 shadow-[0_18px_48px_rgba(17,24,39,0.08)]">
@@ -129,7 +129,7 @@ export async function ArticleDetailsPage({ params }: { params: Promise<ArticleDe
 
       <section className="mx-auto max-w-4xl px-4 pb-16 sm:px-6 lg:pb-20">
         <Reveal preset="fadeUp" className="rounded-[22px] border border-border/70 bg-surface p-6 shadow-[0_12px_34px_rgba(17,24,39,0.06)] sm:p-8">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">{copy.details.continueLearningTitle}</h2>
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-[1.35rem]">{copy.details.continueLearningTitle}</h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-foreground/70">{copy.details.continueLearningDescription}</p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Button href="/courses" variant="primary" size="sm">{copy.details.browseCourses}</Button>
