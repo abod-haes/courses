@@ -3,7 +3,8 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Award, CheckCircle2, Clock3, FileText } from "lucide-react";
-import { getCourseById, getCourseDetailCopy } from "@/features/courses/courses.data";
+import { getCourseDetailCopy } from "@/features/courses/courses.data";
+import { getCourseBySlug } from "@/features/courses/api/courses.api";
 import { CoursePurchasePanel } from "@/features/courses/components/course-purchase-panel.component";
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
 import { localeCookieName } from "@/shared/lib/preferences";
@@ -14,42 +15,14 @@ type PageProps = Readonly<{
 
 const fallbackCurriculumByLocale = {
   en: [
-    {
-      title: "Module 1: Foundations and Orientation",
-      description: "Overview of core concepts and learning expectations.",
-      duration: "18:00",
-    },
-    {
-      title: "Module 2: Guided Case Analysis",
-      description: "Build a step-by-step way to analyze cases and key findings.",
-      duration: "38:20",
-      locked: true,
-    },
-    {
-      title: "Module 3: Applied Review",
-      description: "Practice structured reasoning through realistic learning scenarios.",
-      duration: "49:00",
-      locked: true,
-    },
+    { title: "Module 1: Foundations and Orientation", description: "Overview of core concepts and learning expectations.", duration: "18:00" },
+    { title: "Module 2: Guided Case Analysis", description: "Build a step-by-step way to analyze cases and key findings.", duration: "38:20", locked: true },
+    { title: "Module 3: Applied Review", description: "Practice structured reasoning through realistic learning scenarios.", duration: "49:00", locked: true },
   ],
   ar: [
-    {
-      title: "الوحدة 1: الأساسيات والتوجيه",
-      description: "نظرة عامة على المفاهيم الأساسية وتوقعات مسار التعلم.",
-      duration: "18:00",
-    },
-    {
-      title: "الوحدة 2: تحليل الحالات بإشراف",
-      description: "بناء طريقة خطوة بخطوة لتحليل الحالات والنتائج الأساسية.",
-      duration: "38:20",
-      locked: true,
-    },
-    {
-      title: "الوحدة 3: مراجعة تطبيقية",
-      description: "تدريب على التفكير المنظم من خلال سيناريوهات تعليمية واقعية.",
-      duration: "49:00",
-      locked: true,
-    },
+    { title: "الوحدة 1: الأساسيات والتوجيه", description: "نظرة عامة على المفاهيم الأساسية وتوقعات مسار التعلم.", duration: "18:00" },
+    { title: "الوحدة 2: تحليل الحالات بإشراف", description: "بناء طريقة خطوة بخطوة لتحليل الحالات والنتائج الأساسية.", duration: "38:20", locked: true },
+    { title: "الوحدة 3: مراجعة تطبيقية", description: "تدريب على التفكير المنظم من خلال سيناريوهات تعليمية واقعية.", duration: "49:00", locked: true },
   ],
 } as const;
 
@@ -57,7 +30,7 @@ export default async function Page(props: PageProps) {
   const { id } = await props.params;
   const cookieStore = await cookies();
   const locale = resolveLocale(cookieStore.get(localeCookieName)?.value);
-  const course = getCourseById(locale, id);
+  const course = await getCourseBySlug(id, locale);
   const copy = getCourseDetailCopy(locale);
 
   if (!course) {
