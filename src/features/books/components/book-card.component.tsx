@@ -10,23 +10,32 @@ type BookCardProps = Readonly<{
   viewDetailsLabel: string;
 }>;
 
-const coverBackgroundClasses: Record<BookCategoryKey, string> = {
+const defaultCoverBackgroundClass = "bg-gradient-to-br from-white via-[#f3f6f8] to-[#eef2f3]";
+const defaultCoverImageClass = "h-[84%] w-auto";
+
+const coverBackgroundClasses: Partial<Record<BookCategoryKey, string>> = {
   anatomy: "bg-[#071013]",
   cardiology: "bg-gradient-to-br from-white via-[#f3f6f8] to-[#eef2f3]",
   surgery: "bg-gradient-to-br from-[#d5f4ee] via-[#c5eee8] to-[#a8ded7]",
   pediatrics: "bg-gradient-to-br from-white via-[#f5f6f6] to-[#eeeeee]",
+  "clinical-reference": "bg-gradient-to-br from-white via-[#f3f6f8] to-[#eef2f3]",
+  "training-tools": "bg-gradient-to-br from-[#d5f4ee] via-[#c5eee8] to-[#a8ded7]",
+  "safety-guides": "bg-[#071013]",
 };
 
-const coverImageClasses: Record<BookCategoryKey, string> = {
+const coverImageClasses: Partial<Record<BookCategoryKey, string>> = {
   anatomy: "h-[88%] w-auto",
-  cardiology: "h-[84%] w-auto",
+  cardiology: defaultCoverImageClass,
   surgery: "h-[76%] w-auto",
   pediatrics: "h-[70%] w-auto",
+  "clinical-reference": defaultCoverImageClass,
+  "training-tools": "h-[76%] w-auto",
+  "safety-guides": "h-[88%] w-auto",
 };
 
 function BookCover({ book }: Readonly<{ book: BookItemView }>) {
   return (
-    <div className={cn("relative flex h-[16rem] items-center justify-center overflow-hidden", coverBackgroundClasses[book.categoryKey])}>
+    <div className={cn("relative flex h-[16rem] items-center justify-center overflow-hidden", coverBackgroundClasses[book.categoryKey] ?? defaultCoverBackgroundClass)}>
       <span className="absolute left-3 top-3 z-10 rounded-[4px] bg-primary/10 px-2 py-1 text-[0.58rem] font-black uppercase tracking-[0.08em] text-primary rtl:left-auto rtl:right-3">
         {book.category}
       </span>
@@ -39,7 +48,7 @@ function BookCover({ book }: Readonly<{ book: BookItemView }>) {
         sizes="(max-width: 640px) 80vw, (max-width: 1280px) 35vw, 220px"
         className={cn(
           "object-contain drop-shadow-[0_18px_22px_rgba(17,24,39,0.24)] transition duration-300 group-hover:scale-[1.03]",
-          coverImageClasses[book.categoryKey],
+          coverImageClasses[book.categoryKey] ?? defaultCoverImageClass,
         )}
       />
     </div>
