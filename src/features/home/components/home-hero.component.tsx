@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { BookOpen, Shield, Sparkles, Stethoscope } from "lucide-react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { SiteContainer } from "@/shared/components/layout/site-container";
 import { Button } from "@/shared/components/ui/button";
 import type { HomeMessages } from "../home.types";
 import { HomeHeroVisual } from "./home-hero-visual.component";
@@ -38,7 +39,7 @@ export function HomeHero({ copy }: HomeHeroProps) {
   const trustItems = copy.trustStrip.slice(0, 3);
 
   return (
-    <section className="relative isolate overflow-hidden bg-section-bg px-0 py-6 dark:bg-[#07111f] sm:py-8 lg:min-h-[calc(100dvh-5rem)] lg:py-8 xl:min-h-[calc(100dvh-5.5rem)]">
+    <section className="relative isolate overflow-hidden bg-section-bg px-0 py-5 dark:bg-[#07111f] sm:py-6 lg:min-h-[calc(100dvh-4.5rem)] lg:py-6 xl:min-h-[calc(100dvh-5rem)]">
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
         <Image
           src="/images/hero-bg.png"
@@ -56,7 +57,7 @@ export function HomeHero({ copy }: HomeHeroProps) {
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
       </div>
 
-      <div className="relative z-10 mx-auto grid min-h-[inherit] max-w-7xl items-center gap-6 px-4 sm:px-6 md:gap-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-8 xl:gap-10">
+      <SiteContainer className="relative z-10 grid min-h-[inherit] items-center gap-5 md:gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-7 xl:gap-8">
         <motion.div
           className="mx-auto w-full max-w-2xl text-center lg:mx-0 lg:text-start"
           variants={heroContainerVariants}
@@ -68,7 +69,7 @@ export function HomeHero({ copy }: HomeHeroProps) {
             <span className="truncate">{copy.hero.badge}</span>
           </motion.div>
 
-          <motion.h1 variants={heroItemVariants} className="mx-auto mt-4 max-w-2xl text-[1.75rem] font-black leading-[1.12] tracking-[-0.04em] text-foreground sm:text-[2.2rem] lg:mx-0 lg:text-[2.45rem] xl:text-[2.7rem]">
+          <motion.h1 variants={heroItemVariants} className="mx-auto mt-4 max-w-2xl text-[1.75rem] font-black leading-[1.12] tracking-[-0.04em] text-foreground sm:text-[2.1rem] lg:mx-0 lg:text-[2.25rem] xl:text-[2.45rem]">
             {copy.hero.title}
           </motion.h1>
 
@@ -76,7 +77,7 @@ export function HomeHero({ copy }: HomeHeroProps) {
             {copy.hero.subtitle}
           </motion.p>
 
-          <motion.div variants={heroItemVariants} className="mt-6 grid gap-3 max-sm:px-3 sm:mx-auto sm:max-w-md grid-cols-2 lg:mx-0 lg:max-w-none lg:flex lg:flex-wrap lg:gap-4">
+          <motion.div variants={heroItemVariants} className="mt-6 grid gap-3 max-sm:px-3 sm:mx-auto sm:max-w-md grid-cols-2 lg:mx-0 lg:max-w-none lg:flex lg:flex-wrap lg:gap-3 xl:gap-4">
             <Button href="#courses" variant="primary" className="group w-full rounded-2xl px-5 shadow-[0_16px_36px_rgba(29,23,213,0.22)] hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(29,23,213,0.28)] sm:w-auto">
               <BookOpen className="h-4 w-4 transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-110" aria-hidden="true" />
               {copy.actions.browseCourses}
@@ -88,14 +89,14 @@ export function HomeHero({ copy }: HomeHeroProps) {
           </motion.div>
 
           {trustItems.length > 0 ? (
-            <motion.div variants={heroItemVariants} className="mx-auto mt-6 grid max-w-xl gap-3 sm:grid-cols-3 max-sm:hidden lg:mx-0">
+            <motion.div variants={heroItemVariants} className="mx-auto mt-6 grid max-w-xl gap-2.5 sm:grid-cols-3 max-sm:hidden lg:mx-0 xl:gap-3">
               {trustItems.map((item, index) => {
                 const Icon = trustIcons[index] ?? Shield;
 
                 return (
                   <motion.div
                     key={item}
-                    className="group flex items-center gap-2 rounded-2xl border border-white/76 bg-white/68 px-3 py-2.5 text-start text-sm font-medium text-foreground/72 shadow-[0_10px_26px_rgba(17,24,39,0.045)] backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-primary/18 hover:bg-white/88 hover:shadow-[0_16px_34px_rgba(17,24,39,0.07)] dark:border-white/10 dark:bg-white/6 dark:text-slate-200"
+                    className="group flex items-center gap-2 rounded-2xl border border-white/76 bg-white/68 px-3 py-2.5 text-start text-[0.8125rem] font-medium text-foreground/72 shadow-[0_10px_26px_rgba(17,24,39,0.045)] backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-primary/18 hover:bg-white/88 hover:shadow-[0_16px_34px_rgba(17,24,39,0.07)] dark:border-white/10 dark:bg-white/6 dark:text-slate-200"
                     whileHover={shouldReduceMotion ? undefined : { y: -3 }}
                   >
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/8 text-primary transition duration-300 group-hover:scale-110 dark:bg-primary/18 dark:text-[#cdd3ff]">
@@ -110,14 +111,14 @@ export function HomeHero({ copy }: HomeHeroProps) {
         </motion.div>
 
         <motion.div
-          className="mx-auto w-full max-w-[27rem] lg:mx-0 lg:max-w-[31rem] xl:max-w-[34rem]"
+          className="mx-auto w-full max-w-[25.5rem] lg:mx-0 lg:max-w-[28rem] xl:max-w-[31rem]"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 22, scale: 0.97 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.74, ease: [0.22, 1, 0.36, 1], delay: 0.18 }}
         >
           <HomeHeroVisual copy={copy} />
         </motion.div>
-      </div>
+      </SiteContainer>
     </section>
   );
 }
