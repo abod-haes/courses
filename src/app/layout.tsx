@@ -32,7 +32,7 @@ export const metadata: Metadata = createSeoMetadata({
   description:
     "IASS is a bilingual digital academy for aesthetic medicine courses, books, and articles focused on anatomy, safety, and clinical protocols.",
   path: "/",
-  image: "/images/hero.jpg",
+  image: "/images/hero-blue.png",
   imageAlt: "IASS aesthetic medicine academy",
   keywords: [
     "medical education platform",
@@ -63,7 +63,7 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${tajawal.variable} ${theme === "dark" ? "dark" : ""} h-full antialiased`}
     >
-      <body className="h-screen overflow-hidden bg-background text-foreground">
+      <body suppressHydrationWarning className="h-screen overflow-hidden bg-background text-foreground">
         <NextIntlClientProvider locale={locale} messages={messagesByLocale[locale]}>
           <Providers initialLocale={locale} initialTheme={theme}>
             <JsonLd data={[organizationJsonLd(locale), websiteJsonLd(locale)]} />
