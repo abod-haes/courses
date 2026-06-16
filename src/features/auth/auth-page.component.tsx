@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
+import { SiteContainer } from "@/shared/components/layout/site-container";
 import { localeCookieName } from "@/shared/lib/preferences";
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
 import type { Locale } from "@/shared/lib/types";
@@ -48,14 +49,17 @@ export async function AuthPage({ mode }: AuthPageProps) {
   const modeCopy = authCopy.modes[mode];
 
   return (
-    <div className="relative min-h-full overflow-hidden bg-section-bg">
-      <div className="pointer-events-none absolute left-0 top-0 h-72 w-72 rounded-full bg-primary/8 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-cyan-300/10 blur-3xl" />
+    <main className="relative min-h-full overflow-hidden bg-[linear-gradient(135deg,rgba(248,250,255,0.98),rgba(239,246,255,0.82))] dark:bg-section-bg">
+      <div className="pointer-events-none absolute -left-20 top-6 h-64 w-64 rounded-full bg-primary/8 blur-3xl" />
+      <div className="pointer-events-none absolute -right-20 bottom-0 h-72 w-72 rounded-full bg-cyan-300/10 blur-3xl" />
 
-      <section className="relative mx-auto grid min-h-[calc(100vh-6rem)] max-w-7xl items-center gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,0.94fr)_minmax(24rem,0.76fr)] lg:px-8 lg:py-10">
+      <SiteContainer
+        as="section"
+        className="relative grid min-h-[calc(100dvh-4.25rem)] max-w-[1060px] items-center gap-5 py-5 sm:py-6 xl:grid-cols-[minmax(0,0.92fr)_minmax(22rem,0.72fr)] xl:gap-6 xl:py-7"
+      >
         <AuthVisual copy={authCopy.visual} />
         <AuthFormCard mode={mode} copy={modeCopy} />
-      </section>
-    </div>
+      </SiteContainer>
+    </main>
   );
 }
