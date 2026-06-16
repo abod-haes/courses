@@ -5,6 +5,7 @@
 import { ArrowRight } from "lucide-react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { useLocale } from "next-intl";
+import { SiteContainer } from "@/shared/components/layout/site-container";
 import { Button } from "@/shared/components/ui/button";
 import type { HomeMessages } from "../home.types";
 
@@ -64,8 +65,8 @@ export function FounderSection({ copy }: FounderSectionProps) {
   const arrowHoverClass = isRtl ? "group-hover:-translate-x-0.5" : "group-hover:translate-x-0.5";
 
   return (
-    <section id="founder" className="overflow-hidden bg-section-bg py-16 sm:py-20 lg:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section id="founder" className="overflow-hidden bg-section-bg py-14 sm:py-16 lg:py-20">
+      <SiteContainer>
         <motion.div
           className="mx-auto max-w-3xl text-center"
           initial={shouldReduceMotion ? false : "hidden"}
@@ -74,14 +75,14 @@ export function FounderSection({ copy }: FounderSectionProps) {
           viewport={{ once: true, amount: 0.5 }}
         >
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary sm:text-[0.8125rem]">{founder.label}</p>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem]">{founder.title}</h2>
-          <p className="mt-4 text-base leading-7 text-foreground/68 sm:text-lg">{founder.subtitle}</p>
+          <h2 className="mt-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl lg:text-[2.25rem]">{founder.title}</h2>
+          <p className="mt-4 text-[0.95rem] leading-7 text-foreground/68 sm:text-base">{founder.subtitle}</p>
         </motion.div>
 
-        <article className="group mt-10 overflow-hidden rounded-[24px] border border-border/70 bg-surface shadow-[0_18px_48px_rgba(17,24,39,0.06)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(17,24,39,0.09)] dark:shadow-[0_18px_48px_rgba(0,0,0,0.28)] dark:hover:shadow-[0_24px_64px_rgba(0,0,0,0.34)] sm:mt-12">
-          <div className="grid lg:min-h-[460px] lg:grid-cols-[minmax(0,1.04fr)_minmax(0,0.96fr)]">
+        <article className="group mt-9 overflow-hidden rounded-[24px] border border-border/70 bg-surface shadow-[0_18px_48px_rgba(17,24,39,0.06)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(17,24,39,0.09)] dark:shadow-[0_18px_48px_rgba(0,0,0,0.28)] dark:hover:shadow-[0_24px_64px_rgba(0,0,0,0.34)] sm:mt-10">
+          <div className="grid lg:min-h-[430px] lg:grid-cols-[minmax(0,1.04fr)_minmax(0,0.96fr)]">
             <motion.div
-              className="relative min-h-[280px] overflow-hidden rounded-t-[24px] bg-[#EAF0FF] dark:bg-slate-900 lg:min-h-0 lg:rounded-l-[24px] lg:rounded-tr-none"
+              className="relative min-h-[260px] overflow-hidden rounded-t-[24px] bg-[#EAF0FF] dark:bg-slate-900 lg:min-h-0 lg:rounded-l-[24px] lg:rounded-tr-none"
               initial={shouldReduceMotion ? false : "hidden"}
               whileInView={shouldReduceMotion ? undefined : "visible"}
               variants={imageVariants}
@@ -97,7 +98,7 @@ export function FounderSection({ copy }: FounderSectionProps) {
             </motion.div>
 
             <motion.div
-              className="flex flex-col justify-center p-6 sm:p-8 lg:p-10 xl:p-12"
+              className="flex flex-col justify-center p-6 sm:p-8 lg:p-9 xl:p-10"
               initial={shouldReduceMotion ? false : "hidden"}
               whileInView={shouldReduceMotion ? undefined : "visible"}
               variants={textVariants}
@@ -106,10 +107,10 @@ export function FounderSection({ copy }: FounderSectionProps) {
               <motion.p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary sm:text-[0.8125rem]" variants={itemVariants}>
                 {founder.label}
               </motion.p>
-              <motion.h3 className="mt-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl lg:text-[2.25rem]" variants={itemVariants}>
+              <motion.h3 className="mt-4 text-xl font-semibold tracking-tight text-foreground sm:text-2xl lg:text-[2rem]" variants={itemVariants}>
                 {founder.name}
               </motion.h3>
-              <motion.p className="mt-5 max-w-2xl text-base leading-7 text-foreground/72 sm:text-[1.05rem] sm:leading-8" variants={itemVariants}>
+              <motion.p className="mt-5 max-w-2xl text-[0.95rem] leading-7 text-foreground/72 sm:text-base sm:leading-8" variants={itemVariants}>
                 {founder.description}
               </motion.p>
 
@@ -126,7 +127,7 @@ export function FounderSection({ copy }: FounderSectionProps) {
             </motion.div>
           </div>
         </article>
-      </div>
+      </SiteContainer>
     </section>
   );
 }
