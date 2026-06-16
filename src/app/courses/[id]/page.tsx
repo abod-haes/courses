@@ -1,24 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Award, CheckCircle2, Clock3, FileText, MonitorPlay, Smartphone } from "lucide-react";
+import { ArrowLeft, Award, CheckCircle2, Clock3, FileText } from "lucide-react";
 import { getCourseById, getCourseDetailCopy } from "@/features/courses/courses.data";
 import { CoursePurchasePanel } from "@/features/courses/components/course-purchase-panel.component";
+import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
+import { localeCookieName } from "@/shared/lib/preferences";
 
 type PageProps = Readonly<{
   params: Promise<{ id: string }>;
 }>;
 
-export default async function Page(props: PageProps) {
-  const { id } = await props.params;
-  const course = getCourseById("en", id);
-  const copy = getCourseDetailCopy("en");
-
-  if (!course) {
-    notFound();
-  }
-
-  const modules = course.curriculum.length > 0 ? course.curriculum : [
+const fallbackCurriculumByLocale = {
+  en: [
     {
       title: "Module 1: Foundations and Orientation",
       description: "Overview of core concepts and learning expectations.",
@@ -36,13 +31,47 @@ export default async function Page(props: PageProps) {
       duration: "49:00",
       locked: true,
     },
-  ];
+  ],
+  ar: [
+    {
+      title: "الوحدة 1: الأساسيات والتوجيه",
+      description: "نظرة عامة على المفاهيم الأساسية وتوقعات مسار التعلم.",
+      duration: "18:00",
+    },
+    {
+      title: "الوحدة 2: تحليل الحالات بإشراف",
+      description: "بناء طريقة خطوة بخطوة لتحليل الحالات والنتائج الأساسية.",
+      duration: "38:20",
+      locked: true,
+    },
+    {
+      title: "الوحدة 3: مراجعة تطبيقية",
+      description: "تدريب على التفكير المنظم من خلال سيناريوهات تعليمية واقعية.",
+      duration: "49:00",
+      locked: true,
+    },
+  ],
+} as const;
+
+export default async function Page(props: PageProps) {
+  const { id } = await props.params;
+  const cookieStore = await cookies();
+  const locale = resolveLocale(cookieStore.get(localeCookieName)?.value);
+  const course = getCourseById(locale, id);
+  const copy = getCourseDetailCopy(locale);
+
+  if (!course) {
+    notFound();
+  }
+
+  const modules = course.curriculum.length > 0 ? course.curriculum : fallbackCurriculumByLocale[locale];
+  const hoursLabel = locale === "ar" ? "ساعة" : "Hours";
 
   return (
     <div className="min-h-full bg-section-bg">
       <section className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8 lg:py-8">
         <Link href="/courses" className="inline-flex items-center gap-2 text-xs font-bold text-primary hover:text-primary-strong">
-          <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
+          <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" aria-hidden="true" />
           {copy.backLabel}
         </Link>
 
@@ -56,7 +85,7 @@ export default async function Page(props: PageProps) {
               <span className="uppercase tracking-[0.12em] text-primary">{course.category}</span>
               <span className="inline-flex items-center gap-1.5">
                 <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
-                {course.hours} Hours
+                {course.hours} {hoursLabel}
               </span>
               {course.isCmeEligible ? (
                 <span className="inline-flex items-center gap-1.5">
