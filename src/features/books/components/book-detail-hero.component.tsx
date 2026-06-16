@@ -56,7 +56,7 @@ export function BookDetailHero({ book, copy }: BookDetailHeroProps) {
           </div>
 
           <div className="mt-5 flex flex-wrap items-center gap-3">
-            <Button className="rounded-[4px] px-5" size="sm">
+            <Button href={`/checkout?itemType=book&itemId=${book.id}`} className="rounded-[4px] px-5" size="sm">
               <ShoppingCart className="h-4 w-4" aria-hidden="true" />
               {copy.addToCart}
             </Button>
