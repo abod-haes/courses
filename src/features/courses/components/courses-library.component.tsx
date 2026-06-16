@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { StaggerList } from "@/shared/components/animation/stagger-list.component";
 import { InfiniteScrollSentinel } from "@/shared/components/infinite-scroll-sentinel.component";
 import { LoadMoreSkeleton } from "@/shared/components/load-more-skeleton.component";
+import { SiteContainer } from "@/shared/components/layout/site-container";
 import { nextPageFrom } from "@/shared/api/paging";
 import type { PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
@@ -79,12 +80,12 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
   return (
     <div className="min-h-full bg-section-bg">
       <section className="border-b border-border/60 bg-section-bg">
-        <div className="mx-auto max-w-7xl px-4 pb-8 pt-8 sm:px-6 lg:px-8 lg:pb-10 lg:pt-10">
+        <SiteContainer className="pb-8 pt-8 lg:pb-10 lg:pt-10">
           <CoursesHero copy={copy} />
-        </div>
+        </SiteContainer>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+      <SiteContainer as="section" className="py-6 lg:py-8">
         <CoursesToolbar
           searchTerm={searchTerm}
           searchPlaceholder={copy.searchPlaceholder}
@@ -95,7 +96,7 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
         />
 
         {courses.length > 0 ? (
-          <StaggerList className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          <StaggerList className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
             {courses.map((course) => (
               <CourseTileView key={course.id} course={course} viewDetailsLabel={copy.labels.viewDetails} />
             ))}
@@ -115,7 +116,7 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
 
         {query.isFetchingNextPage ? <LoadMoreSkeleton /> : null}
         <InfiniteScrollSentinel enabled={Boolean(query.hasNextPage && !query.isFetchingNextPage)} onLoadMore={handleLoadMore} />
-      </section>
+      </SiteContainer>
     </div>
   );
 }
