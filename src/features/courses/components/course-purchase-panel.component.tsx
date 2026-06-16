@@ -1,4 +1,5 @@
 import { CheckCircle2, Clock3, FileText, MonitorPlay, Smartphone } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
 import type { CourseDetailCopy, CourseItemView } from "../courses.types";
 
@@ -35,9 +36,9 @@ export function CoursePurchasePanel({ course, copy }: CoursePurchasePanelProps) 
       </div>
 
       <div className="mt-5 border-t border-border/70 pt-5">
-        <button type="button" className="inline-flex w-full items-center justify-center rounded-[7px] bg-primary px-4 py-3 text-xs font-bold text-white transition hover:bg-primary-strong">
+        <Button href={`/checkout?itemType=course&itemId=${course.id}`} className="w-full rounded-[7px] py-3 text-xs font-bold">
           {copy.addToCart}
-        </button>
+        </Button>
         <p className="mt-4 text-center text-[0.74rem] leading-5 text-foreground/55">{copy.unlockNote}</p>
       </div>
 
