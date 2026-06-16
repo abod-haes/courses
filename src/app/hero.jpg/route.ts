@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 export const runtime = "edge";
 
-export function GET() {
-  return NextResponse.redirect(new URL("/images/hero-blue.png", process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"), 308);
+export function GET(request: NextRequest) {
+  return NextResponse.redirect(new URL("/images/hero-blue.png", request.url), 308);
 }
