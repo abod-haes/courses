@@ -17,13 +17,38 @@ export class ApiError extends Error {
   }
 }
 
-function resolveApiBaseUrl(): string {
-  if (typeof window !== "undefined") {
-    return process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api/mock";
+function withProtocol(url: string): string {
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+}
+
+function resolveSiteUrl(): string {
+  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+
+  if (configuredSiteUrl) {
+    return withProtocol(configuredSiteUrl);
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  return process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? `${siteUrl}/api/mock`;
+  const vercelUrl = process.env.VERCEL_URL?.trim() ?? process.env.NEXT_PUBLIC_VERCEL_URL?.trim();
+
+  if (vercelUrl) {
+    return withProtocol(vercelUrl);
+  }
+
+  return "http://localhost:3000";
+}
+
+function resolveApiBaseUrl(): string {
+  const configuredApiUrl = process.env.API_BASE_URL?.trim() ?? process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+
+  if (configuredApiUrl) {
+    return configuredApiUrl;
+  }
+
+  if (typeof window !== "undefined") {
+    return "/api/mock";
+  }
+
+  return `${resolveSiteUrl()}/api/mock`;
 }
 
 function appendSearchParams(url: string, params?: Record<string, SearchParamValue>): string {
