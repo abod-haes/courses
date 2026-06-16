@@ -52,19 +52,19 @@ const sectionMeta = {
     icon: GraduationCap,
     eyebrow: "Courses",
     glow: "from-primary/[0.14] via-blue-500/[0.06] to-transparent dark:from-blue-400/[0.16] dark:via-blue-400/[0.08]",
-    iconClass: "bg-primary text-white shadow-primary/25 dark:bg-blue-400 dark:text-slate-950 dark:shadow-blue-400/20",
+    iconClass: "bg-primary text-white shadow-primary/25 dark:bg-primary dark:text-white dark:shadow-blue-400/20",
   },
   books: {
     icon: BookOpen,
     eyebrow: "Books",
     glow: "from-secondary/[0.14] via-emerald-400/[0.08] to-transparent dark:from-emerald-300/[0.16] dark:via-emerald-300/[0.08]",
-    iconClass: "bg-secondary text-white shadow-secondary/25 dark:bg-emerald-300 dark:text-slate-950 dark:shadow-emerald-300/20",
+    iconClass: "bg-secondary text-white shadow-secondary/25 dark:bg-secondary dark:text-white dark:shadow-emerald-300/20",
   },
   articles: {
     icon: Newspaper,
     eyebrow: "Articles",
     glow: "from-sky-500/[0.14] via-primary/[0.06] to-transparent dark:from-sky-300/[0.16] dark:via-blue-300/[0.08]",
-    iconClass: "bg-sky-600 text-white shadow-sky-500/25 dark:bg-sky-300 dark:text-slate-950 dark:shadow-sky-300/20",
+    iconClass: "bg-sky-600 text-white shadow-sky-500/25 dark:bg-sky-600 dark:text-white dark:shadow-sky-300/20",
   },
 } satisfies Record<"courses" | "books" | "articles", { icon: typeof GraduationCap; eyebrow: string; glow: string; iconClass: string }>;
 
@@ -120,10 +120,10 @@ export function HomeSection({ section, title, description, emptyState, items, ct
             href={ctaHref}
             variant="ghost"
             size="sm"
-            className="view-all-button group inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-full border border-primary/[0.12] bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(0,74,198,0.18)] transition duration-300 hover:-translate-y-0.5 hover:bg-primary/[0.92] hover:text-white hover:shadow-[0_18px_38px_rgba(0,74,198,0.24)] dark:border-white/[0.12] dark:bg-white dark:text-slate-950 dark:shadow-[0_16px_34px_rgba(255,255,255,0.08)] dark:hover:bg-blue-50 dark:hover:text-slate-950 sm:w-auto"
+            className="view-all-button group inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-full border border-primary/[0.12] bg-primary px-5 py-3 text-sm font-semibold !text-white shadow-[0_14px_30px_rgba(0,74,198,0.18)] transition duration-300 hover:-translate-y-0.5 hover:bg-primary/[0.92] hover:!text-white hover:shadow-[0_18px_38px_rgba(0,74,198,0.24)] dark:border-primary/30 dark:bg-primary dark:!text-white dark:shadow-[0_16px_34px_rgba(0,74,198,0.22)] dark:hover:bg-primary/[0.92] dark:hover:!text-white sm:w-auto"
           >
             <span>{ctaLabel}</span>
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-white/[0.16] text-white transition duration-300 group-hover:translate-x-0.5 group-hover:bg-white/[0.24] dark:bg-slate-950/[0.08] dark:text-slate-950 rtl:group-hover:-translate-x-0.5">
+            <span className="grid h-7 w-7 place-items-center rounded-full bg-white/[0.16] text-white transition duration-300 group-hover:translate-x-0.5 group-hover:bg-white/[0.24] dark:bg-white/[0.16] dark:text-white rtl:group-hover:-translate-x-0.5">
               <ArrowRight className="view-all-arrow h-4 w-4 rtl:rotate-180" aria-hidden="true" />
             </span>
           </Button>
