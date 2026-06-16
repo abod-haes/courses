@@ -23,12 +23,11 @@ const heroContainerVariants: Variants = {
 };
 
 const heroItemVariants: Variants = {
-  hidden: { opacity: 0, y: 22, filter: "blur(10px)" },
+  hidden: { opacity: 0, y: 22 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.66, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.58, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
@@ -39,7 +38,7 @@ export function HomeHero({ copy }: HomeHeroProps) {
   const trustItems = copy.trustStrip.slice(0, 3);
 
   return (
-    <section className="relative isolate overflow-hidden bg-section-bg px-0 py-8 dark:bg-[#07111f] sm:py-12 lg:min-h-[70vh] lg:py-16">
+    <section className="relative isolate overflow-hidden bg-section-bg px-0 py-6 dark:bg-[#07111f] sm:py-8 lg:min-h-[calc(100dvh-5rem)] lg:py-8 xl:min-h-[calc(100dvh-5.5rem)]">
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
         <Image
           src="/images/hero-bg.png"
@@ -47,17 +46,17 @@ export function HomeHero({ copy }: HomeHeroProps) {
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center opacity-[0.24] saturate-[1.05] dark:opacity-[0.16]"
+          className="object-cover object-center opacity-[0.58] saturate-[1.08] dark:opacity-[0.26]"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(118deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.84)_42%,rgba(238,242,255,0.88)_100%)] dark:bg-[linear-gradient(118deg,rgba(7,17,31,0.96)_0%,rgba(8,17,29,0.88)_52%,rgba(15,23,42,0.94)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_42%,rgba(255,255,255,0.22),transparent_30%),radial-gradient(circle_at_top_right,rgba(29,23,213,0.12),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(20,184,166,0.09),transparent_32%)] dark:bg-[radial-gradient(circle_at_78%_42%,rgba(15,23,42,0.12),transparent_30%),radial-gradient(circle_at_top_right,rgba(99,102,241,0.18),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(20,184,166,0.08),transparent_30%)]" />
-        <div className="absolute -top-28 right-[-10rem] h-80 w-80 rounded-full bg-primary-soft/70 blur-3xl motion-safe:animate-[clinical-float_11s_ease-in-out_infinite] dark:bg-primary-soft/24 sm:right-[-7rem] sm:h-96 sm:w-96" />
-        <div className="absolute bottom-[-10rem] left-[-9rem] h-[22rem] w-[22rem] rounded-full bg-teal-100/55 blur-3xl motion-safe:animate-[clinical-float_13s_ease-in-out_infinite_reverse] dark:bg-teal-400/10 sm:left-[-6rem] sm:h-[26rem] sm:w-[26rem]" />
-        <div className="absolute left-[42%] top-12 hidden h-72 w-72 -translate-x-1/2 rounded-full bg-white/78 blur-3xl dark:bg-white/5 sm:block" />
+        <div className="absolute inset-0 bg-[linear-gradient(118deg,rgba(255,255,255,0.82)_0%,rgba(248,250,252,0.58)_42%,rgba(238,242,255,0.64)_100%)] dark:bg-[linear-gradient(118deg,rgba(7,17,31,0.9)_0%,rgba(8,17,29,0.78)_52%,rgba(15,23,42,0.88)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_42%,rgba(255,255,255,0.1),transparent_30%),radial-gradient(circle_at_top_right,rgba(29,23,213,0.1),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(20,184,166,0.08),transparent_32%)] dark:bg-[radial-gradient(circle_at_78%_42%,rgba(15,23,42,0.1),transparent_30%),radial-gradient(circle_at_top_right,rgba(99,102,241,0.16),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(20,184,166,0.08),transparent_30%)]" />
+        <div className="absolute -top-28 right-[-10rem] h-80 w-80 rounded-full bg-primary-soft/50 blur-3xl motion-safe:animate-[clinical-float_11s_ease-in-out_infinite] dark:bg-primary-soft/20 sm:right-[-7rem] sm:h-96 sm:w-96" />
+        <div className="absolute bottom-[-10rem] left-[-9rem] h-[22rem] w-[22rem] rounded-full bg-teal-100/42 blur-3xl motion-safe:animate-[clinical-float_13s_ease-in-out_infinite_reverse] dark:bg-teal-400/10 sm:left-[-6rem] sm:h-[26rem] sm:w-[26rem]" />
+        <div className="absolute left-[42%] top-12 hidden h-72 w-72 -translate-x-1/2 rounded-full bg-white/52 blur-3xl dark:bg-white/5 sm:block" />
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
       </div>
 
-      <div className="relative z-10 mx-auto grid min-h-[inherit] max-w-7xl items-center gap-8 md:gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-12 xl:gap-16">
+      <div className="relative z-10 mx-auto grid min-h-[inherit] max-w-7xl items-center gap-6 px-4 sm:px-6 md:gap-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-8 xl:gap-10">
         <motion.div
           className="mx-auto w-full max-w-2xl text-center lg:mx-0 lg:text-start"
           variants={heroContainerVariants}
@@ -69,15 +68,15 @@ export function HomeHero({ copy }: HomeHeroProps) {
             <span className="truncate">{copy.hero.badge}</span>
           </motion.div>
 
-          <motion.h1 variants={heroItemVariants} className="mx-auto mt-5 max-w-2xl text-[1.85rem] font-black leading-[1.12] tracking-[-0.04em] text-foreground sm:text-[2.35rem] lg:mx-0 lg:text-[2.65rem] xl:text-[2.9rem]">
+          <motion.h1 variants={heroItemVariants} className="mx-auto mt-4 max-w-2xl text-[1.75rem] font-black leading-[1.12] tracking-[-0.04em] text-foreground sm:text-[2.2rem] lg:mx-0 lg:text-[2.45rem] xl:text-[2.7rem]">
             {copy.hero.title}
           </motion.h1>
 
-          <motion.p variants={heroItemVariants} className="mx-auto mt-5 max-w-xl text-[0.92rem] leading-7 text-foreground/66 sm:text-base sm:leading-8 lg:mx-0">
+          <motion.p variants={heroItemVariants} className="mx-auto mt-4 max-w-xl text-[0.9rem] leading-7 text-foreground/66 sm:text-[0.96rem] sm:leading-8 lg:mx-0">
             {copy.hero.subtitle}
           </motion.p>
 
-          <motion.div variants={heroItemVariants} className="mt-7 grid gap-3 max-sm:px-3 sm:mx-auto sm:max-w-md grid-cols-2 lg:mx-0 lg:max-w-none lg:flex lg:flex-wrap lg:gap-4">
+          <motion.div variants={heroItemVariants} className="mt-6 grid gap-3 max-sm:px-3 sm:mx-auto sm:max-w-md grid-cols-2 lg:mx-0 lg:max-w-none lg:flex lg:flex-wrap lg:gap-4">
             <Button href="#courses" variant="primary" className="group w-full rounded-2xl px-5 shadow-[0_16px_36px_rgba(29,23,213,0.22)] hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(29,23,213,0.28)] sm:w-auto">
               <BookOpen className="h-4 w-4 transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-110" aria-hidden="true" />
               {copy.actions.browseCourses}
@@ -89,7 +88,7 @@ export function HomeHero({ copy }: HomeHeroProps) {
           </motion.div>
 
           {trustItems.length > 0 ? (
-            <motion.div variants={heroItemVariants} className="mx-auto mt-7 grid max-w-xl gap-3 sm:grid-cols-3 max-sm:hidden lg:mx-0">
+            <motion.div variants={heroItemVariants} className="mx-auto mt-6 grid max-w-xl gap-3 sm:grid-cols-3 max-sm:hidden lg:mx-0">
               {trustItems.map((item, index) => {
                 const Icon = trustIcons[index] ?? Shield;
 
@@ -111,10 +110,10 @@ export function HomeHero({ copy }: HomeHeroProps) {
         </motion.div>
 
         <motion.div
-          className="mx-auto w-full max-w-[32rem] lg:mx-0 lg:max-w-none"
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 26, scale: 0.97, filter: "blur(10px)" }}
-          animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-          transition={{ duration: 0.82, ease: [0.22, 1, 0.36, 1], delay: 0.18 }}
+          className="mx-auto w-full max-w-[27rem] lg:mx-0 lg:max-w-[31rem] xl:max-w-[34rem]"
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 22, scale: 0.97 }}
+          animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.74, ease: [0.22, 1, 0.36, 1], delay: 0.18 }}
         >
           <HomeHeroVisual copy={copy} />
         </motion.div>
