@@ -42,19 +42,19 @@ const sectionMeta = {
   courses: {
     icon: GraduationCap,
     eyebrow: "Courses",
-    glow: "from-primary/14 via-blue-500/6 to-transparent dark:from-blue-400/16 dark:via-blue-400/8",
+    glow: "from-primary/[0.14] via-blue-500/[0.06] to-transparent dark:from-blue-400/[0.16] dark:via-blue-400/[0.08]",
     iconClass: "bg-primary text-white shadow-primary/25 dark:bg-blue-400 dark:text-slate-950 dark:shadow-blue-400/20",
   },
   books: {
     icon: BookOpen,
     eyebrow: "Books",
-    glow: "from-secondary/14 via-emerald-400/8 to-transparent dark:from-emerald-300/16 dark:via-emerald-300/8",
+    glow: "from-secondary/[0.14] via-emerald-400/[0.08] to-transparent dark:from-emerald-300/[0.16] dark:via-emerald-300/[0.08]",
     iconClass: "bg-secondary text-white shadow-secondary/25 dark:bg-emerald-300 dark:text-slate-950 dark:shadow-emerald-300/20",
   },
   articles: {
     icon: Newspaper,
     eyebrow: "Articles",
-    glow: "from-sky-500/14 via-primary/6 to-transparent dark:from-sky-300/16 dark:via-blue-300/8",
+    glow: "from-sky-500/[0.14] via-primary/[0.06] to-transparent dark:from-sky-300/[0.16] dark:via-blue-300/[0.08]",
     iconClass: "bg-sky-600 text-white shadow-sky-500/25 dark:bg-sky-300 dark:text-slate-950 dark:shadow-sky-300/20",
   },
 } satisfies Record<"courses" | "books" | "articles", { icon: typeof GraduationCap; eyebrow: string; glow: string; iconClass: string }>;
@@ -71,7 +71,7 @@ export function HomeSection({ section, title, description, emptyState, items, ct
       <div className={`pointer-events-none absolute inset-x-0 top-6 h-40 rounded-[999px] bg-gradient-to-r ${meta.glow} blur-3xl`} />
 
       <motion.div
-        className="relative overflow-hidden rounded-[28px] border border-slate-200/75 bg-white/82 p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.045] dark:shadow-[0_18px_70px_rgba(0,0,0,0.24)] sm:p-5 lg:p-6"
+        className="relative overflow-hidden rounded-[28px] border border-slate-200/75 bg-white/[0.82] p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.045] dark:shadow-[0_18px_70px_rgba(0,0,0,0.24)] sm:p-5 lg:p-6"
         initial={shouldReduceMotion ? false : "hidden"}
         whileInView={shouldReduceMotion ? undefined : "visible"}
         viewport={{ once: true, amount: 0.28 }}
@@ -98,7 +98,7 @@ export function HomeSection({ section, title, description, emptyState, items, ct
                   variants={dividerVariants}
                   aria-hidden="true"
                 />
-                <span className="rounded-full border border-primary/10 bg-primary/7 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-[0.22em] text-primary dark:border-white/10 dark:bg-white/8 dark:text-blue-100 sm:text-xs">
+                <span className="rounded-full border border-primary/10 bg-primary/[0.07] px-3 py-1 text-[0.65rem] font-bold uppercase tracking-[0.22em] text-primary dark:border-white/10 dark:bg-white/[0.08] dark:text-blue-100 sm:text-xs">
                   {meta.eyebrow}
                 </span>
               </div>
@@ -111,10 +111,10 @@ export function HomeSection({ section, title, description, emptyState, items, ct
             href={ctaHref}
             variant="ghost"
             size="sm"
-            className="view-all-button group inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-full border border-primary/12 bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(0,74,198,0.18)] transition duration-300 hover:-translate-y-0.5 hover:bg-primary/92 hover:text-white hover:shadow-[0_18px_38px_rgba(0,74,198,0.24)] dark:border-white/12 dark:bg-white dark:text-slate-950 dark:shadow-[0_16px_34px_rgba(255,255,255,0.08)] dark:hover:bg-blue-50 dark:hover:text-slate-950 sm:w-auto"
+            className="view-all-button group inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-full border border-primary/[0.12] bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(0,74,198,0.18)] transition duration-300 hover:-translate-y-0.5 hover:bg-primary/[0.92] hover:text-white hover:shadow-[0_18px_38px_rgba(0,74,198,0.24)] dark:border-white/[0.12] dark:bg-white dark:text-slate-950 dark:shadow-[0_16px_34px_rgba(255,255,255,0.08)] dark:hover:bg-blue-50 dark:hover:text-slate-950 sm:w-auto"
           >
             <span>{ctaLabel}</span>
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-white/16 text-white transition duration-300 group-hover:translate-x-0.5 group-hover:bg-white/24 dark:bg-slate-950/8 dark:text-slate-950 rtl:group-hover:-translate-x-0.5">
+            <span className="grid h-7 w-7 place-items-center rounded-full bg-white/[0.16] text-white transition duration-300 group-hover:translate-x-0.5 group-hover:bg-white/[0.24] dark:bg-slate-950/[0.08] dark:text-slate-950 rtl:group-hover:-translate-x-0.5">
               <ArrowRight className="view-all-arrow h-4 w-4 rtl:rotate-180" aria-hidden="true" />
             </span>
           </Button>
