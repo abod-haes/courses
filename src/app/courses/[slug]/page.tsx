@@ -124,15 +124,15 @@ export default async function Page(props: PageProps) {
                 ) : null}
               </div>
 
-              <h1 className="mt-4 max-w-4xl text-[2rem] font-black leading-tight tracking-[-0.04em] text-foreground sm:text-[2.45rem]">
+              <h1 className="mt-4 max-w-4xl text-[1.65rem] font-black leading-tight tracking-[-0.035em] text-foreground sm:text-[2.05rem] lg:text-[2.2rem]">
                 {course.title}
               </h1>
-              <p className="mt-3 text-[1.05rem] font-black text-primary">{course.price}</p>
+              <p className="mt-3 text-[1rem] font-black text-primary">{course.price}</p>
               <p className="mt-6 max-w-3xl text-sm leading-7 text-foreground/68">{course.longDescription}</p>
 
               <div className="mt-10 overflow-hidden rounded-[12px] border border-border/70 bg-surface shadow-[0_8px_24px_rgba(17,24,39,0.05)]">
                 <div className="flex items-center justify-between gap-4 border-b border-border/70 bg-primary/5 px-5 py-4">
-                  <h2 className="text-base font-black text-foreground">{copy.curriculumTitle}</h2>
+                  <h2 className="text-sm font-black text-foreground sm:text-base">{copy.curriculumTitle}</h2>
                   <p className="text-xs font-semibold text-foreground/52">
                     {course.modules} {copy.modulesLabel} • {course.lessons} {copy.lessonsLabel}
                   </p>
