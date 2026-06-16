@@ -6,6 +6,7 @@ import { Reveal } from "@/shared/components/animation/reveal.component";
 import { StaggerList } from "@/shared/components/animation/stagger-list.component";
 import { InfiniteScrollSentinel } from "@/shared/components/infinite-scroll-sentinel.component";
 import { LoadMoreSkeleton } from "@/shared/components/load-more-skeleton.component";
+import { SiteContainer } from "@/shared/components/layout/site-container";
 import { nextPageFrom } from "@/shared/api/paging";
 import type { PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
@@ -106,12 +107,12 @@ export function ArticlesLibrary({ copy, initialPage, locale }: ArticlesLibraryPr
   return (
     <div className="min-h-full bg-section-bg">
       <section className="border-b border-border/60 bg-section-bg">
-        <div className="mx-auto max-w-7xl px-4 pb-7 pt-7 sm:px-6 lg:px-8 lg:pb-8 lg:pt-8">
+        <SiteContainer className="pb-7 pt-7 lg:pb-8 lg:pt-8">
           <ArticlesHero copy={copy} />
-        </div>
+        </SiteContainer>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+      <SiteContainer as="section" className="py-8 lg:py-10">
         <ArticleFilters
           searchTerm={searchTerm}
           searchPlaceholder={copy.filters.searchPlaceholder}
@@ -123,7 +124,7 @@ export function ArticlesLibrary({ copy, initialPage, locale }: ArticlesLibraryPr
         />
 
         {articles.length > 0 ? (
-          <StaggerList className="mt-7 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          <StaggerList className="mt-7 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {articles.map((article) => (
               <ArticleCard key={article.slug} article={article} copy={copy} />
             ))}
@@ -134,7 +135,7 @@ export function ArticlesLibrary({ copy, initialPage, locale }: ArticlesLibraryPr
         {showEmpty ? <ArticlesEmptyState title={copy.empty.title} description={copy.empty.description} /> : null}
         {query.isFetchingNextPage ? <LoadMoreSkeleton /> : null}
         <InfiniteScrollSentinel enabled={Boolean(query.hasNextPage && !query.isFetchingNextPage)} onLoadMore={handleLoadMore} />
-      </section>
+      </SiteContainer>
     </div>
   );
 }
