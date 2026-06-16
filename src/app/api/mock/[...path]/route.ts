@@ -71,7 +71,7 @@ function detailResponse<T extends CatalogItem>(items: T[], slug?: string) {
 
 function categoriesResponse(request: NextRequest, locale: "ar" | "en") {
   const type = request.nextUrl.searchParams.get("filter[type]") ?? request.nextUrl.searchParams.get("type");
-  const safeType = type === "course" || type === "book" || type === "article" ? (type satisfies CategoryType) : undefined;
+  const safeType: CategoryType | undefined = type === "course" || type === "book" || type === "article" ? type : undefined;
   return NextResponse.json({ data: getMockCategories(locale, safeType) });
 }
 
