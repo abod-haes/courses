@@ -60,11 +60,11 @@ export function HomeHero({ copy }: HomeHeroProps) {
             <span className="truncate">{copy.hero.badge}</span>
           </motion.div>
 
-          <motion.h1 variants={heroItemVariants} className="mx-auto mt-5 max-w-2xl text-[2rem] font-black leading-[1.08] tracking-[-0.045em] text-foreground sm:text-5xl lg:mx-0 lg:text-[3rem] xl:text-[3.2rem]">
+          <motion.h1 variants={heroItemVariants} className="mx-auto mt-5 max-w-2xl text-[1.85rem] font-black leading-[1.12] tracking-[-0.04em] text-foreground sm:text-[2.35rem] lg:mx-0 lg:text-[2.65rem] xl:text-[2.9rem]">
             {copy.hero.title}
           </motion.h1>
 
-          <motion.p variants={heroItemVariants} className="mx-auto mt-5 max-w-xl text-[0.95rem] leading-7 text-foreground/66 sm:text-lg sm:leading-8 lg:mx-0">
+          <motion.p variants={heroItemVariants} className="mx-auto mt-5 max-w-xl text-[0.92rem] leading-7 text-foreground/66 sm:text-base sm:leading-8 lg:mx-0">
             {copy.hero.subtitle}
           </motion.p>
 
