@@ -1,54 +1,80 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { StaggerList } from "@/shared/components/animation/stagger-list.component";
+import { InfiniteScrollSentinel } from "@/shared/components/infinite-scroll-sentinel.component";
+import { LoadMoreSkeleton } from "@/shared/components/load-more-skeleton.component";
+import { nextPageFrom } from "@/shared/api/paging";
+import type { PaginatedEnvelope } from "@/shared/api/types";
+import type { Locale } from "@/shared/lib/types";
+import { getCourses } from "../api/courses.api";
 import type { CourseCategoryKey, CourseItemView, CoursesPageCopy } from "../courses.types";
 import { CourseTileView } from "./course-tile-view.component";
 import { CoursesHero } from "./courses-hero.component";
 import { CoursesToolbar, type CoursesCategoryFilter, type CoursesCategoryOption } from "./courses-toolbar.component";
 
-const filterOrder: CourseCategoryKey[] = ["cardiology", "neurology", "pediatrics", "surgery", "pharmacology", "emergency"];
-
 type CoursesLibraryProps = Readonly<{
   copy: CoursesPageCopy;
-  courses: CourseItemView[];
+  initialPage: PaginatedEnvelope<CourseItemView>;
+  locale: Locale;
 }>;
 
-export function CoursesLibrary({ copy, courses }: CoursesLibraryProps) {
+function useDebouncedValue(value: string, delay = 300): string {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setDebouncedValue(value), delay);
+    return () => window.clearTimeout(timeout);
+  }, [delay, value]);
+
+  return debouncedValue;
+}
+
+export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState<CoursesCategoryFilter>("all");
+  const debouncedSearch = useDebouncedValue(searchTerm.trim());
+  const isInitialQuery = debouncedSearch.length === 0 && activeCategory === "all";
+
+  const query = useInfiniteQuery({
+    queryKey: ["courses", locale, debouncedSearch, activeCategory],
+    queryFn: ({ pageParam }) =>
+      getCourses({
+        locale,
+        page: pageParam,
+        perPage: initialPage.meta.perPage,
+        search: debouncedSearch,
+        category: activeCategory === "all" ? undefined : activeCategory,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: nextPageFrom,
+    initialData: isInitialQuery ? { pages: [initialPage], pageParams: [1] } : undefined,
+  });
+
+  const courses = useMemo(() => query.data?.pages.flatMap((page) => page.data) ?? [], [query.data]);
 
   const categoryOptions = useMemo<CoursesCategoryOption[]>(() => {
     const categoryLabels = new Map<CourseCategoryKey, string>();
 
-    courses.forEach((course) => {
+    initialPage.data.forEach((course) => {
       categoryLabels.set(course.categoryKey, course.category);
     });
 
     return [
       { key: "all", label: copy.filters.all },
-      ...filterOrder
-        .filter((category) => categoryLabels.has(category))
-        .map((category) => ({ key: category, label: categoryLabels.get(category) ?? category })),
+      ...Array.from(categoryLabels.entries()).map(([key, label]) => ({ key, label })),
     ];
-  }, [copy.filters.all, courses]);
+  }, [copy.filters.all, initialPage.data]);
 
-  const filteredCourses = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase();
+  const handleLoadMore = useCallback(() => {
+    if (query.hasNextPage && !query.isFetchingNextPage) {
+      void query.fetchNextPage();
+    }
+  }, [query]);
 
-    return courses.filter((course) => {
-      const matchesCategory = activeCategory === "all" || course.categoryKey === activeCategory;
-      const matchesSearch =
-        normalizedSearch.length === 0 ||
-        [course.title, course.instructor, course.category, course.description]
-          .join(" ")
-          .toLowerCase()
-          .includes(normalizedSearch);
-
-      return matchesCategory && matchesSearch;
-    });
-  }, [activeCategory, courses, searchTerm]);
+  const showInitialLoading = query.isFetching && !query.isFetchingNextPage && courses.length === 0;
+  const showEmpty = !showInitialLoading && courses.length === 0;
 
   return (
     <div className="min-h-full bg-section-bg">
@@ -68,30 +94,27 @@ export function CoursesLibrary({ copy, courses }: CoursesLibraryProps) {
           onCategoryChange={setActiveCategory}
         />
 
-        {filteredCourses.length > 0 ? (
+        {courses.length > 0 ? (
           <StaggerList className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            {filteredCourses.map((course) => (
+            {courses.map((course) => (
               <CourseTileView key={course.id} course={course} viewDetailsLabel={copy.labels.viewDetails} />
             ))}
           </StaggerList>
-        ) : (
+        ) : null}
+
+        {showInitialLoading ? <LoadMoreSkeleton /> : null}
+
+        {showEmpty ? (
           <div className="mt-8 rounded-[12px] border border-dashed border-border bg-surface p-10 text-center shadow-[0_8px_24px_rgba(17,24,39,0.04)]">
             <h2 className="text-lg font-black text-foreground">{copy.labels.noResultsTitle}</h2>
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-foreground/60">
               {copy.labels.noResultsDescription}
             </p>
           </div>
-        )}
+        ) : null}
 
-        <div className="mt-12 flex justify-center">
-          <button
-            type="button"
-            className="inline-flex items-center gap-2 rounded-[10px] border border-primary px-9 py-3 text-sm font-bold text-primary transition duration-200 hover:-translate-y-0.5 hover:bg-primary hover:text-white"
-          >
-            {copy.labels.loadMore}
-            <ChevronDown className="h-4 w-4" aria-hidden="true" />
-          </button>
-        </div>
+        {query.isFetchingNextPage ? <LoadMoreSkeleton /> : null}
+        <InfiniteScrollSentinel enabled={Boolean(query.hasNextPage && !query.isFetchingNextPage)} onLoadMore={handleLoadMore} />
       </section>
     </div>
   );
