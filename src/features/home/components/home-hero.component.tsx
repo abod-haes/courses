@@ -78,11 +78,11 @@ export function HomeHero({ copy }: HomeHeroProps) {
           </motion.p>
 
           <motion.div variants={heroItemVariants} className="mt-5 grid gap-2.5 max-sm:px-3 sm:mx-auto sm:max-w-md grid-cols-2 lg:mx-0 lg:max-w-none lg:flex lg:flex-wrap lg:gap-3 xl:gap-3.5">
-            <Button href="#courses" variant="primary" className="group w-full rounded-2xl px-4.5 shadow-[0_16px_36px_rgba(29,23,213,0.22)] hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(29,23,213,0.28)] sm:w-auto">
+            <Button href="#courses" variant="primary" className="group w-full rounded-2xl px-[1.125rem] shadow-[0_16px_36px_rgba(29,23,213,0.22)] hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(29,23,213,0.28)] sm:w-auto">
               <BookOpen className="h-4 w-4 transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-110" aria-hidden="true" />
               {copy.actions.browseCourses}
             </Button>
-            <Button href="#books" variant="secondary" className="group w-full rounded-2xl border-primary/18 bg-white/84 px-4.5 shadow-[0_12px_28px_rgba(15,23,42,0.06)] hover:-translate-y-1 hover:border-primary/28 hover:bg-white dark:bg-white/8 sm:w-auto">
+            <Button href="#books" variant="secondary" className="group w-full rounded-2xl border-primary/18 bg-white/84 px-[1.125rem] shadow-[0_12px_28px_rgba(15,23,42,0.06)] hover:-translate-y-1 hover:border-primary/28 hover:bg-white dark:bg-white/8 sm:w-auto">
               <Sparkles className="h-4 w-4 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110" aria-hidden="true" />
               {copy.actions.exploreBooks}
             </Button>
