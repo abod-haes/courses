@@ -310,3 +310,67 @@ select,
 button {
   font: inherit;
 }
+
+.text-3xl,
+.text-4xl,
+.text-5xl {
+  line-height: 1.12;
+}
+
+.text-3xl {
+  font-size: 1.6rem;
+}
+
+.text-4xl {
+  font-size: 1.95rem;
+}
+
+.text-5xl {
+  font-size: 2.35rem;
+}
+
+@media (min-width: 640px) {
+  .sm\:text-3xl {
+    font-size: 1.7rem;
+    line-height: 1.18;
+  }
+
+  .sm\:text-4xl {
+    font-size: 2rem;
+    line-height: 1.14;
+  }
+
+  .sm\:text-5xl {
+    font-size: 2.45rem;
+    line-height: 1.1;
+  }
+
+  .sm\:text-hero-lg {
+    font-size: var(--text-hero-lg);
+    line-height: var(--text-hero-lg--line-height);
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:text-5xl {
+    font-size: 2.4rem;
+    line-height: 1.1;
+  }
+
+  .lg\:text-\[4\.4rem\] {
+    font-size: 3rem;
+    line-height: 1.08;
+  }
+
+  .lg\:text-\[3rem\] {
+    font-size: 2.65rem;
+    line-height: 1.1;
+  }
+}
+
+@media (min-width: 1280px) {
+  .xl\:text-\[3\.2rem\] {
+    font-size: 2.9rem;
+    line-height: 1.1;
+  }
+}
