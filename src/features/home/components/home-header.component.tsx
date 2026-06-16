@@ -105,7 +105,11 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   }, [menuOpen]);
 
   return (
-    <header className="relative z-50 shrink-0 bg-gradient-to-b from-background via-background/96 to-background/90 shadow-[0_1px_0_rgba(15,23,42,0.06)] backdrop-blur-xl dark:from-slate-950 dark:via-slate-950/96 dark:to-slate-950/90 dark:shadow-[0_1px_0_rgba(255,255,255,0.08)]">
+    <header
+      className={`relative shrink-0 overflow-visible bg-gradient-to-b from-background via-background/96 to-background/90 shadow-[0_1px_0_rgba(15,23,42,0.06)] backdrop-blur-xl dark:from-slate-950 dark:via-slate-950/96 dark:to-slate-950/90 dark:shadow-[0_1px_0_rgba(255,255,255,0.08)] ${
+        menuOpen ? "z-[1200]" : "z-50"
+      }`}
+    >
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-80 dark:via-white/14" />
 
       <div className="motion-safe:animate-[fade-up_420ms_ease-out_both]">
@@ -128,7 +132,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               <span className="sr-only">{copy.brand}</span>
             </Link>
 
-            <nav className="hidden flex-1 items-center justify-center gap-1  xl:flex">
+            <nav className="hidden flex-1 items-center justify-center gap-1 xl:flex">
               {navItems.map((item) => {
                 const isActive = resolveNavState(item.href);
 
@@ -137,15 +141,17 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                     key={item.href}
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
-                    className={`group relative flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition duration-200 ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background ${isActive
+                    className={`group relative flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition duration-200 ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                      isActive
                         ? "bg-primary !text-white shadow-[0_10px_26px_rgba(29,23,213,0.18)] hover:!text-white dark:bg-primary dark:!text-white dark:shadow-[0_10px_30px_rgba(0,74,198,0.22)]"
                         : "text-foreground/68 hover:bg-white/72 hover:text-primary hover:shadow-[0_8px_20px_rgba(15,23,42,0.06)] dark:text-white/68 dark:hover:bg-white/12 dark:hover:text-white"
-                      }`}
+                    }`}
                   >
                     <span>{item.label}</span>
                     <ChevronRight
-                      className={`h-3 w-3 transition duration-200 rtl:rotate-180 ${isActive ? "translate-x-0.5 opacity-100" : "opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100"
-                        }`}
+                      className={`h-3 w-3 transition duration-200 rtl:rotate-180 ${
+                        isActive ? "translate-x-0.5 opacity-100" : "opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100"
+                      }`}
                       aria-hidden="true"
                     />
                   </Link>
@@ -179,10 +185,10 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
       <AnimatePresence initial={false} mode="wait">
         {menuOpen ? (
-          <div className="fixed inset-0 z-[90] lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
+          <div className="fixed inset-0 z-[1100] lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
             <motion.button
               type="button"
-              className="absolute inset-0 bg-slate-950/36 backdrop-blur-[3px]"
+              className="absolute inset-0 z-0 bg-slate-950/42 backdrop-blur-[3px]"
               aria-label={isArabic ? "إغلاق القائمة" : "Close menu"}
               onClick={() => setMenuOpen(false)}
               variants={backdropVariants}
@@ -193,8 +199,9 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
             <motion.aside
               id="mobile-navigation"
-              className={`fixed inset-y-0 ${isArabic ? "right-0" : "left-0"} flex w-[min(86vw,22.5rem)] flex-col overflow-hidden border-white/65 bg-background/98 shadow-[0_26px_80px_rgba(15,23,42,0.28)] ring-1 ring-slate-200/70 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/98 dark:ring-white/12 dark:shadow-[0_26px_90px_rgba(0,0,0,0.56)] ${isArabic ? "rounded-l-[2rem] border-l" : "rounded-r-[2rem] border-r"
-                }`}
+              className={`fixed inset-y-0 ${isArabic ? "right-0" : "left-0"} z-[1110] flex w-[min(88vw,22.5rem)] flex-col overflow-hidden border-white/65 bg-background/98 shadow-[0_26px_80px_rgba(15,23,42,0.28)] ring-1 ring-slate-200/70 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/98 dark:ring-white/12 dark:shadow-[0_26px_90px_rgba(0,0,0,0.56)] ${
+                isArabic ? "rounded-l-[2rem] border-l" : "rounded-r-[2rem] border-r"
+              }`}
               initial={{ x: sidebarInitialX, opacity: 0.86 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: sidebarInitialX, opacity: 0.86 }}
@@ -238,15 +245,17 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                           href={item.href}
                           onClick={() => setMenuOpen(false)}
                           aria-current={isActive ? "page" : undefined}
-                          className={`group flex items-center justify-between rounded-2xl px-4 py-3.5 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 ${isActive
+                          className={`group flex items-center justify-between rounded-2xl px-4 py-3.5 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 ${
+                            isActive
                               ? "bg-primary !text-white shadow-[0_12px_26px_rgba(29,23,213,0.18)] hover:!text-white dark:bg-primary dark:!text-white"
                               : "bg-white/70 text-foreground/75 shadow-[0_8px_18px_rgba(15,23,42,0.04)] ring-1 ring-border/55 hover:bg-primary/8 hover:text-primary dark:bg-white/8 dark:text-white/74 dark:ring-white/10 dark:hover:bg-white/14 dark:hover:text-white"
-                            }`}
+                          }`}
                         >
                           <span>{item.label}</span>
                           <ChevronRight
-                            className={`h-4 w-4 transition duration-200 rtl:rotate-180 ${isActive ? "translate-x-1" : "opacity-55 group-hover:translate-x-1 group-hover:opacity-100"
-                              }`}
+                            className={`h-4 w-4 transition duration-200 rtl:rotate-180 ${
+                              isActive ? "translate-x-1" : "opacity-55 group-hover:translate-x-1 group-hover:opacity-100"
+                            }`}
                             aria-hidden="true"
                           />
                         </Link>
@@ -315,14 +324,11 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                         </span>
                       </span>
                     </span>
-                    <span
-                      aria-hidden="true"
-                      className="relative h-8 w-14 rounded-full bg-slate-900/[0.06] p-1 dark:bg-white/16"
-                      style={{ direction: "ltr" }}
-                    >
+                    <span aria-hidden="true" className="relative h-8 w-14 rounded-full bg-slate-900/[0.06] p-1 dark:bg-white/16" style={{ direction: "ltr" }}>
                       <span
-                        className={`absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full shadow-[0_5px_14px_rgba(15,23,42,0.14)] transition-transform duration-200 ${isDark ? "translate-x-6 bg-white text-slate-950" : "translate-x-0 bg-primary text-white"
-                          }`}
+                        className={`absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full shadow-[0_5px_14px_rgba(15,23,42,0.14)] transition-transform duration-200 ${
+                          isDark ? "translate-x-6 bg-white text-slate-950" : "translate-x-0 bg-primary text-white"
+                        }`}
                       >
                         {isDark ? <SunMedium className="h-3.5 w-3.5" aria-hidden="true" /> : <MoonStar className="h-3.5 w-3.5" aria-hidden="true" />}
                       </span>
