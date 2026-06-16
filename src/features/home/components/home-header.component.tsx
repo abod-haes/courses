@@ -122,7 +122,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               href="/"
               className="flex shrink-0 items-center transition duration-200 ease-out hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              <span className="relative block h-10 w-[9.5rem] sm:h-11 sm:w-[10.5rem]">
+              <span className="relative block h-9 w-[8.75rem] sm:h-10 sm:w-[9.75rem]">
                 <Image
                   alt={`${copy.brand} logo`}
                   src="/images/logo-blue.png"
@@ -214,7 +214,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               style={{ willChange: "transform, opacity" }}
             >
               <div className="flex shrink-0 items-center justify-between border-b border-border/60 px-4 py-4">
-                <span className="relative block h-10 w-[9rem]">
+                <span className="relative block h-9 w-[8.25rem]">
                   <Image
                     alt={`${copy.brand} logo`}
                     src="/images/logo-blue.png"

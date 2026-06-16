@@ -65,7 +65,7 @@ export function HomeFooter({ copy }: HomeFooterProps) {
         <div className="grid gap-12 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
           <div className="max-w-xl">
             <div className="flex items-center gap-4">
-              <span className="relative block h-10 w-[9.5rem] sm:h-11 sm:w-[10.5rem]">
+              <span className="relative block w-[9rem]  sm:w-[10rem]">
                 <Image
                   alt={`${copy.brand} logo`}
                   src="/images/logo-blue.png"

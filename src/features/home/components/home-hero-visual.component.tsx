@@ -17,7 +17,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
 
   return (
     <div className="relative mx-auto w-full max-w-[31rem] motion-safe:animate-[soft-scale_600ms_ease-out_both] sm:max-w-[34rem] lg:max-w-none">
-      <div className="relative overflow-visible rounded-[1.75rem] border border-white/80 bg-white/30 p-1.5 shadow-[0_22px_60px_rgba(15,23,42,0.11)] backdrop-blur-sm dark:border-white/10 dark:bg-white/5 dark:shadow-[0_32px_90px_rgba(0,0,0,0.34)] sm:rounded-[2.5rem] sm:p-2">
+      <div className="relative overflow-visible  sm:p-2">
         <motion.div
           className="relative aspect-[0.96] min-h-[23rem] overflow-hidden rounded-[1.45rem] bg-transparent sm:min-h-[30rem] sm:rounded-[2.1rem] md:min-h-[34rem] lg:min-h-[36rem]"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 18, scale: 0.98 }}
@@ -26,7 +26,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
         >
           <Image
             alt={copy.visual.title}
-            src="/images/hero.jpg"
+            src="/images/hero-blue.png"
             fill
             priority
             sizes="(max-width: 640px) 88vw, (max-width: 1024px) 72vw, 42vw"
@@ -61,7 +61,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
         </motion.div>
 
         <motion.div
-          className="absolute bottom-3 left-3 right-3 z-30 rounded-[1.15rem] border border-white/70 bg-white/94 p-3 shadow-[0_18px_45px_rgba(15,23,42,0.14)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/82 sm:bottom-5 sm:left-5 sm:right-5 sm:rounded-[1.35rem] sm:p-4"
+          className="absolute bottom-2 left-3 right-3 z-30 rounded-[1.15rem] border border-white/70 bg-white/94 p-3 shadow-[0_18px_45px_rgba(15,23,42,0.14)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/82 sm:bottom-[-30px] sm:left-5 sm:right-5 sm:rounded-[1.35rem] sm:p-4"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 20, scale: 0.96 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1], delay: 0.7 }}

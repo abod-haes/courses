@@ -177,7 +177,7 @@ export function HomeStatsSection({ copy }: HomeStatsSectionProps) {
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-foreground/68 dark:text-foreground/76 sm:text-lg">{stats.subtitle}</p>
         </motion.div>
 
-        <div className="mt-8 rounded-[28px] border border-border/70 bg-surface p-4 shadow-[0_18px_48px_rgba(17,24,39,0.05)] dark:border-white/10 dark:bg-slate-900/70 dark:shadow-[0_22px_60px_rgba(0,0,0,0.24)] sm:p-5 lg:p-6">
+        <div className="mt-8 sm:p-5 lg:p-6">
           <motion.div
             className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4"
             initial="hidden"

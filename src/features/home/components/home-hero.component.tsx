@@ -38,7 +38,7 @@ export function HomeHero({ copy }: HomeHeroProps) {
   const trustItems = copy.trustStrip.slice(0, 3);
 
   return (
-    <section className="relative isolate overflow-hidden bg-section-bg px-0 py-8 dark:bg-[#07111f] sm:py-12 lg:min-h-[calc(100dvh-5.5rem)] lg:py-16">
+    <section className="relative isolate overflow-hidden bg-section-bg px-0 py-8 dark:bg-[#07111f] sm:py-12 lg:min-h-[70vh] lg:py-16">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute inset-0 bg-[linear-gradient(118deg,rgba(255,255,255,0.98)_0%,rgba(248,250,252,0.9)_42%,rgba(238,242,255,0.92)_100%)] dark:bg-[linear-gradient(118deg,rgba(7,17,31,0.98)_0%,rgba(8,17,29,0.9)_52%,rgba(15,23,42,0.94)_100%)]" />
         <div className="absolute -top-28 right-[-10rem] h-80 w-80 rounded-full bg-primary-soft/70 blur-3xl motion-safe:animate-[clinical-float_11s_ease-in-out_infinite] dark:bg-primary-soft/24 sm:right-[-7rem] sm:h-96 sm:w-96" />
@@ -48,7 +48,7 @@ export function HomeHero({ copy }: HomeHeroProps) {
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
       </div>
 
-      <div className="relative z-10 mx-auto grid min-h-[inherit] max-w-7xl items-center gap-8 px-4 sm:px-6 md:gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-12 lg:px-8 xl:gap-16">
+      <div className="relative z-10 mx-auto grid min-h-[inherit] max-w-7xl items-center gap-8  md:gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-12  xl:gap-16">
         <motion.div
           className="mx-auto w-full max-w-2xl text-center lg:mx-0 lg:text-start"
           variants={heroContainerVariants}
@@ -60,7 +60,7 @@ export function HomeHero({ copy }: HomeHeroProps) {
             <span className="truncate">{copy.hero.badge}</span>
           </motion.div>
 
-          <motion.h1 variants={heroItemVariants} className="mx-auto mt-5 max-w-2xl text-[2.35rem] font-black leading-[1.08] tracking-[-0.045em] text-foreground sm:text-5xl lg:mx-0 lg:text-[3.2rem] xl:text-[3.8rem]">
+          <motion.h1 variants={heroItemVariants} className="mx-auto mt-5 max-w-2xl text-[2rem] font-black leading-[1.08] tracking-[-0.045em] text-foreground sm:text-5xl lg:mx-0 lg:text-[3rem] xl:text-[3.2rem]">
             {copy.hero.title}
           </motion.h1>
 
