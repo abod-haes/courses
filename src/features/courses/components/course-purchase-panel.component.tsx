@@ -8,13 +8,22 @@ type CoursePurchasePanelProps = Readonly<{
 }>;
 
 export function CoursePurchasePanel({ course, copy }: CoursePurchasePanelProps) {
-  const fallbackIncludes = [
-    `${course.hours} hours of on-demand video`,
-    `${course.lessons} comprehensive articles`,
-    "10 interactive clinical cases",
-    "Full lifetime access",
-    "Access on mobile and TV",
-  ];
+  const isArabic = copy.addToCart.includes("أضف");
+  const fallbackIncludes = isArabic
+    ? [
+        `${course.hours} ساعة من الفيديو عند الطلب`,
+        `${course.lessons} درسًا تعليميًا شاملًا`,
+        "حالات تطبيقية منظمة",
+        "وصول دائم للمحتوى",
+        "إمكانية الوصول من الهاتف والحاسوب",
+      ]
+    : [
+        `${course.hours} hours of on-demand video`,
+        `${course.lessons} comprehensive lessons`,
+        "Structured applied cases",
+        "Full lifetime access",
+        "Access on mobile and desktop",
+      ];
   const includes = course.includes.length > 0 ? course.includes : fallbackIncludes;
   const icons = [MonitorPlay, FileText, CheckCircle2, Clock3, Smartphone];
 
