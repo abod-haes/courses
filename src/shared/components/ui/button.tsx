@@ -25,7 +25,7 @@ const base =
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary px-5 py-3 text-sm !text-white shadow-[0_8px_22px_rgba(29,23,213,0.14)] hover:bg-primary-strong hover:!text-white hover:shadow-[0_10px_26px_rgba(29,23,213,0.18)] active:translate-y-0",
+    "bg-primary px-5 py-3 text-sm !text-white shadow-[0_8px_22px_rgba(29,23,213,0.14)] hover:bg-primary-strong hover:!text-white hover:shadow-[0_10px_26px_rgba(29,23,213,0.18)] active:translate-y-0 dark:bg-primary dark:!text-white dark:hover:bg-primary/90 dark:hover:!text-white",
   secondary:
     "border border-primary/15 bg-primary/6 px-5 py-3 text-sm text-primary hover:border-primary/25 hover:bg-primary/10 hover:text-primary-strong active:translate-y-0",
   ghost: "px-3 py-2 text-sm text-foreground/75 hover:text-primary",
