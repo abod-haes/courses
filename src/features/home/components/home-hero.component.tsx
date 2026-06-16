@@ -39,7 +39,7 @@ export function HomeHero({ copy }: HomeHeroProps) {
   const trustItems = copy.trustStrip.slice(0, 3);
 
   return (
-    <section className="relative isolate overflow-hidden bg-section-bg px-0 py-5 dark:bg-[#07111f] sm:py-6 lg:min-h-[calc(100dvh-4.5rem)] lg:py-6 xl:min-h-[calc(100dvh-5rem)]">
+    <section className="relative isolate overflow-hidden bg-section-bg px-0 py-4 dark:bg-[#07111f] sm:py-5 lg:min-h-[calc(100dvh-4.25rem)] lg:py-4 xl:min-h-[calc(100dvh-4.75rem)]">
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
         <Image
           src="/images/hero-bg.png"
@@ -57,7 +57,7 @@ export function HomeHero({ copy }: HomeHeroProps) {
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
       </div>
 
-      <SiteContainer className="relative z-10 grid min-h-[inherit] items-center gap-5 md:gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-7 xl:gap-8">
+      <SiteContainer className="relative z-10 grid min-h-[inherit] items-center gap-4 md:gap-5 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-6 xl:gap-7">
         <motion.div
           className="mx-auto w-full max-w-2xl text-center lg:mx-0 lg:text-start"
           variants={heroContainerVariants}
@@ -69,27 +69,27 @@ export function HomeHero({ copy }: HomeHeroProps) {
             <span className="truncate">{copy.hero.badge}</span>
           </motion.div>
 
-          <motion.h1 variants={heroItemVariants} className="mx-auto mt-4 max-w-2xl text-[1.75rem] font-black leading-[1.12] tracking-[-0.04em] text-foreground sm:text-[2.1rem] lg:mx-0 lg:text-[2.25rem] xl:text-[2.45rem]">
+          <motion.h1 variants={heroItemVariants} className="mx-auto mt-3.5 max-w-2xl text-[1.62rem] font-black leading-[1.12] tracking-[-0.04em] text-foreground sm:text-[1.95rem] lg:mx-0 lg:text-[2.1rem] xl:text-[2.28rem]">
             {copy.hero.title}
           </motion.h1>
 
-          <motion.p variants={heroItemVariants} className="mx-auto mt-4 max-w-xl text-[0.9rem] leading-7 text-foreground/66 sm:text-[0.96rem] sm:leading-8 lg:mx-0">
+          <motion.p variants={heroItemVariants} className="mx-auto mt-3.5 max-w-xl text-[0.86rem] leading-7 text-foreground/66 sm:text-[0.92rem] sm:leading-8 lg:mx-0">
             {copy.hero.subtitle}
           </motion.p>
 
-          <motion.div variants={heroItemVariants} className="mt-6 grid gap-3 max-sm:px-3 sm:mx-auto sm:max-w-md grid-cols-2 lg:mx-0 lg:max-w-none lg:flex lg:flex-wrap lg:gap-3 xl:gap-4">
-            <Button href="#courses" variant="primary" className="group w-full rounded-2xl px-5 shadow-[0_16px_36px_rgba(29,23,213,0.22)] hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(29,23,213,0.28)] sm:w-auto">
+          <motion.div variants={heroItemVariants} className="mt-5 grid gap-2.5 max-sm:px-3 sm:mx-auto sm:max-w-md grid-cols-2 lg:mx-0 lg:max-w-none lg:flex lg:flex-wrap lg:gap-3 xl:gap-3.5">
+            <Button href="#courses" variant="primary" className="group w-full rounded-2xl px-4.5 shadow-[0_16px_36px_rgba(29,23,213,0.22)] hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(29,23,213,0.28)] sm:w-auto">
               <BookOpen className="h-4 w-4 transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-110" aria-hidden="true" />
               {copy.actions.browseCourses}
             </Button>
-            <Button href="#books" variant="secondary" className="group w-full rounded-2xl border-primary/18 bg-white/84 px-5 shadow-[0_12px_28px_rgba(15,23,42,0.06)] hover:-translate-y-1 hover:border-primary/28 hover:bg-white dark:bg-white/8 sm:w-auto">
+            <Button href="#books" variant="secondary" className="group w-full rounded-2xl border-primary/18 bg-white/84 px-4.5 shadow-[0_12px_28px_rgba(15,23,42,0.06)] hover:-translate-y-1 hover:border-primary/28 hover:bg-white dark:bg-white/8 sm:w-auto">
               <Sparkles className="h-4 w-4 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110" aria-hidden="true" />
               {copy.actions.exploreBooks}
             </Button>
           </motion.div>
 
           {trustItems.length > 0 ? (
-            <motion.div variants={heroItemVariants} className="mx-auto mt-6 grid max-w-xl gap-2.5 sm:grid-cols-3 max-sm:hidden lg:mx-0 xl:gap-3">
+            <motion.div variants={heroItemVariants} className="mx-auto mt-5 grid max-w-xl gap-2.5 sm:grid-cols-3 max-sm:hidden lg:mx-0 xl:gap-3">
               {trustItems.map((item, index) => {
                 const Icon = trustIcons[index] ?? Shield;
 
