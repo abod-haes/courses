@@ -23,7 +23,7 @@ type ArticlesLibraryProps = Readonly<{
 function ArticlesHero({ copy }: Readonly<{ copy: ArticlePageCopy }>) {
   return (
     <Reveal preset="fadeUp" className="max-w-2xl">
-      <h1 className=" text-[2rem] font-black leading-tight tracking-[-0.04em] text-foreground sm:text-[2.5rem]">
+      <h1 className="text-[1.65rem] font-black leading-tight tracking-[-0.035em] text-foreground sm:text-[2.1rem] lg:text-[2.25rem]">
         {copy.hero.title}
       </h1>
       <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/68 sm:text-[0.95rem]">
@@ -39,7 +39,7 @@ function ArticlesEmptyState({ title, description }: Readonly<{ title: string; de
       preset="softScale"
       className="mt-7 rounded-[12px] border border-dashed border-border bg-surface p-10 text-center shadow-[0_8px_24px_rgba(17,24,39,0.04)]"
     >
-      <h2 className="text-lg font-black text-foreground">{title}</h2>
+      <h2 className="text-base font-black text-foreground sm:text-lg">{title}</h2>
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-foreground/60">
         {description}
       </p>
