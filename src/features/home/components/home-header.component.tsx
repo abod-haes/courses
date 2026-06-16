@@ -7,6 +7,7 @@ import { ChevronRight, Globe2, Menu, MoonStar, SunMedium, X } from "lucide-react
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { useEffect, useState } from "react";
 import { usePreferences } from "@/components/preferences-provider";
+import { SiteContainer } from "@/shared/components/layout/site-container";
 import { Button } from "@/shared/components/ui/button";
 import type { HomeMessages } from "../home.types";
 import { HomeHeaderControls } from "./home-header-controls.component";
@@ -113,26 +114,26 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-80 dark:via-white/14" />
 
       <div className="motion-safe:animate-[fade-up_420ms_ease-out_both]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex min-h-16 items-center gap-3 py-2">
+        <SiteContainer>
+          <div className="flex min-h-14 items-center gap-2 py-2 min-[1220px]:gap-3">
             <Link
               href="/"
               className="flex shrink-0 items-center transition duration-200 ease-out hover:-translate-y-0.5 hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              <span className="relative block h-9 w-[8.75rem] sm:h-10 sm:w-[9.75rem]">
+              <span className="relative block h-9 w-[7.9rem] sm:w-[8.45rem] min-[1220px]:h-10 min-[1220px]:w-[9.25rem]">
                 <Image
                   alt={`${copy.brand} logo`}
                   src="/images/logo-blue.png"
                   fill
                   priority
-                  sizes="(max-width: 640px) 152px, 168px"
+                  sizes="(max-width: 640px) 136px, (max-width: 1220px) 140px, 156px"
                   className="object-contain object-left drop-shadow-[0_8px_18px_rgba(15,23,42,0.06)] dark:brightness-0 dark:invert"
                 />
               </span>
               <span className="sr-only">{copy.brand}</span>
             </Link>
 
-            <nav className="hidden flex-1 items-center justify-center gap-1 xl:flex">
+            <nav className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 min-[1120px]:flex min-[1220px]:gap-1">
               {navItems.map((item) => {
                 const isActive = resolveNavState(item.href);
 
@@ -141,13 +142,13 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                     key={item.href}
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
-                    className={`group relative flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition duration-200 ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                    className={`group relative flex items-center gap-1 rounded-full px-2.5 py-2 text-[0.8125rem] font-semibold leading-none transition duration-200 ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background min-[1220px]:gap-1.5 min-[1220px]:px-3.5 min-[1220px]:text-sm ${
                       isActive
                         ? "bg-primary !text-white shadow-[0_10px_26px_rgba(29,23,213,0.18)] hover:!text-white dark:bg-primary dark:!text-white dark:shadow-[0_10px_30px_rgba(0,74,198,0.22)]"
                         : "text-foreground/68 hover:bg-white/72 hover:text-primary hover:shadow-[0_8px_20px_rgba(15,23,42,0.06)] dark:text-white/68 dark:hover:bg-white/12 dark:hover:text-white"
                     }`}
                   >
-                    <span>{item.label}</span>
+                    <span className="whitespace-nowrap">{item.label}</span>
                     <ChevronRight
                       className={`h-3 w-3 transition duration-200 rtl:rotate-180 ${
                         isActive ? "translate-x-0.5 opacity-100" : "opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100"
@@ -159,15 +160,15 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               })}
             </nav>
 
-            <div className="ms-auto hidden items-center gap-2 sm:gap-3 lg:flex">
-              <Button href="/#courses" className="rounded-full px-4 shadow-[0_10px_24px_rgba(29,23,213,0.16)]" variant="primary" size="sm">
+            <div className="ms-auto hidden shrink-0 items-center gap-2 min-[1120px]:flex min-[1220px]:gap-3">
+              <Button href="/#courses" className="hidden rounded-full px-3 shadow-[0_10px_24px_rgba(29,23,213,0.16)] min-[1220px]:inline-flex" variant="primary" size="sm">
                 {copy.actions.getStarted}
               </Button>
 
               <HomeHeaderControls copy={copy.controls} />
             </div>
 
-            <div className="ms-auto flex items-center gap-2 lg:hidden">
+            <div className="ms-auto flex items-center gap-2 min-[1120px]:hidden">
               <button
                 type="button"
                 onClick={() => setMenuOpen(true)}
@@ -180,12 +181,12 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               </button>
             </div>
           </div>
-        </div>
+        </SiteContainer>
       </div>
 
       <AnimatePresence initial={false} mode="wait">
         {menuOpen ? (
-          <div className="fixed inset-0 z-[1100] lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
+          <div className="fixed inset-0 z-[1100] min-[1120px]:hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
             <motion.button
               type="button"
               className="absolute inset-0 z-0 bg-slate-950/42 backdrop-blur-[3px]"
@@ -276,8 +277,8 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                   </Button>
                 </div>
 
-                <div className="mt-5 rounded-3xl bg-white/72 p-2 shadow-[0_12px_30px_rgba(15,23,42,0.06)] ring-1 ring-slate-200/70 backdrop-blur-xl dark:bg-white/8 dark:ring-white/12">
-                  <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.14em] text-foreground/52 dark:text-white/50">
+                <div className="mt-5 rounded-[1.25rem] border border-border/60 bg-white/72 p-2 shadow-[0_12px_30px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-white/6">
+                  <p className="px-3 pb-1.5 pt-2 text-xs font-semibold uppercase tracking-[0.18em] text-foreground/45 dark:text-white/42">
                     {copy.controls.language} / {copy.controls.theme}
                   </p>
 
