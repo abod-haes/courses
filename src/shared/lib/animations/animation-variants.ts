@@ -23,6 +23,10 @@ export const animationVariants: Record<string, Variants> = {
     hidden: { opacity: 0, scale: 0.98 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.22, ease: "easeOut" } },
   },
+  scaleIn: {
+    hidden: { opacity: 0, scale: 0.96, y: 8 },
+    visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.26, ease: "easeOut" } },
+  },
   successPulse: {
     hidden: { opacity: 0, scale: 0.96 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.24, ease: "easeOut" } },
@@ -32,4 +36,3 @@ export const animationVariants: Record<string, Variants> = {
     visible: { opacity: 1, x: 0, transition: { duration: 0.24, ease: "easeOut" } },
   },
 };
-
