@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import Link from "next/link";
-import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, CreditCard, FileText, LibraryBig, LockKeyhole, PackageCheck, ReceiptText, ShieldCheck } from "lucide-react";
+import { AlertTriangle, ArrowRight, CheckCircle2, CreditCard, FileText, LibraryBig, LockKeyhole, PackageCheck, ReceiptText, ShieldCheck } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
 import { Reveal } from "@/shared/components/animation/reveal.component";
@@ -187,10 +186,17 @@ function OrderSummaryCard({ copy, total, hasItems }: Readonly<{ copy: CheckoutCo
             </div>
           </div>
 
-          <Button href="/checkout/success" className="mt-5 w-full rounded-[9px]" aria-disabled={!hasItems}>
-            <LockKeyhole className="h-4 w-4" aria-hidden="true" />
-            {copy.checkout.continueToPayment}
-          </Button>
+          {hasItems ? (
+            <Button href="/checkout/success" className="mt-5 w-full rounded-[9px]">
+              <LockKeyhole className="h-4 w-4" aria-hidden="true" />
+              {copy.checkout.continueToPayment}
+            </Button>
+          ) : (
+            <Button disabled className="mt-5 w-full rounded-[9px]">
+              <LockKeyhole className="h-4 w-4" aria-hidden="true" />
+              {copy.checkout.continueToPayment}
+            </Button>
+          )}
           <Button href="/courses" variant="ghost" className="mt-2 w-full rounded-[9px]">
             {copy.checkout.continueBrowsing}
           </Button>
@@ -319,7 +325,7 @@ function OrderCard({ order, copy }: Readonly<{ order: OrderView; copy: CheckoutC
       ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
       : order.status === "pending"
         ? "bg-amber-500/12 text-amber-700 dark:text-amber-300"
-        : "bg-error/10 text-error";
+        : "bg-danger/10 text-danger";
 
   return (
     <Reveal preset="fadeUp">
@@ -346,16 +352,19 @@ function OrderCard({ order, copy }: Readonly<{ order: OrderView; copy: CheckoutC
               {copy.orders.details}
               <ArrowRight className="h-3.5 w-3.5 transition group-open:rotate-90 rtl:rotate-180 rtl:group-open:rotate-90" aria-hidden="true" />
             </summary>
-            <div className="mt-4 rounded-[12px] border border-border/70 bg-section-bg p-4 text-start md:absolute md:start-6 md:end-6 md:z-10 md:shadow-[0_18px_44px_rgba(17,24,39,0.1)]">
-              <p className="text-sm font-black text-foreground">{copy.orders.paymentSummary}</p>
-              <p className="mt-1 text-xs leading-5 text-foreground/58">{order.paymentSummary}</p>
-              <div className="mt-4 grid gap-3">
-                {order.items.map((item) => (
-                  <CheckoutItemRow key={`${order.id}-${item.type}-${item.id}`} item={item} copy={copy} compact />
-                ))}
-              </div>
-            </div>
           </details>
+        </div>
+        <details className="group border-t border-border/60 px-5 pb-5 md:hidden">
+          <summary className="sr-only">{copy.orders.details}</summary>
+        </details>
+        <div className="mx-5 mb-5 rounded-[12px] border border-border/70 bg-section-bg p-4 text-start">
+          <p className="text-sm font-black text-foreground">{copy.orders.paymentSummary}</p>
+          <p className="mt-1 text-xs leading-5 text-foreground/58">{order.paymentSummary}</p>
+          <div className="mt-4 grid gap-3">
+            {order.items.map((item) => (
+              <CheckoutItemRow key={`${order.id}-${item.type}-${item.id}`} item={item} copy={copy} compact />
+            ))}
+          </div>
         </div>
       </Card>
     </Reveal>
