@@ -1,2 +1,1 @@
-export type MotionPresetName = "fadeIn" | "fadeUp" | "cardStagger" | "softScale" | "successPulse" | "drawerSlide";
-
+export type MotionPresetName = "fadeIn" | "fadeUp" | "cardStagger" | "softScale" | "scaleIn" | "successPulse" | "drawerSlide";
