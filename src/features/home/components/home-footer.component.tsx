@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ComponentType, SVGProps } from "react";
+import { SiteContainer } from "@/shared/components/layout/site-container";
 import type { HomeMessages } from "../home.types";
 
 type HomeFooterProps = Readonly<{
@@ -58,120 +59,124 @@ const socialIcons: Record<HomeMessages["footer"]["social"][number]["icon"], Comp
 
 export function HomeFooter({ copy }: HomeFooterProps) {
   return (
-    <footer className="border-t border-border/60 bg-section-bg">
+    <footer className="relative overflow-hidden border-t border-border/60 bg-[linear-gradient(180deg,var(--section-bg),rgba(248,250,252,0.96))] dark:bg-section-bg">
       <div className="pointer-events-none h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" />
+      <div className="pointer-events-none absolute -left-32 top-12 h-64 w-64 rounded-full bg-primary/7 blur-3xl" />
+      <div className="pointer-events-none absolute -right-28 bottom-0 h-64 w-64 rounded-full bg-secondary/7 blur-3xl" />
 
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-14">
-        <div className="grid gap-12 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
-          <div className="max-w-xl">
-            <div className="flex items-center gap-4">
-              <span className="relative block w-[9rem]  sm:w-[10rem]">
-                <Image
-                  alt={`${copy.brand} logo`}
-                  src="/images/logo-blue.png"
-                  fill
-                  sizes="(max-width: 640px) 152px, 168px"
-                  className="object-contain object-left"
-                />
-              </span>
+      <SiteContainer className="relative py-10 sm:py-12">
+        <div className="rounded-[1.6rem] border border-border/70 bg-surface/82 p-5 shadow-[0_16px_50px_rgba(15,23,42,0.05)] backdrop-blur md:p-7">
+          <div className="grid gap-9 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12">
+            <div className="max-w-xl">
+              <Link href="/" className="inline-flex items-center transition duration-200 hover:-translate-y-0.5 hover:opacity-90">
+                <span className="relative block h-10 w-32 sm:h-12 sm:w-40">
+                  <Image
+                    alt={`${copy.brand} logo`}
+                    src="/images/logo-blue.png"
+                    fill
+                    sizes="(max-width: 640px) 128px, 160px"
+                    className="object-contain object-left rtl:object-right dark:brightness-0 dark:invert"
+                  />
+                </span>
+              </Link>
+
+              <p className="mt-4 max-w-md text-[0.9rem] leading-7 text-foreground/68">{copy.footer.description}</p>
+
+              <div className="mt-6">
+                <p className="text-[0.68rem] font-black uppercase tracking-[0.16em] text-foreground/48">{copy.footer.socialTitle}</p>
+                <div className="mt-3 flex flex-wrap gap-2.5">
+                  {copy.footer.social.map((item) => {
+                    const Icon = socialIcons[item.icon];
+
+                    return (
+                      <a
+                        key={item.label}
+                        href={item.href}
+                        aria-label={item.label}
+                        className="group inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#E6E8F5] bg-white text-primary transition duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:bg-primary hover:text-white dark:border-white/10 dark:bg-slate-900/70 dark:text-[#cdd3ff] dark:hover:border-primary/30 dark:hover:bg-primary dark:hover:text-white"
+                      >
+                        <Icon className="h-4.5 w-4.5 transition duration-200 group-hover:scale-105 group-hover:text-white dark:text-current" />
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
 
-            <p className="mt-5 max-w-md text-sm leading-7 text-foreground/68">{copy.footer.description}</p>
+            <div className="grid gap-7 sm:grid-cols-3">
+              <div>
+                <h4 className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-foreground/48">{copy.footer.learn}</h4>
+                <ul className="mt-3 space-y-2.5 text-[0.88rem] text-foreground/70">
+                  <li>
+                    <Link href="/courses" className="transition hover:text-primary">
+                      {copy.footer.links.courses}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/books" className="transition hover:text-primary">
+                      {copy.footer.links.textbooks}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/articles" className="transition hover:text-primary">
+                      {copy.footer.links.articles}
+                    </Link>
+                  </li>
+                </ul>
+              </div>
 
-            <div className="mt-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground/50">{copy.footer.socialTitle}</p>
-              <div className="mt-4 flex flex-wrap gap-3">
-                {copy.footer.social.map((item) => {
-                  const Icon = socialIcons[item.icon];
+              <div>
+                <h4 className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-foreground/48">{copy.footer.company}</h4>
+                <ul className="mt-3 space-y-2.5 text-[0.88rem] text-foreground/70">
+                  <li>
+                    <Link href="/about-us" className="transition hover:text-primary">
+                      {copy.footer.links.about}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/about-us#founder" className="transition hover:text-primary">
+                      {copy.footer.links.faculty}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/about-us#academy" className="transition hover:text-primary">
+                      {copy.footer.links.careers}
+                    </Link>
+                  </li>
+                </ul>
+              </div>
 
-                  return (
-                    <a
-                      key={item.label}
-                      href={item.href}
-                      aria-label={item.label}
-                      className="group inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#E6E8F5] bg-white text-primary transition duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:bg-primary hover:text-white dark:border-white/10 dark:bg-slate-900/70 dark:text-[#cdd3ff] dark:hover:border-primary/30 dark:hover:bg-primary dark:hover:text-white"
-                    >
-                      <Icon className="h-5 w-5 transition duration-200 group-hover:scale-105 group-hover:text-white dark:text-current" />
-                    </a>
-                  );
-                })}
+              <div>
+                <h4 className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-foreground/48">{copy.footer.support}</h4>
+                <ul className="mt-3 space-y-2.5 text-[0.88rem] text-foreground/70">
+                  <li>
+                    <Link href="/about-us#academy" className="transition hover:text-primary">
+                      {copy.footer.links.helpCenter}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/about-us#founder" className="transition hover:text-primary">
+                      {copy.footer.links.contact}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/about-us" className="transition hover:text-primary">
+                      {copy.footer.links.privacy}
+                    </Link>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
 
-          <div className="grid gap-10 grid-cols-3">
-            <div>
-              <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground/50">{copy.footer.learn}</h4>
-              <ul className="mt-4 space-y-3 text-sm text-foreground/70">
-                <li>
-                  <Link href="/courses" className="transition hover:text-primary">
-                    {copy.footer.links.courses}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/books" className="transition hover:text-primary">
-                    {copy.footer.links.textbooks}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/articles" className="transition hover:text-primary">
-                    {copy.footer.links.articles}
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground/50">{copy.footer.company}</h4>
-              <ul className="mt-4 space-y-3 text-sm text-foreground/70">
-                <li>
-                  <Link href="/about-us" className="transition hover:text-primary">
-                    {copy.footer.links.about}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about-us#founder" className="transition hover:text-primary">
-                    {copy.footer.links.faculty}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about-us#academy" className="transition hover:text-primary">
-                    {copy.footer.links.careers}
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground/50">{copy.footer.support}</h4>
-              <ul className="mt-4 space-y-3 text-sm text-foreground/70">
-                <li>
-                  <Link href="/about-us#academy" className="transition hover:text-primary">
-                    {copy.footer.links.helpCenter}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about-us#founder" className="transition hover:text-primary">
-                    {copy.footer.links.contact}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about-us" className="transition hover:text-primary">
-                    {copy.footer.links.privacy}
-                  </Link>
-                </li>
-              </ul>
-            </div>
+          <div className="mt-8 border-t border-border/60 pt-4 text-[0.82rem] text-foreground/55 sm:flex sm:items-center sm:justify-between">
+            <p>
+              © {new Date().getFullYear()} {copy.brand}. {copy.footer.copyright}
+            </p>
+            <p className="mt-2 text-foreground/45 sm:mt-0">Designed for medical education and academic learning.</p>
           </div>
         </div>
-
-        <div className="mt-10 border-t border-border/60 pt-5 text-sm text-foreground/55 sm:flex sm:items-center sm:justify-between">
-          <p>
-            © {new Date().getFullYear()} {copy.brand}. {copy.footer.copyright}
-          </p>
-          <p className="mt-2 sm:mt-0 text-foreground/45">Designed for medical education and academic learning.</p>
-        </div>
-      </div>
+      </SiteContainer>
     </footer>
   );
 }
