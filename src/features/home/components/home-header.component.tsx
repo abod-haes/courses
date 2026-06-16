@@ -139,7 +139,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                     aria-current={isActive ? "page" : undefined}
                     className={`group relative flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition duration-200 ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                       isActive
-                        ? "bg-primary text-white shadow-[0_10px_26px_rgba(29,23,213,0.18)] dark:bg-white dark:text-slate-950 dark:shadow-[0_10px_30px_rgba(255,255,255,0.12)]"
+                        ? "bg-primary !text-white shadow-[0_10px_26px_rgba(29,23,213,0.18)] hover:!text-white dark:bg-primary dark:!text-white dark:shadow-[0_10px_30px_rgba(0,74,198,0.22)]"
                         : "text-foreground/68 hover:bg-white/72 hover:text-primary hover:shadow-[0_8px_20px_rgba(15,23,42,0.06)] dark:text-white/68 dark:hover:bg-white/12 dark:hover:text-white"
                     }`}
                   >
@@ -167,7 +167,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               <button
                 type="button"
                 onClick={() => setMenuOpen(true)}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/78 text-primary shadow-[0_10px_26px_rgba(15,23,42,0.08)] ring-1 ring-primary/14 transition duration-200 hover:-translate-y-0.5 hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:bg-white/12 dark:text-white dark:ring-white/14 dark:hover:bg-white dark:hover:text-slate-950"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/78 text-primary shadow-[0_10px_26px_rgba(15,23,42,0.08)] ring-1 ring-primary/14 transition duration-200 hover:-translate-y-0.5 hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:bg-white/12 dark:text-white dark:ring-white/14 dark:hover:bg-primary dark:hover:text-white"
                 aria-expanded={menuOpen}
                 aria-controls="mobile-navigation"
                 aria-label={isArabic ? "فتح القائمة" : "Open menu"}
@@ -218,7 +218,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                 <button
                   type="button"
                   onClick={() => setMenuOpen(false)}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/86 text-foreground/72 shadow-[0_8px_20px_rgba(15,23,42,0.08)] ring-1 ring-border/60 transition duration-200 hover:-translate-y-0.5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 dark:bg-white/12 dark:text-white/82 dark:ring-white/12 dark:hover:bg-white dark:hover:text-slate-950"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/86 text-foreground/72 shadow-[0_8px_20px_rgba(15,23,42,0.08)] ring-1 ring-border/60 transition duration-200 hover:-translate-y-0.5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 dark:bg-white/12 dark:text-white/82 dark:ring-white/12 dark:hover:bg-primary dark:hover:text-white"
                   aria-label={isArabic ? "إغلاق القائمة" : "Close menu"}
                 >
                   <X className="h-4 w-4" aria-hidden="true" />
@@ -243,7 +243,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                           aria-current={isActive ? "page" : undefined}
                           className={`group flex items-center justify-between rounded-2xl px-4 py-3.5 text-sm font-semibold transition duration-200 hover:-translate-y-0.5 ${
                             isActive
-                              ? "bg-primary text-white shadow-[0_12px_26px_rgba(29,23,213,0.18)] dark:bg-white dark:text-slate-950"
+                              ? "bg-primary !text-white shadow-[0_12px_26px_rgba(29,23,213,0.18)] hover:!text-white dark:bg-primary dark:!text-white"
                               : "bg-white/70 text-foreground/75 shadow-[0_8px_18px_rgba(15,23,42,0.04)] ring-1 ring-border/55 hover:bg-primary/8 hover:text-primary dark:bg-white/8 dark:text-white/74 dark:ring-white/10 dark:hover:bg-white/14 dark:hover:text-white"
                           }`}
                         >
