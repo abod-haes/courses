@@ -6,12 +6,14 @@ import { cookies } from "next/headers";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Reveal } from "@/shared/components/animation/reveal.component";
 import { Button } from "@/shared/components/ui/button";
+import { defaultCatalogPerPage } from "@/shared/api/paging";
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
 import { localeCookieName } from "@/shared/lib/preferences";
 import type { Locale } from "@/shared/lib/types";
 import { ArticleRichContent } from "./components/article-rich-content.component";
 import { ArticlesLibrary } from "./components/articles-library.component";
-import { getArticleBySlug, getArticlePageCopy, getArticles } from "./articles.data";
+import { getArticleBySlug, getArticles } from "./api/articles.api";
+import { getArticlePageCopy } from "./articles.data";
 
 type ArticleDetailsParams = Readonly<{
   slug: string;
@@ -47,7 +49,7 @@ export async function generateArticlesMetadata(): Promise<Metadata> {
 export async function generateArticleDetailsMetadata({ params }: { params: Promise<ArticleDetailsParams> }): Promise<Metadata> {
   const [{ slug }, locale] = await Promise.all([params, getCurrentLocale()]);
   const copy = getArticlePageCopy(locale);
-  const article = getArticleBySlug(locale, slug);
+  const article = await getArticleBySlug(slug, locale);
 
   if (!article) {
     return { title: copy.meta.detailsTitleSuffix };
@@ -76,15 +78,15 @@ export async function generateArticleDetailsMetadata({ params }: { params: Promi
 export async function ArticlesPage() {
   const locale = await getCurrentLocale();
   const copy = getArticlePageCopy(locale);
-  const articles = getArticles(locale);
+  const initialPage = await getArticles({ locale, page: 1, perPage: defaultCatalogPerPage });
 
-  return <ArticlesLibrary copy={copy} articles={articles} />;
+  return <ArticlesLibrary copy={copy} initialPage={initialPage} locale={locale} />;
 }
 
 export async function ArticleDetailsPage({ params }: { params: Promise<ArticleDetailsParams> }) {
   const [{ slug }, locale] = await Promise.all([params, getCurrentLocale()]);
   const copy = getArticlePageCopy(locale);
-  const article = getArticleBySlug(locale, slug);
+  const article = await getArticleBySlug(slug, locale);
 
   if (!article) {
     notFound();
