@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { Inter, Tajawal } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { Providers } from "@/components/providers";
+import { ClinicalCursorFollower } from "@/shared/components/clinical-cursor-follower";
 import { localeCookieName, themeCookieName } from "@/shared/lib/preferences";
 import { messagesByLocale } from "@/shared/lib/messages";
 import { getLocaleDirection, resolveLocale, resolveTheme } from "@/shared/lib/helpers/locale.helper";
@@ -71,6 +72,7 @@ export default async function RootLayout({
       <body className="h-screen overflow-hidden bg-background text-foreground">
         <NextIntlClientProvider locale={locale} messages={messagesByLocale[locale]}>
           <Providers initialLocale={locale} initialTheme={theme}>
+            <ClinicalCursorFollower />
             <div className="flex h-full flex-col bg-background text-foreground">
               <HomeHeader copy={copy} />
               <div className="relative z-0 flex-1 overflow-y-auto">
