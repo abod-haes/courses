@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { BookOpen, Shield, Sparkles, Stethoscope } from "lucide-react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { Button } from "@/shared/components/ui/button";
@@ -42,24 +41,6 @@ export function HomeHero({ copy }: HomeHeroProps) {
     <section className="relative isolate overflow-hidden bg-section-bg px-0 py-8 dark:bg-[#07111f] sm:py-12 lg:min-h-[70vh] lg:py-16">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute inset-0 bg-[linear-gradient(118deg,rgba(255,255,255,0.98)_0%,rgba(248,250,252,0.9)_42%,rgba(238,242,255,0.92)_100%)] dark:bg-[linear-gradient(118deg,rgba(7,17,31,0.98)_0%,rgba(8,17,29,0.9)_52%,rgba(15,23,42,0.94)_100%)]" />
-
-        <motion.div
-          className="absolute inset-x-0 bottom-[-4rem] top-24 opacity-[0.09] mix-blend-multiply dark:opacity-[0.08] dark:mix-blend-screen sm:bottom-[-6rem] sm:top-16 lg:inset-y-[-2rem] lg:left-auto lg:right-[-5vw] lg:w-[62vw] lg:max-w-[58rem] lg:opacity-[0.16] xl:right-[-2vw]"
-          initial={shouldReduceMotion ? false : { opacity: 0, scale: 1.06, x: 24 }}
-          animate={shouldReduceMotion ? undefined : { opacity: 1, scale: 1, x: 0 }}
-          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.08 }}
-        >
-          <Image
-            alt=""
-            src="/images/hero-blue.png"
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, 62vw"
-            className="object-contain object-bottom lg:object-right-bottom"
-            aria-hidden="true"
-          />
-        </motion.div>
-
         <div className="absolute -top-28 right-[-10rem] h-80 w-80 rounded-full bg-primary-soft/70 blur-3xl motion-safe:animate-[clinical-float_11s_ease-in-out_infinite] dark:bg-primary-soft/24 sm:right-[-7rem] sm:h-96 sm:w-96" />
         <div className="absolute bottom-[-10rem] left-[-9rem] h-[22rem] w-[22rem] rounded-full bg-teal-100/55 blur-3xl motion-safe:animate-[clinical-float_13s_ease-in-out_infinite_reverse] dark:bg-teal-400/10 sm:left-[-6rem] sm:h-[26rem] sm:w-[26rem]" />
         <div className="absolute left-[42%] top-12 hidden h-72 w-72 -translate-x-1/2 rounded-full bg-white/78 blur-3xl dark:bg-white/5 sm:block" />
