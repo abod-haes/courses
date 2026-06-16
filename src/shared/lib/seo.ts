@@ -9,7 +9,7 @@ export const siteConfig = {
   name: "IASS",
   fullName: "International Academy of Aesthetic Science and Skills",
   url: stripTrailingSlash(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
-  defaultImage: "/images/hero.jpg",
+  defaultImage: "/images/hero-blue.png",
   logo: "/images/logo-blue.png",
 } as const;
 
@@ -177,20 +177,5 @@ export function bookJsonLd(book: Readonly<{ title: string; description: string; 
     isbn: book.isbn,
     author: { "@type": "Person", name: book.author },
     publisher: { "@type": "Organization", name: siteConfig.fullName, url: siteConfig.url },
-  };
-}
-
-export function articleJsonLd(article: Readonly<{ title: string; excerpt: string; image: string; href: string; author: string; publishedAt: string }>, locale: Locale): JsonLdData {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: article.title,
-    description: article.excerpt,
-    image: absoluteUrl(article.image),
-    url: absoluteUrl(article.href),
-    inLanguage: locale,
-    datePublished: article.publishedAt,
-    author: { "@type": "Person", name: article.author },
-    publisher: { "@type": "Organization", name: siteConfig.fullName, logo: { "@type": "ImageObject", url: absoluteUrl(siteConfig.logo) } },
   };
 }
