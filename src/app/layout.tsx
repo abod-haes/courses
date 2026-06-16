@@ -4,9 +4,11 @@ import { Inter, Tajawal } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { Providers } from "@/components/providers";
 import { ClinicalCursorFollower } from "@/shared/components/clinical-cursor-follower";
+import { JsonLd } from "@/shared/components/seo/json-ld";
 import { localeCookieName, themeCookieName } from "@/shared/lib/preferences";
 import { messagesByLocale } from "@/shared/lib/messages";
 import { getLocaleDirection, resolveLocale, resolveTheme } from "@/shared/lib/helpers/locale.helper";
+import { createSeoMetadata, organizationJsonLd, websiteJsonLd } from "@/shared/lib/seo";
 import { getHomeMessages } from "@/features/home/home.data";
 import { HomeFooter } from "@/features/home/components/home-footer.component";
 import { HomeHeader } from "@/features/home/components/home-header.component";
@@ -25,30 +27,22 @@ const tajawal = Tajawal({
   variable: "--font-tajawal",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
-  title: {
-    default: "IASS ",
-    template: "%s | IASS ",
-  },
+export const metadata: Metadata = createSeoMetadata({
+  title: "IASS - International Academy of Aesthetic Science and Skills",
   description:
-    "A clean, academic, and modern website for IASS with bilingual content, elegant UI, and strong brand identity.",
-  alternates: {
-    canonical: "/",
-  },
-  openGraph: {
-    title: "IASS ",
-    description: "Modern academic website experience for IASS with a clean visual identity and bilingual support.",
-    type: "website",
-    locale: "en_US",
-    url: "/",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "IASS ",
-    description: "Modern academic website experience for IASS with a clean visual identity and bilingual support.",
-  },
-};
+    "IASS is a bilingual digital academy for aesthetic medicine courses, books, and articles focused on anatomy, safety, and clinical protocols.",
+  path: "/",
+  image: "/images/hero.jpg",
+  imageAlt: "IASS aesthetic medicine academy",
+  keywords: [
+    "medical education platform",
+    "aesthetic medicine academy",
+    "clinical protocols",
+    "digital medical books",
+    "منصة تعليم طبي",
+    "أكاديمية طب تجميلي",
+  ],
+});
 
 export default async function RootLayout({
   children,
@@ -72,6 +66,7 @@ export default async function RootLayout({
       <body className="h-screen overflow-hidden bg-background text-foreground">
         <NextIntlClientProvider locale={locale} messages={messagesByLocale[locale]}>
           <Providers initialLocale={locale} initialTheme={theme}>
+            <JsonLd data={[organizationJsonLd(locale), websiteJsonLd(locale)]} />
             <ClinicalCursorFollower />
             <div className="flex h-full flex-col bg-background text-foreground">
               <HomeHeader copy={copy} />
