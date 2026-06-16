@@ -111,7 +111,7 @@ export function HomeHero({ copy }: HomeHeroProps) {
         </motion.div>
 
         <motion.div
-          className="mx-auto w-full max-w-[25.5rem] lg:mx-0 lg:max-w-[28rem] xl:max-w-[31rem]"
+          className="mx-auto w-full flex-1 lg:ms-0 "
           initial={shouldReduceMotion ? false : { opacity: 0, y: 22, scale: 0.97 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.74, ease: [0.22, 1, 0.36, 1], delay: 0.18 }}
