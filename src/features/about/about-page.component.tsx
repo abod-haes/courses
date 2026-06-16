@@ -224,7 +224,7 @@ export function AboutPage({ locale }: AboutPageProps) {
               <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
               {content.eyebrow}
             </motion.div>
-            <motion.h1 variants={itemVariants} className="mt-6 max-w-4xl text-4xl font-black leading-tight tracking-tight text-slate-950 dark:text-white sm:text-5xl lg:text-[4.4rem] lg:leading-[1.06]">
+            <motion.h1 variants={itemVariants} className="mt-6 max-w-4xl text-4xl font-black leading-tight tracking-tight text-slate-950 dark:text-white sm:text-3xl lg:text-[3.5rem] lg:leading-[1.06]">
               {content.title}
             </motion.h1>
             <motion.p variants={itemVariants} className="mt-6 max-w-3xl text-base leading-8 text-slate-600 dark:text-slate-300 sm:text-lg sm:leading-9">
