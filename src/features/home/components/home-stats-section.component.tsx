@@ -108,7 +108,7 @@ function StatCard({
 
   return (
     <motion.article
-      className="group relative overflow-hidden rounded-[22px] border border-border/70 bg-white px-5 py-8 shadow-[0_10px_28px_rgba(17,24,39,0.04)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(17,24,39,0.06)] dark:border-white/10 dark:bg-slate-900/82 dark:shadow-[0_16px_40px_rgba(0,0,0,0.28)] dark:hover:shadow-[0_20px_48px_rgba(0,0,0,0.34)] sm:px-6 sm:py-9"
+      className="group relative overflow-hidden rounded-lg border border-border/70 bg-white px-5 py-8 shadow-[0_10px_28px_rgba(17,24,39,0.04)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(17,24,39,0.06)] dark:border-white/10 dark:bg-slate-900/82 dark:shadow-[0_16px_40px_rgba(0,0,0,0.28)] dark:hover:shadow-[0_20px_48px_rgba(0,0,0,0.34)] sm:px-6 sm:py-9"
       custom={index}
       initial={shouldReduceMotion ? false : "hidden"}
       whileInView={shouldReduceMotion ? undefined : "visible"}
@@ -179,7 +179,7 @@ export function HomeStatsSection({ copy }: HomeStatsSectionProps) {
 
         <div className="mt-8 sm:p-5 lg:p-6">
           <motion.div
-            className="grid gap-5 max-sm:grid-cols-2  grid-cols-4 "
+            className="grid gap-5 max-sm:grid-cols-1  grid-cols-4 "
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}

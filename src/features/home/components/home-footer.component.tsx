@@ -103,22 +103,22 @@ export function HomeFooter({ copy }: HomeFooterProps) {
               </div>
             </div>
 
-            <div className="grid gap-7 sm:grid-cols-3">
+            <div className="grid gap-7 grid-cols-3 sm:grid-cols-3">
               <div>
                 <h4 className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-foreground/48">{copy.footer.learn}</h4>
                 <ul className="mt-3 space-y-2.5 text-[0.88rem] text-foreground/70">
                   <li>
-                    <Link href="/courses" className="transition hover:text-primary">
+                    <Link href="/courses" className="transition hover:text-primary max-sm:text-sm">
                       {copy.footer.links.courses}
                     </Link>
                   </li>
                   <li>
-                    <Link href="/books" className="transition hover:text-primary">
+                    <Link href="/books" className="transition hover:text-primary max-sm:text-sm">
                       {copy.footer.links.textbooks}
                     </Link>
                   </li>
                   <li>
-                    <Link href="/articles" className="transition hover:text-primary">
+                    <Link href="/articles" className="transition hover:text-primary max-sm:text-sm">
                       {copy.footer.links.articles}
                     </Link>
                   </li>
@@ -129,17 +129,17 @@ export function HomeFooter({ copy }: HomeFooterProps) {
                 <h4 className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-foreground/48">{copy.footer.company}</h4>
                 <ul className="mt-3 space-y-2.5 text-[0.88rem] text-foreground/70">
                   <li>
-                    <Link href="/about-us" className="transition hover:text-primary">
+                    <Link href="/about-us" className="transition hover:text-primary max-sm:text-sm">
                       {copy.footer.links.about}
                     </Link>
                   </li>
                   <li>
-                    <Link href="/about-us#founder" className="transition hover:text-primary">
+                    <Link href="/about-us#founder" className="transition hover:text-primary max-sm:text-sm">
                       {copy.footer.links.faculty}
                     </Link>
                   </li>
                   <li>
-                    <Link href="/about-us#academy" className="transition hover:text-primary">
+                    <Link href="/about-us#academy" className="transition hover:text-primary max-sm:text-sm">
                       {copy.footer.links.careers}
                     </Link>
                   </li>
@@ -150,17 +150,17 @@ export function HomeFooter({ copy }: HomeFooterProps) {
                 <h4 className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-foreground/48">{copy.footer.support}</h4>
                 <ul className="mt-3 space-y-2.5 text-[0.88rem] text-foreground/70">
                   <li>
-                    <Link href="/about-us#academy" className="transition hover:text-primary">
+                    <Link href="/about-us#academy" className="transition hover:text-primary max-sm:text-sm">
                       {copy.footer.links.helpCenter}
                     </Link>
                   </li>
                   <li>
-                    <Link href="/about-us#founder" className="transition hover:text-primary">
+                    <Link href="/about-us#founder" className="transition hover:text-primary max-sm:text-sm">
                       {copy.footer.links.contact}
                     </Link>
                   </li>
                   <li>
-                    <Link href="/about-us" className="transition hover:text-primary">
+                    <Link href="/about-us" className="transition hover:text-primary max-sm:text-sm">
                       {copy.footer.links.privacy}
                     </Link>
                   </li>
