@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Award, BookOpen, ClipboardCheck, GraduationCap, HeartPulse, Microscope, Ruler, Sparkles, Stethoscope } from "lucide-react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { Button } from "@/shared/components/ui/button";
+import { SiteContainer } from "@/shared/components/layout/site-container";
 import type { Locale } from "@/shared/lib/types";
 
 type IconKey = "science" | "skills" | "protocol" | "book" | "ruler";
@@ -152,18 +153,18 @@ const iconByKey = {
 } as const;
 
 const containerVariants: Variants = {
-  hidden: { opacity: 0, y: 18, filter: "blur(8px)" },
+  hidden: { opacity: 0, y: 16, filter: "blur(6px)" },
   visible: {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1], staggerChildren: 0.08, delayChildren: 0.04 },
+    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1], staggerChildren: 0.06, delayChildren: 0.03 },
   },
 };
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 14 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] } },
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.34, ease: [0.22, 1, 0.36, 1] } },
 };
 
 type AboutPageProps = Readonly<{ locale: Locale }>;
@@ -184,7 +185,7 @@ function AnimatedSection({ children, className = "", id }: AnimatedSectionProps)
       variants={containerVariants}
       initial={shouldReduceMotion ? false : "hidden"}
       whileInView={shouldReduceMotion ? undefined : "visible"}
-      viewport={{ once: true, amount: 0.22 }}
+      viewport={{ once: true, amount: 0.2 }}
     >
       {children}
     </motion.section>
@@ -195,13 +196,13 @@ function IconCard({ item }: Readonly<{ item: CardItem }>) {
   const Icon = iconByKey[item.icon];
 
   return (
-    <motion.article variants={itemVariants} className="group relative overflow-hidden rounded-[1.55rem] border border-border/70 bg-white p-5 shadow-[0_14px_34px_rgba(15,23,42,0.055)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(29,23,213,0.10)] dark:border-white/10 dark:bg-white/6 dark:shadow-none">
-      <div className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-primary/8 blur-3xl transition duration-500 group-hover:scale-125 dark:bg-primary/18" />
-      <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary dark:bg-primary/18">
+    <motion.article variants={itemVariants} className="group relative overflow-hidden rounded-[1.05rem] border border-border/60 bg-white p-5 shadow-[0_10px_28px_rgba(15,23,42,0.045)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_42px_rgba(29,23,213,0.08)] dark:border-white/10 dark:bg-white/6 dark:shadow-none">
+      <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-primary/7 blur-3xl transition duration-500 group-hover:scale-110 dark:bg-primary/14" />
+      <div className="relative flex h-11 w-11 items-center justify-center rounded-[0.85rem] bg-primary/10 text-primary dark:bg-primary/18">
         <Icon className="h-5 w-5" aria-hidden="true" />
       </div>
-      <h3 className="relative mt-5 text-lg font-extrabold tracking-tight text-slate-950 dark:text-white">{item.title}</h3>
-      <p className="relative mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">{item.description}</p>
+      <h3 className="relative mt-4 text-base font-extrabold tracking-tight text-slate-950 dark:text-white">{item.title}</h3>
+      <p className="relative mt-2.5 text-sm leading-7 text-slate-600 dark:text-slate-300">{item.description}</p>
     </motion.article>
   );
 }
@@ -211,51 +212,53 @@ export function AboutPage({ locale }: AboutPageProps) {
   const shouldReduceMotion = Boolean(useReducedMotion());
 
   return (
-    <div className="overflow-hidden bg-section-bg">
-      <section className="relative overflow-hidden px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+    <div className="overflow-hidden bg-background">
+      <section className="relative overflow-hidden py-10 sm:py-12 lg:py-14">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-          <div className="absolute left-[-8rem] top-12 h-72 w-72 rounded-full bg-primary/10 blur-3xl motion-safe:animate-[clinical-drift_9s_ease-in-out_infinite] dark:bg-primary/16" />
-          <div className="absolute bottom-0 right-[-10rem] h-80 w-80 rounded-full bg-teal-300/20 blur-3xl motion-safe:animate-[clinical-drift_10s_ease-in-out_infinite_reverse] dark:bg-teal-400/10" />
+          <Image src="/images/hero-bg.png" alt="" fill priority sizes="100vw" className="object-cover opacity-30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/78 via-background/86 to-background" />
+          <div className="absolute left-[-7rem] top-16 h-64 w-64 rounded-full bg-primary/10 blur-3xl motion-safe:animate-[clinical-drift_9s_ease-in-out_infinite] dark:bg-primary/16" />
+          <div className="absolute bottom-0 right-[-8rem] h-72 w-72 rounded-full bg-primary/8 blur-3xl motion-safe:animate-[clinical-drift_10s_ease-in-out_infinite_reverse] dark:bg-primary/12" />
         </div>
 
-        <div className="relative mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.72fr)] lg:gap-14">
+        <SiteContainer className="relative grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,0.58fr)] lg:gap-10">
           <motion.div variants={containerVariants} initial={shouldReduceMotion ? false : "hidden"} animate={shouldReduceMotion ? undefined : "visible"}>
-            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white/74 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-primary shadow-[0_12px_28px_rgba(15,23,42,0.05)] backdrop-blur-xl dark:border-white/10 dark:bg-white/8">
+            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 rounded-full border border-primary/12 bg-white/76 px-3.5 py-1.5 text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-primary shadow-[0_10px_24px_rgba(15,23,42,0.04)] backdrop-blur-xl dark:border-white/10 dark:bg-white/8">
               <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
               {content.eyebrow}
             </motion.div>
-            <motion.h1 variants={itemVariants} className="mt-6 max-w-4xl text-4xl font-black leading-tight tracking-tight text-slate-950 dark:text-white sm:text-3xl lg:text-[3.5rem] lg:leading-[1.06]">
+            <motion.h1 variants={itemVariants} className="mt-5 max-w-3xl text-3xl font-black leading-tight tracking-tight text-slate-950 dark:text-white sm:text-[2.2rem] lg:text-[2.8rem] lg:leading-[1.08]">
               {content.title}
             </motion.h1>
-            <motion.p variants={itemVariants} className="mt-6 max-w-3xl text-base leading-8 text-slate-600 dark:text-slate-300 sm:text-lg sm:leading-9">
+            <motion.p variants={itemVariants} className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300 sm:text-base sm:leading-8">
               {content.subtitle}
             </motion.p>
-            <motion.div variants={itemVariants} className="mt-8 flex flex-wrap gap-3">
-              <Button href="/courses" className="rounded-2xl px-6 shadow-[0_16px_34px_rgba(29,23,213,0.18)] hover:-translate-y-0.5">
+            <motion.div variants={itemVariants} className="mt-6 flex flex-wrap gap-3">
+              <Button href="/courses" className="px-5 shadow-[0_14px_30px_rgba(29,23,213,0.16)] hover:-translate-y-0.5">
                 {content.primaryCta}
               </Button>
-              <Button href="/books" variant="secondary" className="rounded-2xl px-6 hover:-translate-y-0.5">
+              <Button href="/books" variant="secondary" className="px-5 hover:-translate-y-0.5">
                 {content.secondaryCta}
               </Button>
             </motion.div>
-            <motion.div variants={itemVariants} className="mt-9 grid max-w-3xl gap-3 sm:grid-cols-3">
+            <motion.div variants={itemVariants} className="mt-7 grid max-w-2xl gap-3 sm:grid-cols-3">
               {content.stats.map((stat) => (
-                <div key={stat.label} className="rounded-2xl border border-white/70 bg-white/72 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.05)] backdrop-blur-xl dark:border-white/10 dark:bg-white/6">
-                  <p className="text-2xl font-black text-primary">{stat.value}</p>
+                <div key={stat.label} className="rounded-[1rem] border border-white/70 bg-white/74 p-4 shadow-[0_10px_24px_rgba(15,23,42,0.045)] backdrop-blur-xl dark:border-white/10 dark:bg-white/6">
+                  <p className="text-xl font-black text-primary sm:text-2xl">{stat.value}</p>
                   <p className="mt-1 text-xs font-bold text-slate-600 dark:text-slate-300">{stat.label}</p>
                 </div>
               ))}
             </motion.div>
           </motion.div>
 
-          <motion.div className="relative mx-auto w-full max-w-md lg:max-w-none" initial={shouldReduceMotion ? false : { opacity: 0, x: locale === "ar" ? -24 : 24, scale: 0.98 }} animate={shouldReduceMotion ? undefined : { opacity: 1, x: 0, scale: 1 }} transition={{ duration: 0.68, ease: [0.22, 1, 0.36, 1], delay: 0.16 }}>
-            <div className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/44 p-2 shadow-[0_24px_70px_rgba(15,23,42,0.14)] backdrop-blur-xl dark:border-white/10 dark:bg-white/6">
-              <div className="relative aspect-[0.86] overflow-hidden rounded-[1.55rem] bg-transparent">
-                <Image src="/images/hero.jpg" alt={content.imageAlt} fill priority sizes="(max-width: 1024px) 88vw, 34vw" className="object-contain object-bottom drop-shadow-[0_22px_32px_rgba(15,23,42,0.20)]" />
+          <motion.div className="relative mx-auto w-full max-w-[21rem] lg:max-w-[23rem]" initial={shouldReduceMotion ? false : { opacity: 0, x: locale === "ar" ? -18 : 18, scale: 0.98 }} animate={shouldReduceMotion ? undefined : { opacity: 1, x: 0, scale: 1 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.12 }}>
+            <div className="relative overflow-hidden rounded-[1.15rem] border border-white/70 bg-white/48 p-2 shadow-[0_20px_52px_rgba(15,23,42,0.11)] backdrop-blur-xl dark:border-white/10 dark:bg-white/6">
+              <div className="relative aspect-[0.88] overflow-hidden rounded-[0.95rem] bg-transparent">
+                <Image src="/images/hero-blue.png" alt={content.imageAlt} fill priority sizes="(max-width: 1024px) 82vw, 23rem" className="object-contain object-bottom drop-shadow-[0_18px_26px_rgba(15,23,42,0.16)]" />
               </div>
-              <div className="absolute bottom-5 left-5 right-5 rounded-2xl border border-white/70 bg-white/92 p-4 shadow-[0_16px_40px_rgba(15,23,42,0.14)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/82">
+              <div className="absolute bottom-4 left-4 right-4 rounded-[0.95rem] border border-white/70 bg-white/92 p-3 shadow-[0_14px_32px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/82">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary dark:bg-primary/18">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-[0.85rem] bg-primary/10 text-primary dark:bg-primary/18">
                     <HeartPulse className="h-5 w-5 motion-safe:animate-[clinical-float_4s_ease-in-out_infinite]" aria-hidden="true" />
                   </span>
                   <div>
@@ -266,80 +269,85 @@ export function AboutPage({ locale }: AboutPageProps) {
               </div>
             </div>
           </motion.div>
-        </div>
+        </SiteContainer>
       </section>
 
-      <AnimatedSection id="academy" className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
-          <motion.div variants={itemVariants} className="rounded-[1.7rem] border border-border/70 bg-white p-6 shadow-[0_16px_42px_rgba(15,23,42,0.055)] dark:border-white/10 dark:bg-white/6 dark:shadow-none sm:p-8">
-            <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-primary">{content.academy.label}</p>
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 dark:text-white sm:text-4xl">{content.academy.title}</h2>
+      <AnimatedSection id="academy" className="py-10 sm:py-12 lg:py-14">
+        <SiteContainer className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:gap-10">
+          <motion.div variants={itemVariants} className="rounded-[1.05rem] border border-border/60 bg-white p-5 shadow-[0_12px_32px_rgba(15,23,42,0.045)] dark:border-white/10 dark:bg-white/6 dark:shadow-none sm:p-6">
+            <p className="text-[0.7rem] font-extrabold uppercase tracking-[0.2em] text-primary">{content.academy.label}</p>
+            <h2 className="mt-3 text-2xl font-black tracking-tight text-slate-950 dark:text-white sm:text-3xl">{content.academy.title}</h2>
           </motion.div>
-          <motion.div variants={itemVariants} className="space-y-5 text-base leading-8 text-slate-600 dark:text-slate-300 sm:text-lg sm:leading-9">
+          <motion.div variants={itemVariants} className="space-y-4 text-sm leading-7 text-slate-600 dark:text-slate-300 sm:text-base sm:leading-8">
             {content.academy.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           </motion.div>
-        </div>
+        </SiteContainer>
       </AnimatedSection>
 
-      <AnimatedSection id="founder" className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <div className="mx-auto max-w-7xl rounded-[2rem] border border-border/70 bg-white p-6 shadow-[0_18px_52px_rgba(15,23,42,0.065)] dark:border-white/10 dark:bg-white/6 dark:shadow-none sm:p-8 lg:p-10">
-          <motion.div variants={itemVariants} className="max-w-4xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-primary">{content.founder.label}</p>
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 dark:text-white sm:text-4xl lg:text-5xl">{content.founder.title}</h2>
+      <AnimatedSection id="founder" className="py-10 sm:py-12 lg:py-14">
+        <SiteContainer>
+          <div className="rounded-[1.1rem] border border-border/60 bg-white p-5 shadow-[0_14px_36px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-white/6 dark:shadow-none sm:p-6 lg:p-8">
+            <motion.div variants={itemVariants} className="max-w-3xl">
+              <p className="text-[0.7rem] font-extrabold uppercase tracking-[0.2em] text-primary">{content.founder.label}</p>
+              <h2 className="mt-3 text-2xl font-black tracking-tight text-slate-950 dark:text-white sm:text-3xl lg:text-[2.15rem] lg:leading-tight">{content.founder.title}</h2>
+            </motion.div>
+            <div className="mt-6 grid gap-4 lg:grid-cols-3">
+              {content.founder.paragraphs.map((paragraph) => (
+                <motion.p key={paragraph} variants={itemVariants} className="rounded-[0.95rem] border border-border/55 bg-section-bg/80 p-4 text-sm leading-7 text-slate-600 dark:border-white/10 dark:bg-white/6 dark:text-slate-300">
+                  {paragraph}
+                </motion.p>
+              ))}
+            </div>
+          </div>
+        </SiteContainer>
+      </AnimatedSection>
+
+      <AnimatedSection className="py-10 sm:py-12 lg:py-14">
+        <SiteContainer>
+          <motion.div variants={itemVariants} className="mx-auto max-w-2xl text-center">
+            <div className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-[0.9rem] bg-primary/10 text-primary dark:bg-primary/18"><GraduationCap className="h-5 w-5" aria-hidden="true" /></div>
+            <h2 className="text-2xl font-black tracking-tight text-slate-950 dark:text-white sm:text-3xl">{content.pillarsTitle}</h2>
+            <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300 sm:text-base">{content.pillarsSubtitle}</p>
           </motion.div>
-          <div className="mt-8 grid gap-5 lg:grid-cols-3">
-            {content.founder.paragraphs.map((paragraph) => (
-              <motion.p key={paragraph} variants={itemVariants} className="rounded-3xl border border-border/60 bg-section-bg p-5 text-sm leading-7 text-slate-600 dark:border-white/10 dark:bg-white/6 dark:text-slate-300 sm:text-base sm:leading-8">
-                {paragraph}
-              </motion.p>
-            ))}
+          <div className="mt-7 grid gap-4 md:grid-cols-3">{content.pillars.map((item) => <IconCard key={item.title} item={item} />)}</div>
+        </SiteContainer>
+      </AnimatedSection>
+
+      <AnimatedSection className="py-10 sm:py-12 lg:py-14">
+        <SiteContainer>
+          <motion.h2 variants={itemVariants} className="text-2xl font-black tracking-tight text-slate-950 dark:text-white sm:text-3xl">{content.innovationsTitle}</motion.h2>
+          <div className="mt-6 grid gap-4 md:grid-cols-2">{content.innovations.map((item) => <IconCard key={item.title} item={item} />)}</div>
+        </SiteContainer>
+      </AnimatedSection>
+
+      <AnimatedSection className="py-10 sm:py-12 lg:py-14">
+        <SiteContainer>
+          <div className="relative overflow-hidden rounded-[1.1rem] border border-primary/10 bg-white p-5 shadow-[0_16px_42px_rgba(15,23,42,0.055)] dark:border-white/10 dark:bg-white/6 dark:shadow-none sm:p-6 lg:p-8">
+            <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-primary/8 blur-3xl" />
+            <motion.h2 variants={itemVariants} className="relative text-2xl font-black tracking-tight text-slate-950 dark:text-white sm:text-3xl">{content.whyTitle}</motion.h2>
+            <div className="relative mt-6 grid gap-4 md:grid-cols-3">
+              {content.why.map((item, index) => (
+                <motion.div key={item.title} variants={itemVariants} className="rounded-[0.95rem] border border-border/55 bg-section-bg/80 p-4 dark:border-white/10 dark:bg-white/6">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-[0.8rem] bg-primary/10 text-primary"><span className="text-sm font-black">{index + 1}</span></div>
+                  <h3 className="mt-4 text-base font-black text-slate-950 dark:text-white">{item.title}</h3>
+                  <p className="mt-2.5 text-sm leading-7 text-slate-600 dark:text-slate-300">{item.body}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
+        </SiteContainer>
       </AnimatedSection>
 
-      <AnimatedSection className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <div className="mx-auto max-w-7xl">
-          <motion.div variants={itemVariants} className="mx-auto max-w-3xl text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary dark:bg-primary/18"><GraduationCap className="h-6 w-6" aria-hidden="true" /></div>
-            <h2 className="text-3xl font-black tracking-tight text-slate-950 dark:text-white sm:text-4xl">{content.pillarsTitle}</h2>
-            <p className="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">{content.pillarsSubtitle}</p>
-          </motion.div>
-          <div className="mt-9 grid gap-4 md:grid-cols-3">{content.pillars.map((item) => <IconCard key={item.title} item={item} />)}</div>
-        </div>
-      </AnimatedSection>
-
-      <AnimatedSection className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <div className="mx-auto max-w-7xl">
-          <motion.h2 variants={itemVariants} className="text-3xl font-black tracking-tight text-slate-950 dark:text-white sm:text-4xl">{content.innovationsTitle}</motion.h2>
-          <div className="mt-8 grid gap-4 md:grid-cols-2">{content.innovations.map((item) => <IconCard key={item.title} item={item} />)}</div>
-        </div>
-      </AnimatedSection>
-
-      <AnimatedSection className="px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <div className="mx-auto max-w-7xl rounded-[2rem] bg-primary p-6 text-white shadow-[0_24px_70px_rgba(29,23,213,0.22)] sm:p-8 lg:p-10">
-          <motion.h2 variants={itemVariants} className="text-3xl font-black tracking-tight sm:text-4xl">{content.whyTitle}</motion.h2>
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {content.why.map((item, index) => (
-              <motion.div key={item.title} variants={itemVariants} className="rounded-3xl border border-white/16 bg-white/10 p-5 backdrop-blur-xl">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/16 text-white"><span className="text-sm font-black">{index + 1}</span></div>
-                <h3 className="mt-5 text-lg font-black">{item.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-white/78">{item.body}</p>
-              </motion.div>
-            ))}
+      <section className="pb-14 pt-6 sm:pb-16 lg:pb-20">
+        <SiteContainer className="max-w-4xl text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-[0.95rem] bg-primary/10 text-primary dark:bg-primary/18"><Award className="h-6 w-6" aria-hidden="true" /></div>
+          <h2 className="text-2xl font-black tracking-tight text-slate-950 dark:text-white sm:text-3xl">{content.closingTitle}</h2>
+          <p className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-300 sm:text-base sm:leading-8">{content.closingBody}</p>
+          <div className="mt-6 flex justify-center gap-3">
+            <Button href="/courses" className="px-5">{content.primaryCta}</Button>
+            <Button href="/articles" variant="secondary" className="px-5">{locale === "ar" ? "اقرأ المقالات" : "Read articles"}</Button>
           </div>
-        </div>
-      </AnimatedSection>
-
-      <section className="px-4 pb-16 pt-8 sm:px-6 lg:px-8 lg:pb-24">
-        <div className="mx-auto max-w-4xl text-center">
-          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary dark:bg-primary/18"><Award className="h-7 w-7" aria-hidden="true" /></div>
-          <h2 className="text-3xl font-black tracking-tight text-slate-950 dark:text-white sm:text-4xl">{content.closingTitle}</h2>
-          <p className="mt-5 text-base leading-8 text-slate-600 dark:text-slate-300 sm:text-lg sm:leading-9">{content.closingBody}</p>
-          <div className="mt-8 flex justify-center gap-3">
-            <Button href="/courses" className="rounded-2xl px-6">{content.primaryCta}</Button>
-            <Button href="/articles" variant="secondary" className="rounded-2xl px-6">{locale === "ar" ? "اقرأ المقالات" : "Read articles"}</Button>
-          </div>
-        </div>
+        </SiteContainer>
       </section>
     </div>
   );
