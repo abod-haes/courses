@@ -47,14 +47,13 @@ export function HomeHero({ copy }: HomeHeroProps) {
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center opacity-[0.76] saturate-[1.12] contrast-[1.04] dark:opacity-[0.38]"
+          className="object-cover object-center opacity-[0.8] saturate-[1.14] contrast-[1.05] dark:opacity-[0.4]"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(118deg,rgba(255,255,255,0.66)_0%,rgba(248,250,252,0.36)_42%,rgba(238,242,255,0.48)_100%)] dark:bg-[linear-gradient(118deg,rgba(7,17,31,0.78)_0%,rgba(8,17,29,0.62)_52%,rgba(15,23,42,0.78)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_42%,rgba(255,255,255,0.06),transparent_30%),radial-gradient(circle_at_top_right,rgba(29,23,213,0.08),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(20,184,166,0.06),transparent_32%)] dark:bg-[radial-gradient(circle_at_78%_42%,rgba(15,23,42,0.06),transparent_30%),radial-gradient(circle_at_top_right,rgba(99,102,241,0.12),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(20,184,166,0.06),transparent_30%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(118deg,rgba(255,255,255,0.58)_0%,rgba(248,250,252,0.3)_42%,rgba(238,242,255,0.42)_100%)] dark:bg-[linear-gradient(118deg,rgba(7,17,31,0.78)_0%,rgba(8,17,29,0.62)_52%,rgba(15,23,42,0.78)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_42%,rgba(255,255,255,0.06),transparent_30%),radial-gradient(circle_at_top_right,rgba(29,23,213,0.1),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(29,23,213,0.055),transparent_32%)] dark:bg-[radial-gradient(circle_at_78%_42%,rgba(15,23,42,0.06),transparent_30%),radial-gradient(circle_at_top_right,rgba(99,102,241,0.12),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(99,102,241,0.06),transparent_30%)]" />
         <div className="absolute -top-28 right-[-10rem] h-80 w-80 rounded-full bg-primary-soft/40 blur-3xl motion-safe:animate-[clinical-float_11s_ease-in-out_infinite] dark:bg-primary-soft/16 sm:right-[-7rem] sm:h-96 sm:w-96" />
-        <div className="absolute bottom-[-10rem] left-[-9rem] h-[22rem] w-[22rem] rounded-full bg-teal-100/34 blur-3xl motion-safe:animate-[clinical-float_13s_ease-in-out_infinite_reverse] dark:bg-teal-400/8 sm:left-[-6rem] sm:h-[26rem] sm:w-[26rem]" />
+        <div className="absolute bottom-[-10rem] left-[-9rem] h-[22rem] w-[22rem] rounded-full bg-primary/10 blur-3xl motion-safe:animate-[clinical-float_13s_ease-in-out_infinite_reverse] dark:bg-primary/8 sm:left-[-6rem] sm:h-[26rem] sm:w-[26rem]" />
         <div className="absolute left-[42%] top-12 hidden h-72 w-72 -translate-x-1/2 rounded-full bg-white/36 blur-3xl dark:bg-white/4 sm:block" />
-        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
       </div>
 
       <SiteContainer className="relative z-10 grid min-h-[inherit] items-center gap-4 md:gap-5 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:gap-5 xl:gap-6">
