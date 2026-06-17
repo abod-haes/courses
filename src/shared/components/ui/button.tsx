@@ -62,7 +62,7 @@ export function Button({
       "href"
     >;
     return (
-      <Link href={href} className={classes} target={target} rel={rel} onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onTouchStart} onTouchStart={onTouchStart} {...linkProps} />
+      <Link href={href} className={classes} target={target} rel={rel} onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onTouchStart={onTouchStart} {...linkProps} />
     );
   }
 
