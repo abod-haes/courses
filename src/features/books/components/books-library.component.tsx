@@ -1,12 +1,9 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import { StaggerList } from "@/shared/components/animation/stagger-list.component";
-import { InfiniteScrollSentinel } from "@/shared/components/infinite-scroll-sentinel.component";
-import { LoadMoreSkeleton } from "@/shared/components/load-more-skeleton.component";
 import { SiteContainer } from "@/shared/components/layout/site-container";
-import { nextPageFrom } from "@/shared/api/paging";
 import type { PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import { getBooks } from "../api/books.api";
@@ -39,22 +36,20 @@ export function BooksLibrary({ copy, initialPage, locale }: BooksLibraryProps) {
   const debouncedSearch = useDebouncedValue(searchTerm.trim());
   const isInitialQuery = debouncedSearch.length === 0 && activeCategory === "all";
 
-  const query = useInfiniteQuery({
+  const query = useQuery({
     queryKey: ["books", locale, debouncedSearch, activeCategory],
-    queryFn: ({ pageParam }) =>
+    queryFn: () =>
       getBooks({
         locale,
-        page: pageParam,
+        page: 1,
         perPage: initialPage.meta.perPage,
         search: debouncedSearch,
         category: activeCategory === "all" ? undefined : activeCategory,
       }),
-    initialPageParam: 1,
-    getNextPageParam: nextPageFrom,
-    initialData: isInitialQuery ? { pages: [initialPage], pageParams: [1] } : undefined,
+    initialData: isInitialQuery ? initialPage : undefined,
   });
 
-  const books = useMemo(() => query.data?.pages.flatMap((page) => page.data) ?? [], [query.data]);
+  const books = query.data?.data ?? [];
 
   const categoryOptions = useMemo<BooksCategoryOption[]>(() => {
     const categories = new Map<BookCategoryKey, string>();
@@ -69,13 +64,7 @@ export function BooksLibrary({ copy, initialPage, locale }: BooksLibraryProps) {
     ];
   }, [initialPage.data, copy.filters.all]);
 
-  const handleLoadMore = useCallback(() => {
-    if (query.hasNextPage && !query.isFetchingNextPage) {
-      void query.fetchNextPage();
-    }
-  }, [query]);
-
-  const showInitialLoading = query.isFetching && !query.isFetchingNextPage && books.length === 0;
+  const showInitialLoading = query.isFetching && books.length === 0;
   const showEmpty = !showInitialLoading && books.length === 0;
 
   return (
@@ -104,10 +93,13 @@ export function BooksLibrary({ copy, initialPage, locale }: BooksLibraryProps) {
           </StaggerList>
         ) : null}
 
-        {showInitialLoading ? <LoadMoreSkeleton /> : null}
+        {showInitialLoading ? (
+          <div className="mt-8 rounded-[18px] border border-border/60 bg-surface/80 p-6 text-center text-sm font-semibold text-foreground/60">
+            {locale === "ar" ? "جاري تحميل النتائج..." : "Loading results..."}
+          </div>
+        ) : null}
+
         {showEmpty ? <BooksEmptyState title={copy.labels.noResultsTitle} description={copy.labels.noResultsDescription} /> : null}
-        {query.isFetchingNextPage ? <LoadMoreSkeleton /> : null}
-        <InfiniteScrollSentinel enabled={Boolean(query.hasNextPage && !query.isFetchingNextPage)} onLoadMore={handleLoadMore} />
       </SiteContainer>
     </div>
   );
