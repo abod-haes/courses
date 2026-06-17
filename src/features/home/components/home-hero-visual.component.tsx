@@ -35,7 +35,6 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
             />
           </div>
 
-          <div className="pointer-events-none absolute inset-x-8 bottom-8 top-12 z-[1] rounded-full bg-primary/7 blur-3xl dark:bg-white/7" aria-hidden="true" />
 
           <Image
             alt={copy.visual.title}
@@ -48,7 +47,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
         </motion.div>
 
         <motion.div
-          className="absolute left-3 top-3 z-30 rounded-2xl border border-white/70 bg-white/94 px-3 py-2.5 shadow-[0_14px_34px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/82 sm:left-4 sm:top-4 sm:px-3.5 sm:py-3"
+          className="absolute left-3 top-3 z-30 rounded-2xl border border-white/70 bg-white/94 px-3 py-2.5 shadow-[0_14px_34px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/82 sm:left-4 sm:top-[-10%] sm:px-3.5 sm:py-3"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 14, scale: 0.96 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
@@ -65,7 +64,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
         </motion.div>
 
         <motion.div
-          className="absolute right-4 top-[27%] z-30 hidden h-12 w-12 items-center justify-center rounded-2xl border border-white/70 bg-white/92 text-primary shadow-[0_18px_44px_rgba(15,23,42,0.14)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/78 sm:flex"
+          className="absolute right-4 top-[27%] z-30 hidden h-12 w-12 items-center justify-center  text-primary  sm:flex"
           initial={shouldReduceMotion ? false : { opacity: 0, x: 18, scale: 0.9 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, x: 0, scale: 1 }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.55 }}
@@ -74,7 +73,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
         </motion.div>
 
         <motion.div
-          className="absolute bottom-2 left-3 right-3 z-30 rounded-[1.05rem] border border-white/70 bg-white/94 p-3 shadow-[0_18px_45px_rgba(15,23,42,0.14)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/82 sm:bottom-1 sm:left-4 sm:right-4 sm:rounded-[1.2rem] sm:p-3.5"
+          className="absolute bottom-2 left-3 right-3 z-30 rounded-[1.05rem] border border-white/70 bg-white/94 p-3 shadow-[0_18px_45px_rgba(15,23,42,0.14)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/82 sm:bottom-[-7%] sm:left-4 sm:right-4 sm:rounded-[1.2rem] sm:p-3.5"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 18, scale: 0.96 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.58, ease: [0.22, 1, 0.36, 1], delay: 0.7 }}
@@ -108,20 +107,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/58 to-transparent motion-safe:animate-[clinical-shimmer_2.7s_ease-in-out_infinite] dark:via-white/8" />
           </div>
 
-          <div className="mt-2.5 hidden gap-2 sm:grid sm:grid-cols-3">
-            {resources.map((resource, index) => {
-              const Icon = resourceIcons[index] ?? BookOpen;
 
-              return (
-                <div key={resource} className="flex items-center gap-2 rounded-2xl border border-slate-200/80 bg-white/76 p-2 shadow-[0_8px_24px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-white/6">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary dark:bg-primary/18">
-                    <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-                  </span>
-                  <p className="line-clamp-2 text-[10px] font-semibold leading-4 text-slate-700 dark:text-slate-100">{resource}</p>
-                </div>
-              );
-            })}
-          </div>
         </motion.div>
       </div>
     </div>

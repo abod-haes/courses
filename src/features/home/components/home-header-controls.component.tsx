@@ -14,7 +14,7 @@ export function HomeHeaderControls({ copy }: HomeHeaderControlsProps) {
   const languageLabel = locale === "ar" ? "AR" : "EN";
 
   return (
-    <div className="flex items-center gap-1.5 rounded-full bg-white/72 p-1 shadow-[0_10px_30px_rgba(15,23,42,0.06)] ring-1 ring-slate-200/70 backdrop-blur-xl dark:bg-white/10 dark:shadow-[0_12px_34px_rgba(0,0,0,0.2)] dark:ring-white/14">
+    <div className="flex items-center gap-1.5 ">
       <button
         type="button"
         onClick={toggleTheme}
@@ -27,9 +27,8 @@ export function HomeHeaderControls({ copy }: HomeHeaderControlsProps) {
           aria-hidden="true"
         >
           <span
-            className={`absolute left-0.5 top-0.5 flex h-6 w-6 items-center justify-center rounded-full shadow-[0_5px_14px_rgba(15,23,42,0.16)] transition-transform duration-300 ${
-              isDark ? "translate-x-5 bg-white text-slate-950" : "translate-x-0 bg-primary text-white"
-            }`}
+            className={`absolute left-0.5 top-0.5 flex h-6 w-6 items-center justify-center rounded-full shadow-[0_5px_14px_rgba(15,23,42,0.16)] transition-transform duration-300 ${isDark ? "translate-x-5 bg-white text-slate-950" : "translate-x-0 bg-primary text-white"
+              }`}
           >
             {isDark ? <SunMedium className="h-3.5 w-3.5" /> : <MoonStar className="h-3.5 w-3.5" />}
           </span>

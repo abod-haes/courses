@@ -118,9 +118,9 @@ export function HomeSection({ section, title, description, emptyState, items, ct
 
           <Button
             href={ctaHref}
-            variant="ghost"
+            variant="primary"
             size="sm"
-            className="view-all-button group inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-full border border-primary/[0.12] bg-primary px-5 py-3 text-sm font-semibold !text-white shadow-[0_14px_30px_rgba(0,74,198,0.18)] transition duration-300 hover:-translate-y-0.5 hover:bg-primary/[0.92] hover:!text-white hover:shadow-[0_18px_38px_rgba(0,74,198,0.24)] dark:border-primary/30 dark:bg-primary dark:!text-white dark:shadow-[0_16px_34px_rgba(0,74,198,0.22)] dark:hover:bg-primary/[0.92] dark:hover:!text-white sm:w-auto"
+
           >
             <span>{ctaLabel}</span>
             <span className="grid h-7 w-7 place-items-center rounded-full bg-white/[0.16] text-white transition duration-300 group-hover:translate-x-0.5 group-hover:bg-white/[0.24] dark:bg-white/[0.16] dark:text-white rtl:group-hover:-translate-x-0.5">
@@ -131,7 +131,7 @@ export function HomeSection({ section, title, description, emptyState, items, ct
       </motion.div>
 
       {visibleItems.length > 0 ? (
-        <StaggerList className="relative mt-7 grid gap-5 sm:grid-cols-2 lg:gap-6 xl:grid-cols-3">
+        <StaggerList className="relative mt-7 grid gap-5 sm:grid-cols-3 lg:gap-6 xl:grid-cols-3">
           {visibleItems.map((item) => (
             <div key={item.title} className="h-full min-w-0">
               <HomeCard item={item} section={section} copy={copy} />

@@ -122,16 +122,16 @@ function StatCard({
           <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
 
-        <div className={cn("space-y-2 text-center", isRtl && "sm:text-right")}>
+        <div className={cn("space-y-2 text-center")}>
           <motion.div
-            className="text-[2.6rem] leading-none font-semibold tracking-tight text-primary sm:text-[2.9rem]"
+            className="text-[2rem]  leading-none font-semibold tracking-tight text-primary sm:text-[2.2rem]"
             initial={false}
             animate={shouldReduceMotion ? undefined : { y: [0, -2, 0] }}
             transition={shouldReduceMotion ? undefined : { duration: 0.9, ease: "easeOut", delay: 0.1 }}
           >
             {displayValue}
           </motion.div>
-          <h3 className="text-[1.02rem] font-semibold tracking-tight text-foreground sm:text-[1.08rem]">{item.label}</h3>
+          <h3 className="text-[0.9rem] font-semibold tracking-tight text-foreground sm:text-[1rem]">{item.label}</h3>
           <p className="mx-auto max-w-[16rem] text-sm leading-6 text-foreground/65 dark:text-foreground/72">{item.description}</p>
         </div>
       </div>
@@ -179,7 +179,7 @@ export function HomeStatsSection({ copy }: HomeStatsSectionProps) {
 
         <div className="mt-8 sm:p-5 lg:p-6">
           <motion.div
-            className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4"
+            className="grid gap-5 max-sm:grid-cols-2  grid-cols-4 "
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}

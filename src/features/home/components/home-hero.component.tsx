@@ -78,36 +78,17 @@ export function HomeHero({ copy }: HomeHeroProps) {
           </motion.p>
 
           <motion.div variants={heroItemVariants} className="mt-5 grid gap-2.5 max-sm:px-3 sm:mx-auto sm:max-w-md grid-cols-2 lg:mx-0 lg:max-w-none lg:flex lg:flex-wrap lg:gap-3 xl:gap-3.5">
-            <Button href="#courses" variant="primary" className="group w-full rounded-2xl px-[1.125rem] shadow-[0_16px_36px_rgba(29,23,213,0.22)] hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(29,23,213,0.28)] sm:w-auto">
+            <Button href="#courses" variant="primary" className="group w-full sm:w-auto">
               <BookOpen className="h-4 w-4 transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-110" aria-hidden="true" />
               {copy.actions.browseCourses}
             </Button>
-            <Button href="#books" variant="secondary" className="group w-full rounded-2xl border-primary/18 bg-white/84 px-[1.125rem] shadow-[0_12px_28px_rgba(15,23,42,0.06)] hover:-translate-y-1 hover:border-primary/28 hover:bg-white dark:bg-white/8 sm:w-auto">
+            <Button href="#books" variant="secondary" className="group w-full sm:w-auto">
               <Sparkles className="h-4 w-4 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110" aria-hidden="true" />
               {copy.actions.exploreBooks}
             </Button>
           </motion.div>
 
-          {trustItems.length > 0 ? (
-            <motion.div variants={heroItemVariants} className="mx-auto mt-5 grid max-w-xl gap-2.5 sm:grid-cols-3 max-sm:hidden lg:mx-0 xl:gap-3">
-              {trustItems.map((item, index) => {
-                const Icon = trustIcons[index] ?? Shield;
 
-                return (
-                  <motion.div
-                    key={item}
-                    className="group flex items-center gap-2 rounded-2xl border border-white/76 bg-white/68 px-3 py-2.5 text-start text-[0.8125rem] font-medium text-foreground/72 shadow-[0_10px_26px_rgba(17,24,39,0.045)] backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-primary/18 hover:bg-white/88 hover:shadow-[0_16px_34px_rgba(17,24,39,0.07)] dark:border-white/10 dark:bg-white/6 dark:text-slate-200"
-                    whileHover={shouldReduceMotion ? undefined : { y: -3 }}
-                  >
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/8 text-primary transition duration-300 group-hover:scale-110 dark:bg-primary/18 dark:text-[#cdd3ff]">
-                      <Icon className="h-4 w-4" aria-hidden="true" />
-                    </span>
-                    <span className="line-clamp-2">{item}</span>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          ) : null}
         </motion.div>
 
         <motion.div
