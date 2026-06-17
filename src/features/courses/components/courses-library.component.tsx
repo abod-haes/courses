@@ -1,12 +1,9 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import { StaggerList } from "@/shared/components/animation/stagger-list.component";
-import { InfiniteScrollSentinel } from "@/shared/components/infinite-scroll-sentinel.component";
-import { LoadMoreSkeleton } from "@/shared/components/load-more-skeleton.component";
 import { SiteContainer } from "@/shared/components/layout/site-container";
-import { nextPageFrom } from "@/shared/api/paging";
 import type { PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import { getCourses } from "../api/courses.api";
@@ -38,22 +35,20 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
   const debouncedSearch = useDebouncedValue(searchTerm.trim());
   const isInitialQuery = debouncedSearch.length === 0 && activeCategory === "all";
 
-  const query = useInfiniteQuery({
+  const query = useQuery({
     queryKey: ["courses", locale, debouncedSearch, activeCategory],
-    queryFn: ({ pageParam }) =>
+    queryFn: () =>
       getCourses({
         locale,
-        page: pageParam,
+        page: 1,
         perPage: initialPage.meta.perPage,
         search: debouncedSearch,
         category: activeCategory === "all" ? undefined : activeCategory,
       }),
-    initialPageParam: 1,
-    getNextPageParam: nextPageFrom,
-    initialData: isInitialQuery ? { pages: [initialPage], pageParams: [1] } : undefined,
+    initialData: isInitialQuery ? initialPage : undefined,
   });
 
-  const courses = useMemo(() => query.data?.pages.flatMap((page) => page.data) ?? [], [query.data]);
+  const courses = query.data?.data ?? [];
 
   const categoryOptions = useMemo<CoursesCategoryOption[]>(() => {
     const categoryLabels = new Map<CourseCategoryKey, string>();
@@ -68,13 +63,7 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
     ];
   }, [copy.filters.all, initialPage.data]);
 
-  const handleLoadMore = useCallback(() => {
-    if (query.hasNextPage && !query.isFetchingNextPage) {
-      void query.fetchNextPage();
-    }
-  }, [query]);
-
-  const showInitialLoading = query.isFetching && !query.isFetchingNextPage && courses.length === 0;
+  const showInitialLoading = query.isFetching && courses.length === 0;
   const showEmpty = !showInitialLoading && courses.length === 0;
 
   return (
@@ -103,7 +92,11 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
           </StaggerList>
         ) : null}
 
-        {showInitialLoading ? <LoadMoreSkeleton /> : null}
+        {showInitialLoading ? (
+          <div className="mt-8 rounded-[18px] border border-border/60 bg-surface/80 p-6 text-center text-sm font-semibold text-foreground/60">
+            {locale === "ar" ? "جاري تحميل النتائج..." : "Loading results..."}
+          </div>
+        ) : null}
 
         {showEmpty ? (
           <div className="mt-8 rounded-[12px] border border-dashed border-border bg-surface p-10 text-center shadow-[0_8px_24px_rgba(17,24,39,0.04)]">
@@ -113,9 +106,6 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
             </p>
           </div>
         ) : null}
-
-        {query.isFetchingNextPage ? <LoadMoreSkeleton /> : null}
-        <InfiniteScrollSentinel enabled={Boolean(query.hasNextPage && !query.isFetchingNextPage)} onLoadMore={handleLoadMore} />
       </SiteContainer>
     </div>
   );
