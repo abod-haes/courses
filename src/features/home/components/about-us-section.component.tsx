@@ -47,7 +47,6 @@ export function AboutUsSection({ copy }: AboutUsSectionProps) {
           variants={containerVariants}
           viewport={{ once: true, amount: 0.35 }}
         >
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent dark:via-primary/30" />
           <div className="pointer-events-none absolute -left-24 top-4 h-64 w-64 rounded-full bg-primary/8 blur-3xl dark:bg-primary/16" />
           <div className="pointer-events-none absolute -right-20 bottom-0 h-56 w-56 rounded-full bg-primary/6 blur-3xl dark:bg-slate-50/5" />
 
