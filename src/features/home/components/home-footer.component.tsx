@@ -59,13 +59,13 @@ const socialIcons: Record<HomeMessages["footer"]["social"][number]["icon"], Comp
 
 export function HomeFooter({ copy }: HomeFooterProps) {
   return (
-    <footer className="relative overflow-hidden border-t border-border/60 bg-[linear-gradient(180deg,var(--section-bg),rgba(248,250,252,0.96))] dark:bg-section-bg">
+    <footer className="relative overflow-hidden  ">
       <div className="pointer-events-none h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" />
       <div className="pointer-events-none absolute -left-32 top-12 h-64 w-64 rounded-full bg-primary/7 blur-3xl" />
       <div className="pointer-events-none absolute -right-28 bottom-0 h-64 w-64 rounded-full bg-secondary/7 blur-3xl" />
 
-      <SiteContainer className="relative py-10 sm:py-12">
-        <div className="rounded-[1.6rem] border border-border/70 bg-surface/82 p-5 shadow-[0_16px_50px_rgba(15,23,42,0.05)] backdrop-blur md:p-7">
+      <SiteContainer className="relative w-full max-w-[100000px] py-10 mx-0  sm:py-12  px-0  p-5  backdrop-blur md:p-7">
+        <div className="">
           <div className="grid gap-9 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12">
             <div className="max-w-xl">
               <Link href="/" className="inline-flex items-center transition duration-200 hover:-translate-y-0.5 hover:opacity-90">
@@ -82,9 +82,9 @@ export function HomeFooter({ copy }: HomeFooterProps) {
 
               <p className="mt-4 max-w-md text-[0.9rem] leading-7 text-foreground/68">{copy.footer.description}</p>
 
-              <div className="mt-6">
+              <div className="mt-2 gap-2 flex items-center">
                 <p className="text-[0.68rem] font-black uppercase tracking-[0.16em] text-foreground/48">{copy.footer.socialTitle}</p>
-                <div className="mt-3 flex flex-wrap gap-2.5">
+                <div className="flex flex-wrap gap-2.5">
                   {copy.footer.social.map((item) => {
                     const Icon = socialIcons[item.icon];
 

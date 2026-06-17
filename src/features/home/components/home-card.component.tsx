@@ -42,7 +42,7 @@ export function HomeCard({ item, section, copy }: HomeCardProps) {
         <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-primary/7 blur-3xl transition duration-500 group-hover:scale-110 group-hover:bg-primary/10 dark:bg-primary/12" />
 
         <div className="p-3 pb-0 sm:p-4 sm:pb-0">
-          <div className="relative overflow-hidden rounded-[14px] border border-border/60 bg-surface-soft dark:border-white/10">
+          <div className="relative overflow-hidden rounded-md border border-border/60 bg-surface-soft dark:border-white/10">
             <div className={`absolute inset-0 bg-gradient-to-br ${sectionAccents[section]}`} />
             <img
               alt={item.alt}
@@ -79,7 +79,7 @@ export function HomeCard({ item, section, copy }: HomeCardProps) {
           </div>
 
           <div className="mt-5">
-            <Button href={item.href} variant="primary" size="sm" className="group/button w-full rounded-[10px]">
+            <Button href={item.href} variant="primary" size="sm" className="group/button w-full">
               {actionLabel}
               <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover/button:translate-x-0.5 group-hover/button:-translate-y-0.5 rtl:rotate-[-90deg]" aria-hidden="true" />
             </Button>

@@ -47,7 +47,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
         </motion.div>
 
         <motion.div
-          className="absolute left-3 top-3 z-30 rounded-2xl border border-white/70 bg-white/94 px-3 py-2.5 shadow-[0_14px_34px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/82 sm:left-4 sm:top-[-10%] sm:px-3.5 sm:py-3"
+          className="absolute left-3 top-3 z-30 rounded-lg border border-white/70 bg-white/94 px-3 py-2.5 shadow-[0_14px_34px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/82 sm:left-4 sm:top-[-10%] sm:px-3.5 sm:py-3"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 14, scale: 0.96 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
@@ -73,14 +73,14 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
         </motion.div>
 
         <motion.div
-          className="absolute bottom-2 left-3 right-3 z-30 rounded-[1.05rem] border border-white/70 bg-white/94 p-3 shadow-[0_18px_45px_rgba(15,23,42,0.14)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/82 sm:bottom-[-7%] sm:left-4 sm:right-4 sm:rounded-[1.2rem] sm:p-3.5"
+          className="absolute bottom-2 left-3 right-3 z-30 rounded-lg border border-white/70 bg-white/94 p-3 shadow-[0_18px_45px_rgba(15,23,42,0.14)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/82 sm:bottom-[-7%] sm:left-4 sm:right-4 sm:rounded-lg sm:p-3.5"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 18, scale: 0.96 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.58, ease: [0.22, 1, 0.36, 1], delay: 0.7 }}
         >
           <div className="mb-2.5 flex items-center justify-between gap-3 sm:gap-4">
             <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary dark:bg-primary/18 sm:h-10 sm:w-10">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary dark:bg-primary/18 sm:h-10 sm:w-10">
                 <Activity className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
               </span>
               <div className="min-w-0">
@@ -91,7 +91,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
             <CheckCircle2 className="h-5 w-5 shrink-0 text-primary sm:h-6 sm:w-6" aria-hidden="true" />
           </div>
 
-          <div className="relative h-7 overflow-hidden rounded-2xl border border-border/60 bg-slate-50 dark:border-white/10 dark:bg-white/5 sm:h-8">
+          <div className="relative h-7 overflow-hidden rounded-md border border-border/60 bg-slate-50 dark:border-white/10 dark:bg-white/5 sm:h-8">
             <svg className="absolute inset-0 h-full w-full text-primary/85" viewBox="0 0 320 48" fill="none" aria-hidden="true">
               <path
                 className="motion-safe:animate-[ecg-draw_2.8s_ease-in-out_infinite]"
