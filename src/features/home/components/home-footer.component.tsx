@@ -64,7 +64,7 @@ export function HomeFooter({ copy }: HomeFooterProps) {
       <div className="pointer-events-none absolute -left-32 top-12 h-64 w-64 rounded-full bg-primary/7 blur-3xl" />
       <div className="pointer-events-none absolute -right-28 bottom-0 h-64 w-64 rounded-full bg-secondary/7 blur-3xl" />
 
-      <SiteContainer className="relative w-full max-w-[100000px] py-10 mx-0  sm:py-12  px-0  p-5  backdrop-blur md:p-7">
+      <SiteContainer className="relative w-full py-10   sm:py-12  px-0  p-5  backdrop-blur md:p-7">
         <div className="">
           <div className="grid gap-9 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12">
             <div className="max-w-xl">

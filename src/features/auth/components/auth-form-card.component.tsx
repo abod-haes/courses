@@ -181,10 +181,7 @@ export function AuthFormCard({ mode, copy }: AuthFormCardProps) {
         </form>
 
         <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[0.72rem] text-foreground/56">
-          <Link href="/" className="inline-flex items-center gap-1.5 font-bold text-foreground/62 transition hover:text-primary">
-            <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" aria-hidden="true" />
-            {copy.homeLabel}
-          </Link>
+
 
           <span className="h-1 w-1 rounded-full bg-border" aria-hidden="true" />
 

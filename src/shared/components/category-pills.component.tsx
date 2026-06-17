@@ -20,7 +20,7 @@ export function CategoryPills({ items, activeKey, ariaLabel, onSelect }: Categor
       {items.map((item) => {
         const isActive = activeKey === item.key;
         const baseClasses =
-          "rounded-full px-4 py-2 text-xs !leading-none font-bold transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+          "rounded-full px-4 py-2 !text-sm !leading-none font-bold transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background";
         const activeClasses = "bg-primary text-white shadow-[0_8px_18px_rgba(29,23,213,0.16)]";
         const inactiveClasses = "border border-border bg-surface text-foreground/72 hover:-translate-y-0.5 hover:border-primary/20 hover:bg-primary/5 hover:text-primary";
 
