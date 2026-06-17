@@ -48,13 +48,14 @@ export async function AuthPage({ mode }: AuthPageProps) {
   const modeCopy = authCopy.modes[mode];
 
   return (
-    <main className="relative min-h-full overflow-hidden bg-[linear-gradient(135deg,rgba(248,250,255,0.98),rgba(239,246,255,0.82))] dark:bg-section-bg">
-      <div className="pointer-events-none absolute -left-20 top-6 h-64 w-64 rounded-full bg-primary/8 blur-3xl" />
-      <div className="pointer-events-none absolute -right-20 bottom-0 h-72 w-72 rounded-full bg-cyan-300/10 blur-3xl" />
+    <main className="relative overflow-hidden bg-[linear-gradient(135deg,rgba(248,250,255,0.99),rgba(242,246,255,0.92))] dark:bg-section-bg">
+      <div className="pointer-events-none absolute -left-24 top-8 h-56 w-56 rounded-full bg-primary/7 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-4 h-60 w-60 rounded-full bg-primary/6 blur-3xl" />
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[30rem] w-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/45 blur-3xl" />
 
       <SiteContainer
         as="section"
-        className="relative grid h-min max-w-[1060px] items-center gap-5 py-5 sm:py-6  xl:py-7"
+        className="relative flex min-h-[calc(100dvh-4.25rem)] max-w-[980px] items-center justify-center py-4 sm:py-5 lg:py-6"
       >
         <AuthFormCard mode={mode} copy={modeCopy} />
       </SiteContainer>
