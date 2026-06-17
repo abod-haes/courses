@@ -70,7 +70,7 @@ export function MedicalPageLoader({ messages = defaultMessages, label = "IASS" }
 
         <div className="mt-5 space-y-2">
           <p className="text-label-caps uppercase tracking-[0.28em] text-primary">Clinical Loading</p>
-          <h1 className="font-display text-3xl font-bold tracking-[-0.03em] text-on-surface sm:text-4xl">{label}</h1>
+          <h1 className=" text-3xl font-bold tracking-[-0.03em] text-on-surface sm:text-4xl">{label}</h1>
         </div>
 
         <div className="mx-auto mt-7 w-full max-w-sm overflow-hidden rounded-full bg-primary-soft p-2">

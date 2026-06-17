@@ -68,13 +68,13 @@ export function AuthFormCard({ mode, copy }: AuthFormCardProps) {
       initial={{ opacity: 0, y: 18, scale: 0.985 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className="relative mx-auto w-full max-w-[25.5rem] overflow-hidden rounded-[1.25rem] border border-border/70 bg-surface/96 p-4 shadow-[0_18px_52px_rgba(17,24,39,0.07)] backdrop-blur sm:max-w-[27rem] sm:p-5 lg:p-6"
+      className="relative mx-auto w-full max-w-[25.5rem] overflow-hidden rounded-lg border border-border/70 bg-surface/96 p-4 shadow-[0_18px_52px_rgba(17,24,39,0.07)] backdrop-blur sm:max-w-[27rem] h-full sm:p-5 lg:p-6"
     >
       <div className="pointer-events-none absolute -right-28 -top-28 h-52 w-52 rounded-full bg-primary/7 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-28 left-4 h-52 w-52 rounded-full bg-cyan-400/8 blur-3xl" />
 
       <div className="relative z-10">
-        <div className="mb-5 flex items-center justify-between gap-3">
+        <div className="mb-5 flex items-center justify-center gap-3">
           <Link href="/" className="inline-flex items-center transition duration-200 hover:-translate-y-0.5 hover:opacity-90">
             <span className="relative block h-7 w-20 sm:h-8 sm:w-24">
               <Image
@@ -88,21 +88,12 @@ export function AuthFormCard({ mode, copy }: AuthFormCardProps) {
             </span>
           </Link>
 
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/90 px-2.5 py-1.5 text-[0.7rem] font-bold text-foreground/62 transition duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:bg-primary/5 hover:text-primary"
-          >
-            <Home className="h-3.5 w-3.5" aria-hidden="true" />
-            {copy.homeLabel}
-          </Link>
+
         </div>
 
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/10 bg-primary/6 px-2.5 py-1 text-[0.62rem] font-black uppercase tracking-[0.12em] text-primary">
-          <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-          {copy.eyebrow}
-        </span>
 
-        <h1 className="mt-4 font-display text-[1.55rem] font-black leading-tight tracking-[-0.035em] text-foreground sm:text-[1.85rem]">
+
+        <h1 className="mt-4 text-[1.55rem] font-black leading-tight tracking-[-0.035em] text-foreground sm:text-[1.85rem]">
           {copy.title}
         </h1>
         <p className="mt-2 max-w-md text-[0.82rem] leading-6 text-foreground/62">

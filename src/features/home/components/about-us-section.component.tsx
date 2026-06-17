@@ -39,14 +39,15 @@ export function AboutUsSection({ copy }: AboutUsSectionProps) {
 
   return (
     <section id="about-us" className="overflow-hidden bg-section-bg py-12 sm:py-16 lg:py-20">
-      <SiteContainer>
-        <motion.div
-          className="relative overflow-hidden rounded-[28px] border border-border/70 bg-surface p-5 shadow-[0_16px_44px_rgba(17,24,39,0.05)] dark:border-white/10 dark:bg-slate-900/72 dark:shadow-[0_22px_60px_rgba(0,0,0,0.28)] sm:p-6 lg:p-8"
-          initial={shouldReduceMotion ? false : "hidden"}
-          whileInView={shouldReduceMotion ? undefined : "visible"}
-          variants={containerVariants}
-          viewport={{ once: true, amount: 0.35 }}
-        >
+
+      <motion.div
+        className="relative overflow-hidden sm:p-6 lg:p-8"
+        initial={shouldReduceMotion ? false : "hidden"}
+        whileInView={shouldReduceMotion ? undefined : "visible"}
+        variants={containerVariants}
+        viewport={{ once: true, amount: 0.35 }}
+      >
+        <SiteContainer>
           <div className="pointer-events-none absolute -left-24 top-4 h-64 w-64 rounded-full bg-primary/8 blur-3xl dark:bg-primary/16" />
           <div className="pointer-events-none absolute -right-20 bottom-0 h-56 w-56 rounded-full bg-primary/6 blur-3xl dark:bg-slate-50/5" />
 
@@ -71,7 +72,7 @@ export function AboutUsSection({ copy }: AboutUsSectionProps) {
                 return (
                   <div
                     key={item.label}
-                    className="rounded-[20px] border border-border/70 bg-white p-4 text-start shadow-[0_8px_22px_rgba(17,24,39,0.04)] dark:border-white/10 dark:bg-white/5 dark:shadow-none"
+                    className="rounded-lg border border-border/70 bg-white p-4 text-start shadow-[0_8px_22px_rgba(17,24,39,0.04)] dark:border-white/10 dark:bg-white/5 dark:shadow-none"
                   >
                     <div className="flex items-start gap-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-primary/15">
@@ -87,8 +88,8 @@ export function AboutUsSection({ copy }: AboutUsSectionProps) {
               })}
             </motion.div>
           </div>
-        </motion.div>
-      </SiteContainer>
+        </SiteContainer>
+      </motion.div>
     </section>
   );
 }

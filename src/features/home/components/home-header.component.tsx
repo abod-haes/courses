@@ -141,7 +141,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                     key={item.href}
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
-                    className={`group relative flex items-center rounded-full  py-1.5 text-[0.66rem] font-semibold leading-none transition duration-200 ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background  min-[1280px]:text-[0.72rem] gap-1.5 px-3 min-[1500px]:py-2 min-[1500px]:text-[0.84rem] ${isActive
+                    className={`group relative flex items-center rounded-md  py-1.5 text-[0.66rem] font-semibold leading-none transition duration-200 ease-out hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background  min-[1280px]:text-[0.72rem] gap-1.5 px-3 min-[1500px]:py-2 min-[1500px]:text-[0.84rem] ${isActive
                       ? "bg-primary !text-white shadow-[0_10px_26px_rgba(29,23,213,0.18)] hover:!text-white dark:bg-primary dark:!text-white dark:shadow-[0_10px_30px_rgba(0,74,198,0.22)]"
                       : "text-foreground/68 hover:bg-white/72 hover:text-primary hover:shadow-[0_8px_20px_rgba(15,23,42,0.06)] dark:text-white/68 dark:hover:bg-white/12 dark:hover:text-white"
                       }`}
@@ -159,7 +159,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
             <div className="ms-auto hidden shrink-0 items-center gap-1 min-[1120px]:flex min-[1500px]:gap-2.5">
               <Button
-                href="/#courses"
+                href="/login"
                 className="hidden leading-none shadow-[0_10px_24px_rgba(29,23,213,0.16)] min-[1200px]:inline-flex min-[1500px]:h-9 min-[1500px]:px-3 min-[1500px]:text-[0.84rem]"
                 variant="primary"
                 size="sm"

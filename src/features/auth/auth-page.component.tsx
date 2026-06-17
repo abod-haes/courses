@@ -7,7 +7,6 @@ import type { Locale } from "@/shared/lib/types";
 import { authCopyByLocale, getAuthModeCopy } from "./auth.data";
 import type { AuthMode } from "./auth.types";
 import { AuthFormCard } from "./components/auth-form-card.component";
-import { AuthVisual } from "./components/auth-visual.component";
 
 type AuthPageProps = Readonly<{
   mode: AuthMode;
@@ -55,9 +54,8 @@ export async function AuthPage({ mode }: AuthPageProps) {
 
       <SiteContainer
         as="section"
-        className="relative grid min-h-[calc(100dvh-4.25rem)] max-w-[1060px] items-center gap-5 py-5 sm:py-6 xl:grid-cols-[minmax(0,0.92fr)_minmax(22rem,0.72fr)] xl:gap-6 xl:py-7"
+        className="relative grid h-min max-w-[1060px] items-center gap-5 py-5 sm:py-6  xl:py-7"
       >
-        <AuthVisual copy={authCopy.visual} />
         <AuthFormCard mode={mode} copy={modeCopy} />
       </SiteContainer>
     </main>
