@@ -50,7 +50,7 @@ function AuthInput({ field, config }: Readonly<{ field: AuthFieldCopy; config: F
       <span className="mb-1.5 block text-[0.68rem] font-bold leading-none text-foreground/56">
         {field.label}
       </span>
-      <span className="flex h-[2.35rem] items-center gap-2.5 rounded-full border border-border/75 bg-background/92 px-3.5 text-foreground/74 shadow-[0_5px_16px_rgba(17,24,39,0.025)] transition duration-200 focus-within:border-primary/45 focus-within:bg-surface focus-within:ring-3 focus-within:ring-primary/10 sm:h-[2.45rem]">
+      <span className="flex h-[2.35rem] items-center gap-2.5 rounded-md border border-border/75 bg-background/92 px-3.5 text-foreground/74 shadow-[0_5px_16px_rgba(17,24,39,0.025)] transition duration-200 focus-within:border-primary/45 focus-within:bg-surface focus-within:ring-3 focus-within:ring-primary/10 sm:h-[2.45rem]">
         <Icon className="h-3.5 w-3.5 shrink-0 text-primary/72" aria-hidden="true" />
         <Input
           id={inputId}
@@ -174,7 +174,7 @@ export function AuthFormCard({ mode, copy }: AuthFormCardProps) {
             </p>
           ) : null}
 
-          <Button type="submit" className="mt-4 h-[2.55rem] w-full rounded-full text-[0.8rem] font-black shadow-[0_14px_30px_rgba(29,23,213,0.16)] sm:h-[2.7rem]" size="md">
+          <Button type="submit" className="mt-4 h-[2.55rem] w-full  text-[0.8rem] font-black shadow-[0_14px_30px_rgba(29,23,213,0.16)] sm:h-[2.7rem]" size="md">
             {copy.submitLabel}
             <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
           </Button>
