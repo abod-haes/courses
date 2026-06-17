@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Lock, Mail, UserRound } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, Lock, Mail, UserRound } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -38,6 +39,9 @@ const modeFields: Record<AuthMode, readonly FieldConfig[]> = {
 
 function AuthInput({ field, config }: Readonly<{ field: AuthFieldCopy; config: FieldConfig }>) {
   const Icon = config.icon;
+  const isPassword = config.type === "password";
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const inputType = isPassword && isPasswordVisible ? "text" : config.type;
 
   return (
     <label className={cn("block", config.className)}>
@@ -47,12 +51,27 @@ function AuthInput({ field, config }: Readonly<{ field: AuthFieldCopy; config: F
       <span className="flex h-[2.35rem] items-center gap-2.5 rounded-full border border-border/75 bg-background/92 px-3.5 text-foreground/74 shadow-[0_5px_16px_rgba(17,24,39,0.025)] transition duration-200 focus-within:border-primary/45 focus-within:bg-surface focus-within:ring-3 focus-within:ring-primary/10 sm:h-[2.45rem]">
         <Icon className="h-3.5 w-3.5 shrink-0 text-primary/72" aria-hidden="true" />
         <input
-          type={config.type}
+          type={inputType}
           name={config.key}
           autoComplete={config.autoComplete}
           placeholder={field.placeholder}
-          className="w-full bg-transparent text-[0.78rem] font-medium text-foreground outline-none placeholder:text-[0.76rem] placeholder:font-medium placeholder:text-foreground/32 sm:text-[0.8rem] sm:placeholder:text-[0.78rem]"
+          className="w-full min-w-0 bg-transparent text-[0.78rem] font-medium text-foreground outline-none placeholder:text-[0.76rem] placeholder:font-medium placeholder:text-foreground/32 sm:text-[0.8rem] sm:placeholder:text-[0.78rem]"
         />
+        {isPassword ? (
+          <button
+            type="button"
+            className="-me-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-primary/58 transition duration-200 hover:bg-primary/8 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25"
+            aria-label={isPasswordVisible ? "Hide password" : "Show password"}
+            aria-pressed={isPasswordVisible}
+            onClick={() => setIsPasswordVisible((currentValue) => !currentValue)}
+          >
+            {isPasswordVisible ? (
+              <EyeOff className="h-3.5 w-3.5" aria-hidden="true" />
+            ) : (
+              <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+            )}
+          </button>
+        ) : null}
       </span>
     </label>
   );
