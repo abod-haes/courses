@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { ArrowLeft, ArrowRight, Eye, EyeOff, Lock, Mail, UserRound } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, Lock, Mail, UserRound } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
 import { cn } from "@/shared/lib/utils";
 import type { AuthFieldCopy, AuthFieldKey, AuthMode, AuthModeCopy } from "../auth.types";
 
@@ -42,20 +43,22 @@ function AuthInput({ field, config }: Readonly<{ field: AuthFieldCopy; config: F
   const isPassword = config.type === "password";
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const inputType = isPassword && isPasswordVisible ? "text" : config.type;
+  const inputId = `auth-${config.key}`;
 
   return (
-    <label className={cn("block", config.className)}>
+    <label className={cn("block", config.className)} htmlFor={inputId}>
       <span className="mb-1.5 block text-[0.68rem] font-bold leading-none text-foreground/56">
         {field.label}
       </span>
       <span className="flex h-[2.35rem] items-center gap-2.5 rounded-full border border-border/75 bg-background/92 px-3.5 text-foreground/74 shadow-[0_5px_16px_rgba(17,24,39,0.025)] transition duration-200 focus-within:border-primary/45 focus-within:bg-surface focus-within:ring-3 focus-within:ring-primary/10 sm:h-[2.45rem]">
         <Icon className="h-3.5 w-3.5 shrink-0 text-primary/72" aria-hidden="true" />
-        <input
+        <Input
+          id={inputId}
           type={inputType}
           name={config.key}
           autoComplete={config.autoComplete}
           placeholder={field.placeholder}
-          className="w-full min-w-0 bg-transparent text-[0.78rem] font-medium text-foreground outline-none placeholder:text-[0.76rem] placeholder:font-medium placeholder:text-foreground/32 sm:text-[0.8rem] sm:placeholder:text-[0.78rem]"
+          className="h-auto min-w-0 flex-1 border-0 bg-transparent px-0 py-0 text-[0.78rem] font-medium text-foreground shadow-none outline-none placeholder:text-[0.76rem] placeholder:font-medium placeholder:text-foreground/32 focus:border-transparent focus:bg-transparent focus:ring-0 sm:text-[0.8rem] sm:placeholder:text-[0.78rem]"
         />
         {isPassword ? (
           <button
@@ -73,6 +76,33 @@ function AuthInput({ field, config }: Readonly<{ field: AuthFieldCopy; config: F
           </button>
         ) : null}
       </span>
+    </label>
+  );
+}
+
+function AuthCheckbox({ children, variant = "plain" }: Readonly<{ children: ReactNode; variant?: "plain" | "card" }>) {
+  const isCard = variant === "card";
+
+  return (
+    <label
+      className={cn(
+        "group inline-flex cursor-pointer items-start text-start text-foreground/60 transition duration-200 hover:text-foreground/78",
+        isCard
+          ? "mt-3 w-full gap-2.5 rounded-[1rem] border border-border/65 bg-background/72 p-2.5 text-[0.68rem] leading-5 hover:border-primary/25 hover:bg-surface"
+          : "items-center gap-2 text-[0.7rem] font-semibold",
+      )}
+    >
+      <input type="checkbox" className="peer sr-only" />
+      <span
+        className={cn(
+          "mt-0.5 inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded border border-border bg-surface text-white transition duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-primary/25 peer-checked:border-primary peer-checked:bg-primary",
+          !isCard && "mt-0",
+        )}
+        aria-hidden="true"
+      >
+        <Check className="h-2.5 w-2.5" aria-hidden="true" />
+      </span>
+      <span>{children}</span>
     </label>
   );
 }
@@ -128,13 +158,7 @@ export function AuthFormCard({ mode, copy }: AuthFormCardProps) {
 
           {isLogin ? (
             <div className="mt-3 flex items-center justify-between gap-3 text-[0.7rem] font-semibold text-foreground/60">
-              <label className="inline-flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  className="h-3.5 w-3.5 rounded border-border text-primary accent-[var(--primary)]"
-                />
-                <span>{copy.rememberLabel}</span>
-              </label>
+              <AuthCheckbox>{copy.rememberLabel}</AuthCheckbox>
 
               <Link href="/forgot-password" className="font-bold text-primary transition hover:text-primary-strong">
                 {copy.forgotPasswordLabel}
@@ -142,15 +166,7 @@ export function AuthFormCard({ mode, copy }: AuthFormCardProps) {
             </div>
           ) : null}
 
-          {isRegister && copy.termsLabel ? (
-            <label className="mt-3 flex items-start gap-2.5 rounded-[1rem] border border-border/65 bg-background/72 p-2.5 text-start text-[0.68rem] leading-5 text-foreground/60">
-              <input
-                type="checkbox"
-                className="mt-0.5 h-3.5 w-3.5 rounded border-border text-primary accent-[var(--primary)]"
-              />
-              <span>{copy.termsLabel}</span>
-            </label>
-          ) : null}
+          {isRegister && copy.termsLabel ? <AuthCheckbox variant="card">{copy.termsLabel}</AuthCheckbox> : null}
 
           {copy.helperText ? (
             <p className="mt-3 rounded-[1rem] border border-primary/10 bg-primary/6 p-2.5 text-[0.7rem] leading-5 text-foreground/60">
