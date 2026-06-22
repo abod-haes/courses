@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { SiteContainer } from "@/shared/components/layout/site-container";
-import { createJsonLdScript } from "@/shared/lib/helpers/jsonld.helper";
 import { localeCookieName } from "@/shared/lib/preferences";
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
 import type { Locale } from "@/shared/lib/types";
+import { getHomeCatalog } from "./api/home.api";
 import { getHomeMessages } from "./home.data";
 import { HomeHero } from "./components/home-hero.component";
 import { AboutUsSection } from "./components/about-us-section.component";
@@ -52,22 +52,7 @@ export async function HomePage() {
   const localeCookie = cookieStore.get(localeCookieName)?.value;
   const locale = getLocaleFromCookies(localeCookie);
   const copy = getHomeMessages(locale);
-
-  const jsonLd = [
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      name: copy.brand,
-      url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-      description: copy.meta.description,
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      name: copy.brand,
-      url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-    },
-  ];
+  const catalog = await getHomeCatalog(locale).catch(() => copy.catalog);
 
   return (
     <div className="home-scroll-area h-full overflow-y-auto">
@@ -81,7 +66,7 @@ export async function HomePage() {
           title={copy.sections.courses.title}
           description={copy.sections.courses.description}
           emptyState={copy.sections.courses.emptyState}
-          items={copy.catalog.courses}
+          items={catalog.courses}
           ctaLabel={copy.actions.viewAll}
           ctaHref="/courses"
           copy={copy}
@@ -92,7 +77,7 @@ export async function HomePage() {
           title={copy.sections.books.title}
           description={copy.sections.books.description}
           emptyState={copy.sections.books.emptyState}
-          items={copy.catalog.books}
+          items={catalog.books}
           ctaLabel={copy.actions.viewAll}
           ctaHref="/books"
           copy={copy}
@@ -104,13 +89,12 @@ export async function HomePage() {
           title={copy.sections.articles.title}
           description={copy.sections.articles.description}
           emptyState={copy.sections.articles.emptyState}
-          items={copy.catalog.articles}
+          items={catalog.articles}
           ctaLabel={copy.actions.viewAll}
           ctaHref="/articles"
           copy={copy}
         />
       </SiteContainer>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: createJsonLdScript(jsonLd) }} />
     </div>
   );
 }
