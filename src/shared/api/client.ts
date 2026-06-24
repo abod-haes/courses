@@ -1,3 +1,5 @@
+import { websiteSessionKey } from "./website-session";
+
 type SearchParamValue = string | number | boolean | null | undefined;
 
 type ApiFetchOptions = RequestInit &
@@ -86,12 +88,34 @@ async function readErrorDetails(response: Response): Promise<unknown> {
   return response.text().catch(() => null);
 }
 
+function getClientSession(): string | null {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(websiteSessionKey);
+}
+
+function redirectClientToLogin(): void {
+  if (typeof window === "undefined") return;
+
+  if (window.location.pathname === "/login") return;
+
+  const currentPath = `${window.location.pathname}${window.location.search}`;
+  window.localStorage.removeItem(websiteSessionKey);
+  window.location.assign(`/login?redirectTo=${encodeURIComponent(currentPath)}`);
+}
+
 export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
   const { searchParams, headers: initHeaders, ...init } = options;
   const headers = new Headers(initHeaders);
 
   if (!headers.has("Accept")) {
     headers.set("Accept", "application/json");
+  }
+
+  if (!headers.has("Authorization")) {
+    const session = getClientSession();
+    if (session) {
+      headers.set("Authorization", `Bearer ${session}`);
+    }
   }
 
   const response = await fetch(buildApiUrl(path, searchParams), {
@@ -101,6 +125,11 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
 
   if (!response.ok) {
     const details = await readErrorDetails(response);
+
+    if (response.status === 401) {
+      redirectClientToLogin();
+    }
+
     throw new ApiError(`API request failed with status ${response.status}`, response.status, details);
   }
 
