@@ -6,6 +6,7 @@ import { Reveal } from "@/shared/components/animation/reveal.component";
 import { StaggerList } from "@/shared/components/animation/stagger-list.component";
 import { SiteContainer } from "@/shared/components/layout/site-container";
 import { CatalogPagination } from "@/shared/components/catalog/catalog-pagination.component";
+import { getCatalogCategoryOptions } from "@/shared/api/categories.api";
 import type { PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import { getArticles } from "../api/articles.api";
@@ -87,10 +88,7 @@ export function ArticlesLibrary({ copy, initialPage, locale }: ArticlesLibraryPr
     initialData: isInitialQuery ? initialPage : undefined,
   });
 
-  const pageData = query.data ?? initialPage;
-  const articles = pageData.data;
-
-  const categoryOptions = useMemo<ArticleCategoryOption[]>(() => {
+  const fallbackCategoryOptions = useMemo<ArticleCategoryOption[]>(() => {
     const categories = new Map<string, string>();
 
     initialPage.data.forEach((article) => {
@@ -103,6 +101,16 @@ export function ArticlesLibrary({ copy, initialPage, locale }: ArticlesLibraryPr
     ];
   }, [initialPage.data, copy.filters.allCategories]);
 
+  const categoriesQuery = useQuery({
+    queryKey: ["catalog-categories", "article", locale],
+    queryFn: () => getCatalogCategoryOptions("article", locale, copy.filters.allCategories),
+    initialData: fallbackCategoryOptions,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const pageData = query.data ?? initialPage;
+  const articles = pageData.data;
+  const categoryOptions = categoriesQuery.data ?? fallbackCategoryOptions;
   const showInitialLoading = query.isFetching && articles.length === 0;
   const showEmpty = !showInitialLoading && articles.length === 0;
 
