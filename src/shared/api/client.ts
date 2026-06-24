@@ -39,18 +39,56 @@ function resolveSiteUrl(): string {
   return "http://localhost:3000";
 }
 
-function resolveApiBaseUrl(): string {
-  const configuredApiUrl = process.env.API_BASE_URL?.trim() ?? process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+function normalizeApiBaseUrl(baseUrl: string): string {
+  const trimmed = baseUrl.trim().replace(/\/$/, "");
 
-  if (configuredApiUrl) {
-    return configuredApiUrl;
+  if (!trimmed || trimmed.startsWith("/")) {
+    return trimmed;
   }
 
+  const withScheme = withProtocol(trimmed);
+
+  try {
+    const url = new URL(withScheme);
+    const pathname = url.pathname.replace(/\/$/, "");
+
+    if (!pathname || pathname === "") {
+      url.pathname = "/api";
+      return url.toString().replace(/\/$/, "");
+    }
+
+    return url.toString().replace(/\/$/, "");
+  } catch {
+    return withScheme;
+  }
+}
+
+function resolveMockBaseUrl(): string {
   if (typeof window !== "undefined") {
     return "/api/mock";
   }
 
   return `${resolveSiteUrl()}/api/mock`;
+}
+
+function shouldUseMockFallback(): boolean {
+  return process.env.API_ENABLE_MOCK_FALLBACK !== "false" && process.env.NEXT_PUBLIC_API_ENABLE_MOCK_FALLBACK !== "false";
+}
+
+function resolveApiBaseUrls(): { primary: string; fallback: string | null } {
+  const configuredApiUrl = process.env.API_BASE_URL?.trim() ?? process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+  const mockBaseUrl = resolveMockBaseUrl();
+
+  if (!configuredApiUrl) {
+    return { primary: mockBaseUrl, fallback: null };
+  }
+
+  const primary = normalizeApiBaseUrl(configuredApiUrl);
+
+  return {
+    primary,
+    fallback: shouldUseMockFallback() && primary !== mockBaseUrl ? mockBaseUrl : null,
+  };
 }
 
 function appendSearchParams(url: string, params?: Record<string, SearchParamValue>): string {
@@ -67,15 +105,15 @@ function appendSearchParams(url: string, params?: Record<string, SearchParamValu
   return query ? `${url}${url.includes("?") ? "&" : "?"}${query}` : url;
 }
 
-function buildApiUrl(path: string, searchParams?: Record<string, SearchParamValue>): string {
-  const baseUrl = resolveApiBaseUrl().replace(/\/$/, "");
+function buildApiUrl(baseUrl: string, path: string, searchParams?: Record<string, SearchParamValue>): string {
+  const normalizedBaseUrl = baseUrl.replace(/\/$/, "");
   const apiPath = path.startsWith("/") ? path : `/${path}`;
 
-  if (baseUrl.startsWith("/")) {
-    return appendSearchParams(`${baseUrl}${apiPath}`, searchParams);
+  if (normalizedBaseUrl.startsWith("/")) {
+    return appendSearchParams(`${normalizedBaseUrl}${apiPath}`, searchParams);
   }
 
-  return appendSearchParams(new URL(`${baseUrl}${apiPath}`).toString(), searchParams);
+  return appendSearchParams(new URL(`${normalizedBaseUrl}${apiPath}`).toString(), searchParams);
 }
 
 async function readErrorDetails(response: Response): Promise<unknown> {
@@ -103,9 +141,18 @@ function redirectClientToLogin(): void {
   window.location.assign(`/login?redirectTo=${encodeURIComponent(currentPath)}`);
 }
 
+function isNetworkFailure(error: unknown): boolean {
+  return error instanceof TypeError || (error instanceof Error && /fetch failed|network|failed/i.test(error.message));
+}
+
+async function sendRequest(url: string, init: RequestInit): Promise<Response> {
+  return fetch(url, init);
+}
+
 export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
   const { searchParams, headers: initHeaders, ...init } = options;
   const headers = new Headers(initHeaders);
+  const { primary, fallback } = resolveApiBaseUrls();
 
   if (!headers.has("Accept")) {
     headers.set("Accept", "application/json");
@@ -118,10 +165,27 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     }
   }
 
-  const response = await fetch(buildApiUrl(path, searchParams), {
+  const requestInit: RequestInit = {
+    cache: "no-store",
     ...init,
     headers,
-  });
+  };
+
+  let response: Response;
+
+  try {
+    response = await sendRequest(buildApiUrl(primary, path, searchParams), requestInit);
+  } catch (error) {
+    if (!fallback || !isNetworkFailure(error)) {
+      throw new ApiError("Unable to reach the API server.", 0, error);
+    }
+
+    response = await sendRequest(buildApiUrl(fallback, path, searchParams), requestInit);
+  }
+
+  if (!response.ok && fallback && response.status >= 500) {
+    response = await sendRequest(buildApiUrl(fallback, path, searchParams), requestInit);
+  }
 
   if (!response.ok) {
     const details = await readErrorDetails(response);
