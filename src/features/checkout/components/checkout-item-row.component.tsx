@@ -38,13 +38,13 @@ export function CheckoutItemRow({ item, copy, compact = false }: CheckoutItemRow
           <div className="mt-3 flex items-center justify-between gap-3">
             <p className="text-sm font-black text-foreground">{item.price}</p>
             {!compact ? (
-              <button
-                type="button"
+              <Link
+                href="/checkout?empty=1"
                 className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[0.68rem] font-bold text-foreground/45 transition hover:bg-danger/10 hover:text-danger"
               >
                 <X className="h-3.5 w-3.5" aria-hidden="true" />
                 {copy.checkout.remove}
-              </button>
+              </Link>
             ) : null}
           </div>
         </div>
