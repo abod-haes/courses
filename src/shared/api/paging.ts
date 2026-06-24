@@ -1,6 +1,6 @@
 import type { PaginatedEnvelope, PaginationMeta } from "./types";
 
-export const defaultCatalogPerPage = 48;
+export const defaultCatalogPerPage = 8;
 
 export function nextPageFrom<T>(lastPage: PaginatedEnvelope<T>): number | undefined {
   return lastPage.meta.currentPage < lastPage.meta.lastPage ? lastPage.meta.currentPage + 1 : undefined;
