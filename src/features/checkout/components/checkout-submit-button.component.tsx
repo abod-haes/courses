@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { LockKeyhole } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { websiteSessionKey } from "@/shared/api/website-session";
-import { createCheckoutSession } from "../checkout.api";
 import type { CheckoutItemView } from "../checkout.types";
 
 type CheckoutSubmitButtonProps = Readonly<{
@@ -14,12 +13,17 @@ type CheckoutSubmitButtonProps = Readonly<{
   loginRequiredLabel: string;
 }>;
 
+function paymentUnavailableMessage(): string {
+  const isArabic = document.documentElement.lang === "ar" || document.documentElement.dir === "rtl";
+  return isArabic ? "لم يتم بناء ميزة الدفع بعد. سنربط Stripe عندما يجهز الباك." : "Payment has not been built yet. Stripe will be connected when the backend is ready.";
+}
+
 export function CheckoutSubmitButton({ items, label, loginRequiredLabel }: CheckoutSubmitButtonProps) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleCheckout() {
+  function handleCheckout() {
     const hasSession = window.localStorage.getItem(websiteSessionKey);
     const currentPath = `${window.location.pathname}${window.location.search}`;
 
@@ -31,13 +35,10 @@ export function CheckoutSubmitButton({ items, label, loginRequiredLabel }: Check
     setIsPending(true);
     setError(null);
 
-    try {
-      const checkoutUrl = await createCheckoutSession(items);
-      window.location.assign(checkoutUrl);
-    } catch {
-      setError(loginRequiredLabel);
+    window.setTimeout(() => {
+      setError(paymentUnavailableMessage() || loginRequiredLabel);
       setIsPending(false);
-    }
+    }, 180);
   }
 
   return (
@@ -46,7 +47,7 @@ export function CheckoutSubmitButton({ items, label, loginRequiredLabel }: Check
         <LockKeyhole className="h-4 w-4" aria-hidden="true" />
         {isPending ? "..." : label}
       </Button>
-      {error ? <p className="mt-2 text-center text-xs font-semibold text-danger">{error}</p> : null}
+      {error ? <p className="mt-2 rounded-[10px] border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-center text-xs font-semibold text-amber-700 dark:text-amber-300">{error}</p> : null}
     </div>
   );
 }
