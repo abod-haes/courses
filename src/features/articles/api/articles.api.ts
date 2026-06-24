@@ -10,7 +10,7 @@ function toArticleSummary(article: Article): ArticleSummary {
     title: article.title,
     excerpt: article.excerpt,
     category: article.category.name,
-    author: article.author,
+    author: article.author ?? "IASS Academic Team",
     image: article.image?.url ?? "/images/course-1.png",
     alt: article.image?.alt ?? article.title,
     publishedAt: article.publishedAt ?? new Date().toISOString(),
@@ -45,7 +45,7 @@ export async function getArticleBySlug(slug: string, locale: Locale): Promise<Ar
 
     return {
       ...toArticleSummary(response.data),
-      body: response.data.body.split("\n\n").filter(Boolean),
+      body: (response.data.body ?? response.data.excerpt).split("\n\n").filter(Boolean),
     };
   } catch {
     return null;
