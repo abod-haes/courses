@@ -1,7 +1,6 @@
-import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { BookOpen, GraduationCap, LibraryBig, PlayCircle, ShieldCheck } from "lucide-react";
+import { BookOpen, FileText, GraduationCap, PlayCircle, ShieldCheck } from "lucide-react";
 import { getLibraryFromApi } from "@/features/checkout/checkout.api";
 import { getCheckoutCopy } from "@/features/checkout/checkout.data";
 import { generateLibraryMetadata } from "@/features/checkout/checkout-pages.component";
@@ -168,7 +167,7 @@ function LibraryTabLink({
 
 function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: CheckoutItemView; copy: CheckoutCopy; actionLabel: string }>) {
   const isCourse = item.type === "course";
-  const Icon = isCourse ? PlayCircle : FileIcon;
+  const Icon = isCourse ? PlayCircle : FileText;
 
   return (
     <Reveal preset="fadeUp">
@@ -216,10 +215,6 @@ function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: Check
       </Card>
     </Reveal>
   );
-}
-
-function FileIcon(props: React.ComponentProps<typeof BookOpen>) {
-  return <BookOpen {...props} />;
 }
 
 function LibraryEmptyState({ copy, href, label }: Readonly<{ copy: CheckoutCopy; href: string; label: string }>) {
