@@ -113,9 +113,9 @@ function mergeHomeCopy(fallback: HomeMessages, apiData: HomeApiResponse["data"])
 
 function toHomeCatalog(data: HomeApiResponse["data"], locale: Locale, fallback: HomeCatalog): HomeCatalog {
   return {
-    courses: (data.latestCourses ?? []).map((course) => toCourseItem(course, locale)) || fallback.courses,
-    books: (data.latestBooks ?? []).map((book) => toBookItem(book, locale)) || fallback.books,
-    articles: (data.latestArticles ?? []).map(toArticleItem) || fallback.articles,
+    courses: data.latestCourses?.map((course) => toCourseItem(course, locale)) ?? fallback.courses,
+    books: data.latestBooks?.map((book) => toBookItem(book, locale)) ?? fallback.books,
+    articles: data.latestArticles?.map(toArticleItem) ?? fallback.articles,
   };
 }
 
