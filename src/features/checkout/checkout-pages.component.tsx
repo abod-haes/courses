@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { AlertTriangle, ArrowRight, CheckCircle2, CreditCard, FileText, LibraryBig, LockKeyhole, PackageCheck, ReceiptText, ShieldCheck } from "lucide-react";
+import { redirect } from "next/navigation";
+import { AlertTriangle, ArrowRight, CheckCircle2, CreditCard, FileText, LibraryBig, PackageCheck, ReceiptText, ShieldCheck } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
 import { Reveal } from "@/shared/components/animation/reveal.component";
 import { StaggerList } from "@/shared/components/animation/stagger-list.component";
+import { websiteSessionCookieName } from "@/shared/api/website-session";
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
 import { localeCookieName } from "@/shared/lib/preferences";
 import type { Locale } from "@/shared/lib/types";
+import { CheckoutSubmitButton } from "./components/checkout-submit-button.component";
 import { CheckoutItemRow } from "./components/checkout-item-row.component";
-import { getCheckoutCopy, getCheckoutSelection, getCheckoutTotal, getMockOrder, getMockOrders } from "./checkout.data";
+import { getCheckoutCopy } from "./checkout.data";
+import { getCheckoutSelectionFromApi, getCheckoutTotal, getLibraryFromApi, getOrdersFromApi } from "./checkout.api";
 import type { CheckoutCopy, CheckoutItemType, CheckoutItemView, OrderView } from "./checkout.types";
 
 function getLocaleFromCookies(cookieLocale: string | null | undefined): Locale {
@@ -21,26 +25,24 @@ async function getCurrentLocale(): Promise<Locale> {
   return getLocaleFromCookies(cookieStore.get(localeCookieName)?.value);
 }
 
+async function requireSessionToken(returnTo: string): Promise<string> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(websiteSessionCookieName)?.value;
+
+  if (!token) {
+    redirect(`/login?redirectTo=${encodeURIComponent(returnTo)}`);
+  }
+
+  return token;
+}
+
 function buildPageMetadata(title: string, description: string, canonical: string): Metadata {
   return {
-    title: {
-      absolute: title,
-    },
+    title: { absolute: title },
     description,
-    alternates: {
-      canonical,
-    },
-    openGraph: {
-      title,
-      description,
-      type: "website",
-      url: canonical,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
+    alternates: { canonical },
+    openGraph: { title, description, type: "website", url: canonical },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
@@ -89,13 +91,15 @@ export async function CheckoutPage({ searchParams }: CheckoutPageProps = {}) {
   const itemType = getSearchParamValue(params.itemType);
   const itemId = getSearchParamValue(params.itemId);
   const isEmpty = getSearchParamValue(params.empty) === "1";
-  const items = getCheckoutSelection(locale, itemType as CheckoutItemType | undefined, itemId, isEmpty);
+  await requireSessionToken(`/checkout${itemType && itemId ? `?itemType=${itemType}&itemId=${itemId}` : ""}`);
 
-  return <CheckoutReviewScreen copy={copy} items={items} />;
+  const items = await getCheckoutSelectionFromApi(locale, copy, itemType as CheckoutItemType | undefined, itemId, isEmpty).catch(() => []);
+
+  return <CheckoutReviewScreen copy={copy} items={items} locale={locale} />;
 }
 
-function CheckoutReviewScreen({ copy, items }: Readonly<{ copy: CheckoutCopy; items: CheckoutItemView[] }>) {
-  const total = getCheckoutTotal(items);
+function CheckoutReviewScreen({ copy, items, locale }: Readonly<{ copy: CheckoutCopy; items: CheckoutItemView[]; locale: Locale }>) {
+  const total = getCheckoutTotal(items, locale);
 
   return (
     <div className="min-h-full bg-section-bg">
@@ -134,7 +138,7 @@ function CheckoutReviewScreen({ copy, items }: Readonly<{ copy: CheckoutCopy; it
           <CheckoutEmptyState copy={copy} />
         )}
 
-        <OrderSummaryCard copy={copy} total={total} hasItems={items.length > 0} />
+        <OrderSummaryCard copy={copy} total={total} items={items} />
       </section>
     </div>
   );
@@ -158,7 +162,7 @@ function CheckoutEmptyState({ copy }: Readonly<{ copy: CheckoutCopy }>) {
   );
 }
 
-function OrderSummaryCard({ copy, total, hasItems }: Readonly<{ copy: CheckoutCopy; total: string; hasItems: boolean }>) {
+function OrderSummaryCard({ copy, total, items }: Readonly<{ copy: CheckoutCopy; total: string; items: CheckoutItemView[] }>) {
   return (
     <Reveal preset="fadeLeft" className="lg:sticky lg:top-24 lg:self-start">
       <Card className="overflow-hidden rounded-[16px] bg-surface shadow-[0_14px_38px_rgba(17,24,39,0.08)]">
@@ -186,14 +190,15 @@ function OrderSummaryCard({ copy, total, hasItems }: Readonly<{ copy: CheckoutCo
             </div>
           </div>
 
-          {hasItems ? (
-            <Button href="/checkout/success" className="mt-5 w-full rounded-[9px]">
-              <LockKeyhole className="h-4 w-4" aria-hidden="true" />
-              {copy.checkout.continueToPayment}
-            </Button>
+          {items.length > 0 ? (
+            <CheckoutSubmitButton
+              items={items}
+              label={copy.checkout.continueToPayment}
+              loginRequiredLabel={copy.checkout.emptyDescription}
+            />
           ) : (
             <Button disabled className="mt-5 w-full rounded-[9px]">
-              <LockKeyhole className="h-4 w-4" aria-hidden="true" />
+              <CreditCard className="h-4 w-4" aria-hidden="true" />
               {copy.checkout.continueToPayment}
             </Button>
           )}
@@ -209,15 +214,21 @@ function OrderSummaryCard({ copy, total, hasItems }: Readonly<{ copy: CheckoutCo
 export async function CheckoutSuccessPage() {
   const locale = await getCurrentLocale();
   const copy = getCheckoutCopy(locale);
-  const order = getMockOrder(locale);
-  return <CheckoutResultScreen copy={copy} order={order} variant="success" />;
+  const token = await requireSessionToken("/checkout/success");
+  const orders = await getOrdersFromApi(locale, copy, token).catch(() => []);
+  const order = orders.find((entry) => entry.status === "paid") ?? orders[0];
+
+  return order ? <CheckoutResultScreen copy={copy} order={order} variant="success" /> : <CheckoutEmptyState copy={copy} />;
 }
 
 export async function CheckoutCancelPage() {
   const locale = await getCurrentLocale();
   const copy = getCheckoutCopy(locale);
-  const order = getMockOrder(locale);
-  return <CheckoutResultScreen copy={copy} order={order} variant="cancel" />;
+  const token = await requireSessionToken("/checkout/cancel");
+  const orders = await getOrdersFromApi(locale, copy, token).catch(() => []);
+  const order = orders[0];
+
+  return order ? <CheckoutResultScreen copy={copy} order={order} variant="cancel" /> : <CheckoutEmptyState copy={copy} />;
 }
 
 function CheckoutResultScreen({
@@ -288,7 +299,8 @@ function CheckoutResultScreen({
 export async function OrdersPage() {
   const locale = await getCurrentLocale();
   const copy = getCheckoutCopy(locale);
-  const orders = getMockOrders(locale);
+  const token = await requireSessionToken("/orders");
+  const orders = await getOrdersFromApi(locale, copy, token).catch(() => []);
 
   return (
     <div className="min-h-full bg-section-bg">
@@ -354,9 +366,6 @@ function OrderCard({ order, copy }: Readonly<{ order: OrderView; copy: CheckoutC
             </summary>
           </details>
         </div>
-        <details className="group border-t border-border/60 px-5 pb-5 md:hidden">
-          <summary className="sr-only">{copy.orders.details}</summary>
-        </details>
         <div className="mx-5 mb-5 rounded-[12px] border border-border/70 bg-section-bg p-4 text-start">
           <p className="text-sm font-black text-foreground">{copy.orders.paymentSummary}</p>
           <p className="mt-1 text-xs leading-5 text-foreground/58">{order.paymentSummary}</p>
@@ -374,9 +383,8 @@ function OrderCard({ order, copy }: Readonly<{ order: OrderView; copy: CheckoutC
 export async function LibraryPage() {
   const locale = await getCurrentLocale();
   const copy = getCheckoutCopy(locale);
-  const order = getMockOrder(locale);
-  const courses = order.items.filter((item) => item.type === "course");
-  const books = order.items.filter((item) => item.type === "book");
+  const token = await requireSessionToken("/library");
+  const library = await getLibraryFromApi(locale, copy, token).catch(() => ({ courses: [], books: [] }));
 
   return (
     <div className="min-h-full bg-section-bg">
@@ -393,8 +401,8 @@ export async function LibraryPage() {
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-7 px-4 py-8 sm:px-6 lg:grid-cols-2 lg:px-8 lg:py-10">
-        <LibraryPanel title={copy.library.coursesTab} items={courses} copy={copy} actionLabel={copy.library.continueLearning} emptyHref="/courses" emptyLabel={copy.library.browseCourses} />
-        <LibraryPanel title={copy.library.booksTab} items={books} copy={copy} actionLabel={copy.library.accessBook} emptyHref="/books" emptyLabel={copy.library.browseBooks} />
+        <LibraryPanel title={copy.library.coursesTab} items={library.courses} copy={copy} actionLabel={copy.library.continueLearning} emptyHref="/courses" emptyLabel={copy.library.browseCourses} />
+        <LibraryPanel title={copy.library.booksTab} items={library.books} copy={copy} actionLabel={copy.library.accessBook} emptyHref="/books" emptyLabel={copy.library.browseBooks} />
       </section>
     </div>
   );
