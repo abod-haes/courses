@@ -41,9 +41,10 @@ export type LessonPublic = Readonly<{
   title: string;
   slug: string;
   summary: string;
+  isPreview?: boolean;
   durationMinutes: number;
   sortOrder: number;
-  status: ContentStatus;
+  status?: ContentStatus;
 }>;
 
 export type CourseSection = Readonly<{
@@ -59,14 +60,14 @@ export type Course = Readonly<{
   title: string;
   slug: string;
   shortDescription: string;
-  description: string;
+  description?: string;
   price: number;
   currency: string;
   category: Pick<Category, "id" | "name" | "slug" | "type">;
   thumbnail: Media | null;
-  status: ContentStatus;
+  status?: ContentStatus;
   publishedAt: string | null;
-  sections: CourseSection[];
+  sections?: CourseSection[];
 }>;
 
 export type Book = Readonly<{
@@ -74,13 +75,13 @@ export type Book = Readonly<{
   title: string;
   slug: string;
   shortDescription: string;
-  description: string;
+  description?: string;
   price: number;
   currency: string;
   category: Pick<Category, "id" | "name" | "slug" | "type">;
   cover: Media | null;
   hasProtectedFile: boolean;
-  status: ContentStatus;
+  status?: ContentStatus;
   publishedAt: string | null;
   isbn?: string;
 }>;
@@ -90,12 +91,12 @@ export type Article = Readonly<{
   title: string;
   slug: string;
   excerpt: string;
-  body: string;
+  body?: string;
   category: Pick<Category, "id" | "name" | "slug" | "type">;
   image: Media | null;
-  status: ContentStatus;
+  status?: ContentStatus;
   publishedAt: string | null;
-  author: string;
+  author?: string;
 }>;
 
 export type User = Readonly<{
