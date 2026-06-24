@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { StaggerList } from "@/shared/components/animation/stagger-list.component";
 import { SiteContainer } from "@/shared/components/layout/site-container";
 import { CatalogPagination } from "@/shared/components/catalog/catalog-pagination.component";
+import { getCatalogCategoryOptions } from "@/shared/api/categories.api";
 import type { PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import { getBooks } from "../api/books.api";
@@ -61,10 +62,7 @@ export function BooksLibrary({ copy, initialPage, locale }: BooksLibraryProps) {
     initialData: isInitialQuery ? initialPage : undefined,
   });
 
-  const pageData = query.data ?? initialPage;
-  const books = pageData.data;
-
-  const categoryOptions = useMemo<BooksCategoryOption[]>(() => {
+  const fallbackCategoryOptions = useMemo<BooksCategoryOption[]>(() => {
     const categories = new Map<BookCategoryKey, string>();
 
     initialPage.data.forEach((book) => {
@@ -77,6 +75,16 @@ export function BooksLibrary({ copy, initialPage, locale }: BooksLibraryProps) {
     ];
   }, [initialPage.data, copy.filters.all]);
 
+  const categoriesQuery = useQuery({
+    queryKey: ["catalog-categories", "book", locale],
+    queryFn: () => getCatalogCategoryOptions("book", locale, copy.filters.all),
+    initialData: fallbackCategoryOptions,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const pageData = query.data ?? initialPage;
+  const books = pageData.data;
+  const categoryOptions = categoriesQuery.data ?? fallbackCategoryOptions;
   const showInitialLoading = query.isFetching && books.length === 0;
   const showEmpty = !showInitialLoading && books.length === 0;
 
