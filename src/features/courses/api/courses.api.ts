@@ -12,19 +12,20 @@ function formatPrice(value: number, currency: string, locale: Locale): string {
 }
 
 function totalLessons(course: Course): number {
-  return course.sections.reduce((sum, section) => sum + section.lessons.length, 0);
+  return (course.sections ?? []).reduce((sum, section) => sum + section.lessons.length, 0);
 }
 
 function totalMinutes(course: Course): number {
-  return course.sections.reduce(
+  return (course.sections ?? []).reduce(
     (sum, section) => sum + section.lessons.reduce((lessonSum, lesson) => lessonSum + lesson.durationMinutes, 0),
     0,
   );
 }
 
 function toCourseView(course: Course, locale: Locale): CourseItemView {
+  const sections = course.sections ?? [];
   const lessons = totalLessons(course);
-  const hours = Math.max(1, Math.ceil(totalMinutes(course) / 60));
+  const hours = lessons > 0 ? Math.max(1, Math.ceil(totalMinutes(course) / 60)) : 1;
 
   return {
     id: String(course.id),
@@ -33,16 +34,16 @@ function toCourseView(course: Course, locale: Locale): CourseItemView {
     categoryKey: course.category.slug,
     category: course.category.name,
     description: course.shortDescription,
-    longDescription: course.description,
+    longDescription: course.description ?? course.shortDescription,
     price: formatPrice(course.price, course.currency, locale),
     image: course.thumbnail?.url ?? "/images/course-1.png",
     imageAlt: course.thumbnail?.alt ?? course.title,
     hours: String(hours),
     lessons,
-    modules: course.sections.length,
+    modules: sections.length || Math.max(1, lessons),
     isCmeEligible: true,
-    includes: locale === "ar" ? ["فيديوهات منظمة", "ملفات مرجعية", "بروتوكولات قابلة للتطبيق"] : ["Structured videos", "Reference files", "Practical protocols"],
-    curriculum: course.sections.flatMap((section) =>
+    includes: locale === "ar" ? ["محتوى منظم", "ملفات مرجعية", "خطوات عملية"] : ["Structured content", "Reference files", "Practical steps"],
+    curriculum: sections.flatMap((section) =>
       section.lessons.map((lesson) => ({
         title: lesson.title,
         description: lesson.summary,
