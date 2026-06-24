@@ -39,7 +39,7 @@ export function HomeHero({ copy }: HomeHeroProps) {
   const trustItems = copy.trustStrip.slice(0, 3);
 
   return (
-    <section className="relative isolate overflow-hidden bg-section-bg px-0 py-4 dark:bg-[#07111f] sm:py-5 lg:min-h-[calc(100dvh-4.25rem)] lg:py-4 xl:min-h-[calc(100dvh-4.75rem)]">
+    <section className="relative isolate overflow-hidden bg-section-bg px-0 py-5 dark:bg-[#07111f] sm:py-6 lg:min-h-[calc(88dvh-4.25rem)] lg:py-5 xl:min-h-[calc(90dvh-4.75rem)]">
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
         <Image
           src="/images/hero-bg.png"
@@ -56,23 +56,23 @@ export function HomeHero({ copy }: HomeHeroProps) {
         <div className="absolute left-[42%] top-12 hidden h-72 w-72 -translate-x-1/2 rounded-full bg-white/36 blur-3xl dark:bg-white/4 sm:block" />
       </div>
 
-      <SiteContainer className="relative z-10 grid min-h-[inherit] items-center gap-4 md:gap-5 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:gap-5 xl:gap-6">
+      <SiteContainer className="relative z-10 grid min-h-[inherit] items-center gap-5 md:gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-6 xl:gap-7">
         <motion.div
           className="mx-auto w-full max-w-2xl text-center lg:mx-0 lg:text-start"
           variants={heroContainerVariants}
           initial={shouldReduceMotion ? false : "hidden"}
           animate={shouldReduceMotion ? undefined : "visible"}
         >
-          <motion.div variants={heroItemVariants} className="inline-flex max-w-full items-center gap-2 rounded-full border border-primary/12 bg-white/88 px-3.5 py-2 text-xs font-semibold text-primary shadow-[0_10px_28px_rgba(17,24,39,0.05)] backdrop-blur-md dark:border-white/10 dark:bg-white/8 dark:text-[#cdd3ff]">
+          <motion.div variants={heroItemVariants} className="inline-flex max-w-full items-center gap-2 rounded-full border border-primary/12 bg-white/88 px-3.5 py-2 text-xs font-bold text-primary shadow-[0_10px_28px_rgba(17,24,39,0.05)] backdrop-blur-md dark:border-white/10 dark:bg-white/8 dark:text-[#cdd3ff]">
             <Shield className="h-4 w-4 shrink-0" aria-hidden="true" />
             <span className="truncate">{copy.hero.badge}</span>
           </motion.div>
 
-          <motion.h1 variants={heroItemVariants} className="mx-auto mt-3.5 max-w-2xl text-[1.62rem] font-black leading-[1.12] tracking-[-0.04em] text-foreground sm:text-[1.95rem] lg:mx-0 lg:text-[2.1rem] xl:text-[2.28rem]">
+          <motion.h1 variants={heroItemVariants} className="mx-auto mt-4 max-w-2xl text-[1.72rem] font-extrabold leading-[1.16] tracking-[-0.032em] text-foreground sm:text-[2.05rem] lg:mx-0 lg:text-[2.18rem] xl:text-[2.36rem]">
             {copy.hero.title}
           </motion.h1>
 
-          <motion.p variants={heroItemVariants} className="mx-auto mt-3.5 max-w-xl text-[0.86rem] leading-7 text-foreground/66 sm:text-[0.92rem] sm:leading-8 lg:mx-0">
+          <motion.p variants={heroItemVariants} className="mx-auto mt-4 max-w-xl text-[0.92rem] font-normal leading-7 text-foreground/68 sm:text-[0.98rem] sm:leading-8 lg:mx-0">
             {copy.hero.subtitle}
           </motion.p>
 
