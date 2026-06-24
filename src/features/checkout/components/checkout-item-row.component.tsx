@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { BookOpen, GraduationCap, X } from "lucide-react";
+import { clearStoredCheckoutItems } from "../checkout-storage";
 import type { CheckoutCopy, CheckoutItemView } from "../checkout.types";
 
 type CheckoutItemRowProps = Readonly<{
@@ -40,6 +43,7 @@ export function CheckoutItemRow({ item, copy, compact = false }: CheckoutItemRow
             {!compact ? (
               <Link
                 href="/checkout?empty=1"
+                onClick={() => clearStoredCheckoutItems()}
                 className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[0.68rem] font-bold text-foreground/45 transition hover:bg-danger/10 hover:text-danger"
               >
                 <X className="h-3.5 w-3.5" aria-hidden="true" />
