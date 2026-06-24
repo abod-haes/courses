@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { StaggerList } from "@/shared/components/animation/stagger-list.component";
 import { SiteContainer } from "@/shared/components/layout/site-container";
 import { CatalogPagination } from "@/shared/components/catalog/catalog-pagination.component";
+import { getCatalogCategoryOptions } from "@/shared/api/categories.api";
 import type { PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import { getCourses } from "../api/courses.api";
@@ -60,10 +61,7 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
     initialData: isInitialQuery ? initialPage : undefined,
   });
 
-  const pageData = query.data ?? initialPage;
-  const courses = pageData.data;
-
-  const categoryOptions = useMemo<CoursesCategoryOption[]>(() => {
+  const fallbackCategoryOptions = useMemo<CoursesCategoryOption[]>(() => {
     const categoryLabels = new Map<CourseCategoryKey, string>();
 
     initialPage.data.forEach((course) => {
@@ -76,6 +74,16 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
     ];
   }, [copy.filters.all, initialPage.data]);
 
+  const categoriesQuery = useQuery({
+    queryKey: ["catalog-categories", "course", locale],
+    queryFn: () => getCatalogCategoryOptions("course", locale, copy.filters.all),
+    initialData: fallbackCategoryOptions,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const pageData = query.data ?? initialPage;
+  const courses = pageData.data;
+  const categoryOptions = categoriesQuery.data ?? fallbackCategoryOptions;
   const showInitialLoading = query.isFetching && courses.length === 0;
   const showEmpty = !showInitialLoading && courses.length === 0;
 
