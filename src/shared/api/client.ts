@@ -1,4 +1,4 @@
-import { websiteSessionKey } from "./website-session";
+import { websiteSessionCookieName, websiteSessionKey, websiteUserKey } from "./website-session";
 
 type SearchParamValue = string | number | boolean | null | undefined;
 
@@ -126,19 +126,43 @@ async function readErrorDetails(response: Response): Promise<unknown> {
   return response.text().catch(() => null);
 }
 
+function readCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+
+  const prefix = `${name}=`;
+  const match = document.cookie
+    .split(";")
+    .map((item) => item.trim())
+    .find((item) => item.startsWith(prefix));
+
+  return match ? decodeURIComponent(match.slice(prefix.length)) : null;
+}
+
 function getClientSession(): string | null {
   if (typeof window === "undefined") return null;
-  return window.localStorage.getItem(websiteSessionKey);
+  return window.localStorage.getItem(websiteSessionKey) ?? readCookie(websiteSessionCookieName);
+}
+
+export function clearWebsiteClientSession(): void {
+  if (typeof window === "undefined") return;
+
+  window.localStorage.removeItem(websiteSessionKey);
+  window.localStorage.removeItem(websiteUserKey);
+  document.cookie = `${websiteSessionCookieName}=; path=/; max-age=0; SameSite=Lax`;
+  window.dispatchEvent(new Event("iass:website-session-changed"));
 }
 
 function redirectClientToLogin(): void {
   if (typeof window === "undefined") return;
 
-  if (window.location.pathname === "/login") return;
+  if (window.location.pathname === "/login") {
+    clearWebsiteClientSession();
+    return;
+  }
 
   const currentPath = `${window.location.pathname}${window.location.search}`;
-  window.localStorage.removeItem(websiteSessionKey);
-  window.location.assign(`/login?redirectTo=${encodeURIComponent(currentPath)}`);
+  clearWebsiteClientSession();
+  window.location.assign(`/login?redirectTo=${encodeURIComponent(currentPath)}&sessionExpired=1`);
 }
 
 function isNetworkFailure(error: unknown): boolean {
