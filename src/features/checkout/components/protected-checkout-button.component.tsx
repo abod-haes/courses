@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { websiteSessionKey } from "@/shared/api/website-session";
+import { writeStoredCheckoutItems } from "../checkout-storage";
 import type { CheckoutItemType } from "../checkout.types";
 
 type ProtectedCheckoutButtonProps = Readonly<{
@@ -29,10 +30,7 @@ export function ProtectedCheckoutButton({ itemType, itemId, children, className 
       return;
     }
 
-    window.localStorage.setItem(
-      "iass:checkout:cart",
-      JSON.stringify([{ type: itemType, id: Number(itemId), quantity: 1 }]),
-    );
+    writeStoredCheckoutItems([{ type: itemType, id: Number(itemId), quantity: 1 }]);
     router.push(nextPath);
   }
 
