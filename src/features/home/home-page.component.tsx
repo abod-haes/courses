@@ -4,7 +4,7 @@ import { SiteContainer } from "@/shared/components/layout/site-container";
 import { localeCookieName } from "@/shared/lib/preferences";
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
 import type { Locale } from "@/shared/lib/types";
-import { getHomeCatalog } from "./api/home.api";
+import { getHomePageData } from "./api/home.api";
 import { getHomeMessages } from "./home.data";
 import { HomeHero } from "./components/home-hero.component";
 import { AboutUsSection } from "./components/about-us-section.component";
@@ -51,8 +51,8 @@ export async function HomePage() {
   const cookieStore = await cookies();
   const localeCookie = cookieStore.get(localeCookieName)?.value;
   const locale = getLocaleFromCookies(localeCookie);
-  const copy = getHomeMessages(locale);
-  const catalog = await getHomeCatalog(locale).catch(() => copy.catalog);
+  const fallbackCopy = getHomeMessages(locale);
+  const { copy, catalog } = await getHomePageData(locale, fallbackCopy);
 
   return (
     <div className="home-scroll-area h-full overflow-y-auto">
