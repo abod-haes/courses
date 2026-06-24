@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { Inter, Tajawal } from "next/font/google";
+import { Cairo, Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { Providers } from "@/components/providers";
 import { ClinicalCursorFollower } from "@/shared/components/clinical-cursor-follower";
@@ -13,6 +13,7 @@ import { getHomeMessages } from "@/features/home/home.data";
 import { HomeFooter } from "@/features/home/components/home-footer.component";
 import { HomeHeader } from "@/features/home/components/home-header.component";
 import "./globals.css";
+import "./typography.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,11 +21,11 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const tajawal = Tajawal({
-  subsets: ["arabic"],
-  weight: ["400", "500", "700", "800", "900"],
+const cairo = Cairo({
+  subsets: ["arabic", "latin"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
-  variable: "--font-tajawal",
+  variable: "--font-cairo",
 });
 
 export const metadata: Metadata = createSeoMetadata({
@@ -61,7 +62,7 @@ export default async function RootLayout({
       lang={locale}
       dir={getLocaleDirection(locale)}
       suppressHydrationWarning
-      className={`${inter.variable} ${tajawal.variable} ${theme === "dark" ? "dark" : ""} h-full antialiased`}
+      className={`${inter.variable} ${cairo.variable} ${theme === "dark" ? "dark" : ""} h-full antialiased`}
     >
       <body suppressHydrationWarning className="h-screen overflow-hidden bg-background text-foreground">
         <NextIntlClientProvider locale={locale} messages={messagesByLocale[locale]}>
