@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, BookOpen, CheckCircle2 } from "lucide-react";
 import { getBookBySlug } from "@/features/books/api/books.api";
 import { getBooksPageCopy } from "@/features/books/books.data";
-import { Button } from "@/shared/components/ui/button";
+import { ProtectedCheckoutButton } from "@/features/checkout/components/protected-checkout-button.component";
 import { Card } from "@/shared/components/ui/card";
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
 import { localeCookieName } from "@/shared/lib/preferences";
@@ -71,9 +71,9 @@ export default async function Page(props: PageProps) {
             <div className="relative flex h-[28rem] items-center justify-center rounded-[14px] bg-gradient-to-br from-white via-[#f3f6f8] to-[#eef2f3]">
               <Image src={book.image} alt={book.imageAlt} width={250} height={360} className="h-[86%] w-auto object-contain drop-shadow-[0_18px_22px_rgba(17,24,39,0.24)]" />
             </div>
-            <Button href={`/checkout?itemType=book&itemId=${book.id}`} className="mt-5 w-full rounded-[8px] py-3 text-xs font-bold">
+            <ProtectedCheckoutButton itemType="book" itemId={book.id} className="mt-5 w-full rounded-[8px] py-3 text-xs font-bold">
               {copy.detail.addToCart}
-            </Button>
+            </ProtectedCheckoutButton>
           </Card>
 
           <div>
