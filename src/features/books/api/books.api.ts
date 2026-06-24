@@ -12,6 +12,8 @@ function formatPrice(value: number, currency: string, locale: Locale): string {
 }
 
 function toBookView(book: Book, locale: Locale): BookItemView {
+  const description = book.description ?? book.shortDescription;
+
   return {
     id: String(book.id),
     title: book.title,
@@ -27,7 +29,7 @@ function toBookView(book: Book, locale: Locale): BookItemView {
     details: {
       availability: locale === "ar" ? "متوفر كمرجع رقمي" : "Available as a digital reference",
       accessNote: locale === "ar" ? "يتم فتح المرجع الرقمي بعد إتمام الشراء بنجاح." : "Digital access is unlocked after successful purchase.",
-      description: [book.description],
+      description: [description],
       highlights: locale === "ar" ? ["تنظيم أكاديمي واضح", "نقاط أمان عملية", "مناسب للمراجعة السريعة"] : ["Clear academic structure", "Practical safety notes", "Built for fast review"],
       tableOfContents: locale === "ar" ? ["المدخل العلمي", "إطار التقييم", "خطوات التطبيق", "مراجعة الأمان"] : ["Scientific overview", "Assessment framework", "Application steps", "Safety review"],
       authorBio: locale === "ar" ? ["محتوى صادر عن فريق IASS الأكاديمي تحت إشراف الدكتور إياس عكاري."] : ["Prepared by the IASS academic team under the supervision of Dr. Iyas Akkari."],
