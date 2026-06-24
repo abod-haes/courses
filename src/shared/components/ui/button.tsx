@@ -21,19 +21,19 @@ type ButtonElementProps = CommonButtonProps &
   };
 
 const base =
-  "relative inline-flex items-center justify-center gap-2 rounded-md font-semibold transition duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none";
+  "relative inline-flex items-center justify-center gap-2 rounded-md font-semibold leading-none tracking-[-0.01em] transition duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none";
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary px-5 py-3 text-sm !text-white shadow-[0_8px_22px_rgba(29,23,213,0.14)] hover:bg-primary-strong hover:!text-white hover:shadow-[0_10px_26px_rgba(29,23,213,0.18)] active:translate-y-0 dark:bg-primary dark:!text-white dark:hover:bg-primary/90 dark:hover:!text-white",
+    "bg-primary px-5 py-3 text-[0.9rem] !text-white shadow-[0_8px_22px_rgba(29,23,213,0.14)] hover:bg-primary-strong hover:!text-white hover:shadow-[0_10px_26px_rgba(29,23,213,0.18)] active:translate-y-0 dark:bg-primary dark:!text-white dark:hover:bg-primary/90 dark:hover:!text-white",
   secondary:
-    "border border-primary/15 bg-white/86 px-5 py-3 text-sm text-primary shadow-[0_8px_22px_rgba(17,24,39,0.045)] backdrop-blur-md hover:border-primary/25 hover:bg-primary/8 hover:text-primary-strong active:translate-y-0 dark:border-white/10 dark:bg-white/8 dark:text-[#dbe1ff] dark:hover:bg-white/12",
-  ghost: "px-3 py-2 text-sm text-foreground/75 hover:text-primary",
+    "border border-primary/15 bg-white/86 px-5 py-3 text-[0.9rem] text-primary shadow-[0_8px_22px_rgba(17,24,39,0.045)] backdrop-blur-md hover:border-primary/25 hover:bg-primary/8 hover:text-primary-strong active:translate-y-0 dark:border-white/10 dark:bg-white/8 dark:text-[#dbe1ff] dark:hover:bg-white/12",
+  ghost: "px-3 py-2 text-[0.86rem] text-foreground/75 hover:text-primary",
 };
 
 const sizes: Record<ButtonSize, string> = {
   sm: "px-4 py-2 text-xs",
-  md: "px-5 py-3 text-sm",
+  md: "px-5 py-3 text-[0.9rem]",
 };
 
 function getButtonClasses(variant: ButtonVariant, size: ButtonSize, className?: string) {
