@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { StaggerList } from "@/shared/components/animation/stagger-list.component";
 import { SiteContainer } from "@/shared/components/layout/site-container";
+import { CatalogPagination } from "@/shared/components/catalog/catalog-pagination.component";
 import type { PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import { getBooks } from "../api/books.api";
@@ -30,18 +31,29 @@ function useDebouncedValue(value: string, delay = 300): string {
   return debouncedValue;
 }
 
+function paginationCopy(locale: Locale) {
+  return locale === "ar"
+    ? { previous: "السابق", next: "التالي", page: "صفحة", of: "من", results: "نتيجة" }
+    : { previous: "Previous", next: "Next", page: "Page", of: "of", results: "results" };
+}
+
 export function BooksLibrary({ copy, initialPage, locale }: BooksLibraryProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState<BooksCategoryFilter>("all");
+  const [page, setPage] = useState(1);
   const debouncedSearch = useDebouncedValue(searchTerm.trim());
-  const isInitialQuery = debouncedSearch.length === 0 && activeCategory === "all";
+  const isInitialQuery = debouncedSearch.length === 0 && activeCategory === "all" && page === 1;
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, activeCategory]);
 
   const query = useQuery({
-    queryKey: ["books", locale, debouncedSearch, activeCategory],
+    queryKey: ["books", locale, debouncedSearch, activeCategory, page, initialPage.meta.perPage],
     queryFn: () =>
       getBooks({
         locale,
-        page: 1,
+        page,
         perPage: initialPage.meta.perPage,
         search: debouncedSearch,
         category: activeCategory === "all" ? undefined : activeCategory,
@@ -49,7 +61,8 @@ export function BooksLibrary({ copy, initialPage, locale }: BooksLibraryProps) {
     initialData: isInitialQuery ? initialPage : undefined,
   });
 
-  const books = query.data?.data ?? [];
+  const pageData = query.data ?? initialPage;
+  const books = pageData.data;
 
   const categoryOptions = useMemo<BooksCategoryOption[]>(() => {
     const categories = new Map<BookCategoryKey, string>();
@@ -91,6 +104,10 @@ export function BooksLibrary({ copy, initialPage, locale }: BooksLibraryProps) {
               <BookCard key={book.id} book={book} viewDetailsLabel={copy.labels.viewDetails} />
             ))}
           </StaggerList>
+        ) : null}
+
+        {pageData.meta.total > 0 ? (
+          <CatalogPagination meta={pageData.meta} copy={paginationCopy(locale)} isLoading={query.isFetching} onPageChange={setPage} />
         ) : null}
 
         {showInitialLoading ? (
