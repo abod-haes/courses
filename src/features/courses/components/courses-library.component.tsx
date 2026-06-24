@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { StaggerList } from "@/shared/components/animation/stagger-list.component";
 import { SiteContainer } from "@/shared/components/layout/site-container";
+import { CatalogPagination } from "@/shared/components/catalog/catalog-pagination.component";
 import type { PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import { getCourses } from "../api/courses.api";
@@ -29,18 +30,29 @@ function useDebouncedValue(value: string, delay = 300): string {
   return debouncedValue;
 }
 
+function paginationCopy(locale: Locale) {
+  return locale === "ar"
+    ? { previous: "السابق", next: "التالي", page: "صفحة", of: "من", results: "نتيجة" }
+    : { previous: "Previous", next: "Next", page: "Page", of: "of", results: "results" };
+}
+
 export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState<CoursesCategoryFilter>("all");
+  const [page, setPage] = useState(1);
   const debouncedSearch = useDebouncedValue(searchTerm.trim());
-  const isInitialQuery = debouncedSearch.length === 0 && activeCategory === "all";
+  const isInitialQuery = debouncedSearch.length === 0 && activeCategory === "all" && page === 1;
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, activeCategory]);
 
   const query = useQuery({
-    queryKey: ["courses", locale, debouncedSearch, activeCategory],
+    queryKey: ["courses", locale, debouncedSearch, activeCategory, page, initialPage.meta.perPage],
     queryFn: () =>
       getCourses({
         locale,
-        page: 1,
+        page,
         perPage: initialPage.meta.perPage,
         search: debouncedSearch,
         category: activeCategory === "all" ? undefined : activeCategory,
@@ -48,7 +60,8 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
     initialData: isInitialQuery ? initialPage : undefined,
   });
 
-  const courses = query.data?.data ?? [];
+  const pageData = query.data ?? initialPage;
+  const courses = pageData.data;
 
   const categoryOptions = useMemo<CoursesCategoryOption[]>(() => {
     const categoryLabels = new Map<CourseCategoryKey, string>();
@@ -90,6 +103,10 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
               <CourseTileView key={course.id} course={course} viewDetailsLabel={copy.labels.viewDetails} />
             ))}
           </StaggerList>
+        ) : null}
+
+        {pageData.meta.total > 0 ? (
+          <CatalogPagination meta={pageData.meta} copy={paginationCopy(locale)} isLoading={query.isFetching} onPageChange={setPage} />
         ) : null}
 
         {showInitialLoading ? (
