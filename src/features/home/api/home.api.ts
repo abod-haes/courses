@@ -21,6 +21,14 @@ type HomeApiResponse = Readonly<{
   }>;
 }>;
 
+function emptyHomeCatalog(): HomeCatalog {
+  return {
+    courses: [],
+    books: [],
+    articles: [],
+  };
+}
+
 function formatPrice(value: number, currency: string, locale: Locale): string {
   return new Intl.NumberFormat(locale === "ar" ? "ar" : "en-US", {
     style: "currency",
@@ -111,11 +119,11 @@ function mergeHomeCopy(fallback: HomeMessages, apiData: HomeApiResponse["data"])
   };
 }
 
-function toHomeCatalog(data: HomeApiResponse["data"], locale: Locale, fallback: HomeCatalog): HomeCatalog {
+function toHomeCatalog(data: HomeApiResponse["data"], locale: Locale): HomeCatalog {
   return {
-    courses: data.latestCourses?.map((course) => toCourseItem(course, locale)) ?? fallback.courses,
-    books: data.latestBooks?.map((book) => toBookItem(book, locale)) ?? fallback.books,
-    articles: data.latestArticles?.map(toArticleItem) ?? fallback.articles,
+    courses: data.latestCourses?.map((course) => toCourseItem(course, locale)) ?? [],
+    books: data.latestBooks?.map((book) => toBookItem(book, locale)) ?? [],
+    articles: data.latestArticles?.map(toArticleItem) ?? [],
   };
 }
 
@@ -135,25 +143,29 @@ export async function getHomePageData(
 
     return {
       copy: mergeHomeCopy(fallbackMessages, response.data),
-      catalog: toHomeCatalog(response.data, locale, fallbackMessages.catalog),
+      catalog: toHomeCatalog(response.data, locale),
     };
   } catch {
     return {
       copy: fallbackMessages,
-      catalog: fallbackMessages.catalog,
+      catalog: emptyHomeCatalog(),
     };
   }
 }
 
 export async function getHomeCatalog(locale: Locale): Promise<HomeCatalog> {
-  const response = await apiFetch<HomeApiResponse>("/home", {
-    searchParams: {
-      locale,
-      coursesLimit: 3,
-      booksLimit: 3,
-      articlesLimit: 3,
-    },
-  });
+  try {
+    const response = await apiFetch<HomeApiResponse>("/home", {
+      searchParams: {
+        locale,
+        coursesLimit: 3,
+        booksLimit: 3,
+        articlesLimit: 3,
+      },
+    });
 
-  return toHomeCatalog(response.data, locale, { courses: [], books: [], articles: [] });
+    return toHomeCatalog(response.data, locale);
+  } catch {
+    return emptyHomeCatalog();
+  }
 }
