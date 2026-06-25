@@ -74,7 +74,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   const libraryLabel = isArabic ? "مكتبتي" : "My library";
   const logoutLabel = isArabic ? "تسجيل الخروج" : "Logout";
   const accountLabel = isArabic ? "حسابي" : "My account";
-  const quickActionsLabel = isArabic ? "إدارة الحساب والتفضيلات" : "Manage account and preferences";
+  const quickActionsLabel = isArabic ? "إدارة الحساب" : "Account menu";
 
   const navItems = useMemo(
     () => [
@@ -204,7 +204,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   }
 
   const cartButton = (
-    <Button href={cartHref} variant="secondary" size="sm" className="relative rounded-full px-4" onClick={() => setMenuOpen(false)}>
+    <Button href={cartHref} variant="secondary" size="sm" className="relative rounded-full px-4" onClick={() => setAccountMenuOpen(false)}>
       <ShoppingCart className="h-4 w-4" aria-hidden="true" />
       <span>{cartLabel}</span>
       {cartCount > 0 ? (
@@ -220,7 +220,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
       <button
         type="button"
         onClick={() => setAccountMenuOpen((isOpen) => !isOpen)}
-        className="inline-flex h-10 items-center gap-2 rounded-full border border-primary/15 bg-white/88 px-3.5 text-sm font-bold text-foreground/80 shadow-[0_10px_26px_rgba(15,23,42,0.08)] ring-1 ring-white/60 transition duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:bg-primary/8 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-white/10 dark:text-white/84 dark:ring-white/12 dark:hover:bg-white/14 dark:hover:text-white"
+        className="inline-flex h-10 items-center gap-2 rounded-full border border-primary/15 bg-white/88 px-3 text-sm font-bold text-foreground/80 shadow-[0_10px_26px_rgba(15,23,42,0.08)] ring-1 ring-white/60 transition duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:bg-primary/8 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-white/10 dark:text-white/84 dark:ring-white/12 dark:hover:bg-white/14 dark:hover:text-white"
         aria-haspopup="menu"
         aria-expanded={accountMenuOpen}
         aria-label={accountLabel}
@@ -234,21 +234,21 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
       <AnimatePresence>
         {accountMenuOpen ? (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            initial={{ opacity: 0, y: 8, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.98 }}
-            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-            className={`absolute top-full z-[80] mt-3 w-[23rem] overflow-hidden rounded-[1.35rem] border border-border/70 bg-background/98 p-3 text-start shadow-[0_28px_90px_rgba(15,23,42,0.22)] ring-1 ring-white/75 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/98 dark:ring-white/10 ${isArabic ? "left-0" : "right-0"}`}
+            exit={{ opacity: 0, y: 8, scale: 0.98 }}
+            transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+            className={`absolute top-full z-[80] mt-2 w-[18.5rem] overflow-hidden rounded-[1rem] border border-border/70 bg-background/98 p-2 text-start shadow-[0_18px_54px_rgba(15,23,42,0.16)] ring-1 ring-white/75 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/98 dark:ring-white/10 ${isArabic ? "left-0" : "right-0"}`}
             role="menu"
           >
-            <div className="mb-2 rounded-[1.15rem] bg-gradient-to-br from-primary/12 via-primary/7 to-transparent p-4 dark:from-white/12 dark:via-white/7">
-              <div className="flex items-center gap-3">
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-[0_12px_28px_rgba(29,23,213,0.24)]">
-                  <UserRound className="h-5 w-5" aria-hidden="true" />
+            <div className="mb-1 rounded-[0.85rem] bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-2.5 dark:from-white/10 dark:via-white/5">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-white shadow-[0_8px_20px_rgba(29,23,213,0.2)]">
+                  <UserRound className="h-4 w-4" aria-hidden="true" />
                 </span>
                 <span>
-                  <span className="block text-base font-black text-foreground dark:text-white">{accountLabel}</span>
-                  <span className="mt-0.5 block text-xs font-semibold leading-5 text-foreground/55 dark:text-white/50">{quickActionsLabel}</span>
+                  <span className="block text-sm font-black text-foreground dark:text-white">{accountLabel}</span>
+                  <span className="mt-0.5 block text-[11px] font-semibold leading-4 text-foreground/55 dark:text-white/50">{quickActionsLabel}</span>
                 </span>
               </div>
             </div>
@@ -256,19 +256,19 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
             <Link
               href="/library"
               onClick={() => setAccountMenuOpen(false)}
-              className="flex w-full items-center justify-between rounded-[1rem] px-3.5 py-3.5 text-sm font-bold text-foreground/80 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
+              className="flex w-full items-center justify-between rounded-[0.8rem] px-2.5 py-2.5 text-xs font-bold text-foreground/80 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
               role="menuitem"
             >
-              <span className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-white/12 dark:text-white">
-                  <UserRound className="h-4 w-4" aria-hidden="true" />
+              <span className="flex items-center gap-2.5">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-white/12 dark:text-white">
+                  <UserRound className="h-3.5 w-3.5" aria-hidden="true" />
                 </span>
                 {libraryLabel}
               </span>
-              <ChevronRight className="h-4 w-4 opacity-45 rtl:rotate-180" aria-hidden="true" />
+              <ChevronRight className="h-3.5 w-3.5 opacity-45 rtl:rotate-180" aria-hidden="true" />
             </Link>
 
-            <div className="my-2 h-px bg-border/60 dark:bg-white/10" />
+            <div className="my-1 h-px bg-border/60 dark:bg-white/10" />
 
             <button
               type="button"
@@ -276,21 +276,21 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                 toggleLocale();
                 setAccountMenuOpen(false);
               }}
-              className="flex w-full items-center justify-between rounded-[1rem] px-3.5 py-3.5 text-start text-sm font-bold text-foreground/80 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
+              className="flex w-full items-center justify-between rounded-[0.8rem] px-2.5 py-2.5 text-start text-xs font-bold text-foreground/80 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
               role="menuitem"
             >
-              <span className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-white/12 dark:text-white">
-                  <Globe2 className="h-4 w-4" aria-hidden="true" />
+              <span className="flex items-center gap-2.5">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-white/12 dark:text-white">
+                  <Globe2 className="h-3.5 w-3.5" aria-hidden="true" />
                 </span>
                 <span>
                   <span className="block">{copy.controls.language}</span>
-                  <span className="mt-0.5 block text-xs font-semibold text-foreground/48 dark:text-white/45">
+                  <span className="mt-0.5 block text-[10px] font-semibold text-foreground/48 dark:text-white/45">
                     {locale === "en" ? copy.controls.english : copy.controls.arabic}
                   </span>
                 </span>
               </span>
-              <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-black tracking-[0.14em] text-primary dark:bg-white/12 dark:text-white" dir="ltr">{languageLabel}</span>
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-black tracking-[0.12em] text-primary dark:bg-white/12 dark:text-white" dir="ltr">{languageLabel}</span>
             </button>
 
             <button
@@ -299,39 +299,39 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                 toggleTheme();
                 setAccountMenuOpen(false);
               }}
-              className="mt-1 flex w-full items-center justify-between rounded-[1rem] px-3.5 py-3.5 text-start text-sm font-bold text-foreground/80 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
+              className="mt-0.5 flex w-full items-center justify-between rounded-[0.8rem] px-2.5 py-2.5 text-start text-xs font-bold text-foreground/80 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
               role="menuitem"
             >
-              <span className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-white/12 dark:text-white">
-                  {isDark ? <SunMedium className="h-4 w-4" aria-hidden="true" /> : <MoonStar className="h-4 w-4" aria-hidden="true" />}
+              <span className="flex items-center gap-2.5">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-white/12 dark:text-white">
+                  {isDark ? <SunMedium className="h-3.5 w-3.5" aria-hidden="true" /> : <MoonStar className="h-3.5 w-3.5" aria-hidden="true" />}
                 </span>
                 <span>
                   <span className="block">{copy.controls.theme}</span>
-                  <span className="mt-0.5 block text-xs font-semibold text-foreground/48 dark:text-white/45">{isDark ? copy.controls.dark : copy.controls.light}</span>
+                  <span className="mt-0.5 block text-[10px] font-semibold text-foreground/48 dark:text-white/45">{isDark ? copy.controls.dark : copy.controls.light}</span>
                 </span>
               </span>
-              <span aria-hidden="true" className="relative h-7 w-12 rounded-full bg-slate-900/[0.06] p-1 dark:bg-white/16" style={{ direction: "ltr" }}>
+              <span aria-hidden="true" className="relative h-6 w-10 rounded-full bg-slate-900/[0.06] p-1 dark:bg-white/16" style={{ direction: "ltr" }}>
                 <span
-                  className={`absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-full shadow-[0_5px_14px_rgba(15,23,42,0.14)] transition-transform duration-200 ${isDark ? "translate-x-5 bg-white text-slate-950" : "translate-x-0 bg-primary text-white"}`}
+                  className={`absolute left-1 top-1 flex h-4 w-4 items-center justify-center rounded-full shadow-[0_4px_12px_rgba(15,23,42,0.12)] transition-transform duration-200 ${isDark ? "translate-x-4 bg-white text-slate-950" : "translate-x-0 bg-primary text-white"}`}
                 >
-                  {isDark ? <SunMedium className="h-3 w-3" aria-hidden="true" /> : <MoonStar className="h-3 w-3" aria-hidden="true" />}
+                  {isDark ? <SunMedium className="h-2.5 w-2.5" aria-hidden="true" /> : <MoonStar className="h-2.5 w-2.5" aria-hidden="true" />}
                 </span>
               </span>
             </button>
 
-            <div className="my-2 h-px bg-border/60 dark:bg-white/10" />
+            <div className="my-1 h-px bg-border/60 dark:bg-white/10" />
 
             <button
               type="button"
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="flex w-full items-center justify-between rounded-[1rem] px-3.5 py-3.5 text-start text-sm font-black text-red-600 transition duration-200 hover:bg-red-50 disabled:pointer-events-none disabled:opacity-60 dark:text-red-300 dark:hover:bg-red-500/10"
+              className="flex w-full items-center justify-between rounded-[0.8rem] px-2.5 py-2.5 text-start text-xs font-black text-red-600 transition duration-200 hover:bg-red-50 disabled:pointer-events-none disabled:opacity-60 dark:text-red-300 dark:hover:bg-red-500/10"
               role="menuitem"
             >
-              <span className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-300">
-                  <LogOut className="h-4 w-4" aria-hidden="true" />
+              <span className="flex items-center gap-2.5">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-300">
+                  <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
                 </span>
                 {isLoggingOut ? (isArabic ? "جاري الخروج..." : "Logging out...") : logoutLabel}
               </span>
