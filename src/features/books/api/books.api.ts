@@ -1,4 +1,5 @@
 import { apiFetch } from "@/shared/api/client";
+import { buildPageMeta, defaultCatalogPerPage } from "@/shared/api/paging";
 import type { Book, CatalogListParams, PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { BookItemView } from "../books.types";
@@ -9,6 +10,13 @@ function formatPrice(value: number, currency: string, locale: Locale): string {
     currency,
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+function emptyBooksPage(params: CatalogListParams): PaginatedEnvelope<BookItemView> {
+  return {
+    data: [],
+    meta: buildPageMeta(0, params.page, params.perPage ?? defaultCatalogPerPage),
+  };
 }
 
 function toBookView(book: Book, locale: Locale): BookItemView {
@@ -43,21 +51,26 @@ function toBookView(book: Book, locale: Locale): BookItemView {
 
 export async function getBooks(params: CatalogListParams): Promise<PaginatedEnvelope<BookItemView>> {
   const locale = params.locale ?? "en";
-  const response = await apiFetch<PaginatedEnvelope<Book>>("/books", {
-    searchParams: {
-      locale,
-      page: params.page,
-      perPage: params.perPage,
-      search: params.search,
-      sort: params.sort ?? "-publishedAt",
-      "filter[category]": params.category,
-    },
-  });
 
-  return {
-    ...response,
-    data: response.data.map((book) => toBookView(book, locale)),
-  };
+  try {
+    const response = await apiFetch<PaginatedEnvelope<Book>>("/books", {
+      searchParams: {
+        locale,
+        page: params.page,
+        perPage: params.perPage,
+        search: params.search,
+        sort: params.sort ?? "-publishedAt",
+        "filter[category]": params.category,
+      },
+    });
+
+    return {
+      ...response,
+      data: response.data.map((book) => toBookView(book, locale)),
+    };
+  } catch {
+    return emptyBooksPage(params);
+  }
 }
 
 export async function getBookBySlug(slug: string, locale: Locale): Promise<BookItemView | null> {
