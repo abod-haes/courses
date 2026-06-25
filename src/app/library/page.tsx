@@ -5,6 +5,7 @@ import { getLibraryFromApi } from "@/features/checkout/checkout.api";
 import { getCheckoutCopy } from "@/features/checkout/checkout.data";
 import { generateLibraryMetadata } from "@/features/checkout/checkout-pages.component";
 import type { CheckoutCopy, CheckoutItemView } from "@/features/checkout/checkout.types";
+import { ApiError } from "@/shared/api/client";
 import { websiteSessionCookieName } from "@/shared/api/website-session";
 import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
@@ -49,13 +50,22 @@ async function requireSessionToken(returnTo: string): Promise<string> {
   return token;
 }
 
+function handleProtectedApiError(error: unknown, returnTo: string): never {
+  if (error instanceof ApiError && error.status === 401) {
+    redirect(`/login?redirectTo=${encodeURIComponent(returnTo)}&sessionExpired=1`);
+  }
+
+  throw error;
+}
+
 export default async function Page({ searchParams }: LibraryPageProps) {
   const locale = await getCurrentLocale();
   const copy = getCheckoutCopy(locale);
   const params = searchParams ? await searchParams : {};
   const activeTab = resolveLibraryTab(getSearchParamValue(params.tab));
-  const token = await requireSessionToken(`/library${activeTab === "books" ? "?tab=books" : ""}`);
-  const library = await getLibraryFromApi(locale, copy, token).catch(() => ({ courses: [], books: [] }));
+  const returnTo = `/library${activeTab === "books" ? "?tab=books" : ""}`;
+  const token = await requireSessionToken(returnTo);
+  const library = await getLibraryFromApi(locale, copy, token).catch((error) => handleProtectedApiError(error, returnTo));
   const activeItems = activeTab === "courses" ? library.courses : library.books;
 
   return (
@@ -65,10 +75,10 @@ export default async function Page({ searchParams }: LibraryPageProps) {
           <Reveal preset="fadeUp" className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
               <p className="text-[0.68rem] font-black uppercase tracking-[0.16em] text-primary">{copy.library.eyebrow}</p>
-              <h1 className="mt-3 text-[2rem] font-black leading-tight tracking-[-0.04em] text-foreground sm:text-[2.6rem]">
+              <h1 className="mt-3 text-4xl font-black text-foreground sm:text-5xl">
                 {copy.library.title}
               </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-foreground/68 sm:text-[0.95rem]">{copy.library.subtitle}</p>
+              <p className="mt-3 max-w-2xl text-sm text-foreground/68 sm:text-base">{copy.library.subtitle}</p>
             </div>
 
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/70 bg-surface p-1 shadow-[0_8px_22px_rgba(15,23,42,0.04)]">
@@ -94,10 +104,10 @@ export default async function Page({ searchParams }: LibraryPageProps) {
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
         <Reveal preset="fadeUp" className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-xl font-black tracking-[-0.03em] text-foreground">
+            <h2 className="text-xl font-black text-foreground">
               {activeTab === "courses" ? copy.library.coursesTab : copy.library.booksTab}
             </h2>
-            <p className="mt-1 text-sm leading-6 text-foreground/58">
+            <p className="mt-1 text-sm text-foreground/58">
               {activeItems.length > 0
                 ? `${activeItems.length} ${activeTab === "courses" ? copy.labels.course : copy.labels.book}`
                 : copy.library.emptyDescription}
@@ -193,10 +203,10 @@ function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: Check
               <span className="rounded-full bg-section-bg px-3 py-1 text-[0.68rem] font-bold text-foreground/58">{item.accessLabel}</span>
             </div>
 
-            <h3 className="mt-3 line-clamp-2 text-lg font-black leading-snug tracking-[-0.03em] text-foreground sm:text-xl">
+            <h3 className="mt-3 line-clamp-2 text-lg font-black text-foreground sm:text-xl">
               {item.title}
             </h3>
-            <p className="mt-2 line-clamp-2 text-sm leading-6 text-foreground/62">{item.description}</p>
+            <p className="mt-2 line-clamp-2 text-sm text-foreground/62">{item.description}</p>
           </div>
 
           <div className="flex flex-col justify-between gap-4 border-t border-border/70 bg-section-bg/70 p-5 md:border-s md:border-t-0">
@@ -204,7 +214,7 @@ function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: Check
               <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-foreground/42">
                 {isCourse ? copy.labels.lifetimeAccess : copy.labels.digitalAccess}
               </p>
-              <p className="mt-2 text-xl font-black tracking-[-0.03em] text-foreground">{item.price}</p>
+              <p className="mt-2 text-xl font-black text-foreground">{item.price}</p>
             </div>
 
             <Button href={item.href} className="w-full rounded-full">
@@ -224,8 +234,8 @@ function LibraryEmptyState({ copy, href, label }: Readonly<{ copy: CheckoutCopy;
         <span className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary/8 text-primary">
           <ShieldCheck className="h-7 w-7" aria-hidden="true" />
         </span>
-        <h3 className="mt-4 text-lg font-black tracking-[-0.03em] text-foreground">{copy.library.emptyTitle}</h3>
-        <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-foreground/60">{copy.library.emptyDescription}</p>
+        <h3 className="mt-4 text-lg font-black text-foreground">{copy.library.emptyTitle}</h3>
+        <p className="mx-auto mt-2 max-w-md text-sm text-foreground/60">{copy.library.emptyDescription}</p>
         <Button href={href} className="mt-5 rounded-full">
           {label}
         </Button>
