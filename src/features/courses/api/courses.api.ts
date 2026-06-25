@@ -1,4 +1,5 @@
 import { apiFetch } from "@/shared/api/client";
+import { buildPageMeta, defaultCatalogPerPage } from "@/shared/api/paging";
 import type { Course, CatalogListParams, PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { CourseItemView } from "../courses.types";
@@ -20,6 +21,13 @@ function totalMinutes(course: Course): number {
     (sum, section) => sum + section.lessons.reduce((lessonSum, lesson) => lessonSum + lesson.durationMinutes, 0),
     0,
   );
+}
+
+function emptyCoursesPage(params: CatalogListParams): PaginatedEnvelope<CourseItemView> {
+  return {
+    data: [],
+    meta: buildPageMeta(0, params.page, params.perPage ?? defaultCatalogPerPage),
+  };
 }
 
 function toCourseView(course: Course, locale: Locale): CourseItemView {
@@ -56,21 +64,26 @@ function toCourseView(course: Course, locale: Locale): CourseItemView {
 
 export async function getCourses(params: CatalogListParams): Promise<PaginatedEnvelope<CourseItemView>> {
   const locale = params.locale ?? "en";
-  const response = await apiFetch<PaginatedEnvelope<Course>>("/courses", {
-    searchParams: {
-      locale,
-      page: params.page,
-      perPage: params.perPage,
-      search: params.search,
-      sort: params.sort ?? "-publishedAt",
-      "filter[category]": params.category,
-    },
-  });
 
-  return {
-    ...response,
-    data: response.data.map((course) => toCourseView(course, locale)),
-  };
+  try {
+    const response = await apiFetch<PaginatedEnvelope<Course>>("/courses", {
+      searchParams: {
+        locale,
+        page: params.page,
+        perPage: params.perPage,
+        search: params.search,
+        sort: params.sort ?? "-publishedAt",
+        "filter[category]": params.category,
+      },
+    });
+
+    return {
+      ...response,
+      data: response.data.map((course) => toCourseView(course, locale)),
+    };
+  } catch {
+    return emptyCoursesPage(params);
+  }
 }
 
 export async function getCourseBySlug(slug: string, locale: Locale): Promise<CourseItemView | null> {
