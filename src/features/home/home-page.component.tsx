@@ -54,6 +54,10 @@ export async function HomePage() {
   const fallbackCopy = getHomeMessages(locale);
   const { copy, catalog } = await getHomePageData(locale, fallbackCopy);
 
+  const hasCourses = catalog.courses.length > 0;
+  const hasBooks = catalog.books.length > 0;
+  const hasArticles = catalog.articles.length > 0;
+
   return (
     <div className="home-scroll-area h-full overflow-y-auto">
       <HomeHero copy={copy} />
@@ -61,39 +65,46 @@ export async function HomePage() {
       <FounderSection copy={copy} />
 
       <SiteContainer>
-        <HomeSection
-          section="courses"
-          title={copy.sections.courses.title}
-          description={copy.sections.courses.description}
-          emptyState={copy.sections.courses.emptyState}
-          items={catalog.courses}
-          ctaLabel={copy.actions.viewAll}
-          ctaHref="/courses"
-          copy={copy}
-        />
+        {hasCourses ? (
+          <HomeSection
+            section="courses"
+            title={copy.sections.courses.title}
+            description={copy.sections.courses.description}
+            emptyState={copy.sections.courses.emptyState}
+            items={catalog.courses}
+            ctaLabel={copy.actions.viewAll}
+            ctaHref="/courses"
+            copy={copy}
+          />
+        ) : null}
 
-        <HomeSection
-          section="books"
-          title={copy.sections.books.title}
-          description={copy.sections.books.description}
-          emptyState={copy.sections.books.emptyState}
-          items={catalog.books}
-          ctaLabel={copy.actions.viewAll}
-          ctaHref="/books"
-          copy={copy}
-        />
+        {hasBooks ? (
+          <HomeSection
+            section="books"
+            title={copy.sections.books.title}
+            description={copy.sections.books.description}
+            emptyState={copy.sections.books.emptyState}
+            items={catalog.books}
+            ctaLabel={copy.actions.viewAll}
+            ctaHref="/books"
+            copy={copy}
+          />
+        ) : null}
+
         <HomeStatsSection copy={copy} />
 
-        <HomeSection
-          section="articles"
-          title={copy.sections.articles.title}
-          description={copy.sections.articles.description}
-          emptyState={copy.sections.articles.emptyState}
-          items={catalog.articles}
-          ctaLabel={copy.actions.viewAll}
-          ctaHref="/articles"
-          copy={copy}
-        />
+        {hasArticles ? (
+          <HomeSection
+            section="articles"
+            title={copy.sections.articles.title}
+            description={copy.sections.articles.description}
+            emptyState={copy.sections.articles.emptyState}
+            items={catalog.articles}
+            ctaLabel={copy.actions.viewAll}
+            ctaHref="/articles"
+            copy={copy}
+          />
+        ) : null}
       </SiteContainer>
     </div>
   );
