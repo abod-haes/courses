@@ -1,7 +1,15 @@
 import { apiFetch } from "@/shared/api/client";
+import { buildPageMeta, defaultCatalogPerPage } from "@/shared/api/paging";
 import type { Article, CatalogListParams, PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { ArticleDetail, ArticleSummary } from "../articles.types";
+
+function emptyArticlesPage(params: CatalogListParams): PaginatedEnvelope<ArticleSummary> {
+  return {
+    data: [],
+    meta: buildPageMeta(0, params.page, params.perPage ?? defaultCatalogPerPage),
+  };
+}
 
 function toArticleSummary(article: Article): ArticleSummary {
   return {
@@ -20,21 +28,26 @@ function toArticleSummary(article: Article): ArticleSummary {
 
 export async function getArticles(params: CatalogListParams): Promise<PaginatedEnvelope<ArticleSummary>> {
   const locale = params.locale ?? "en";
-  const response = await apiFetch<PaginatedEnvelope<Article>>("/articles", {
-    searchParams: {
-      locale,
-      page: params.page,
-      perPage: params.perPage,
-      search: params.search,
-      sort: params.sort ?? "-publishedAt",
-      "filter[category]": params.category,
-    },
-  });
 
-  return {
-    ...response,
-    data: response.data.map(toArticleSummary),
-  };
+  try {
+    const response = await apiFetch<PaginatedEnvelope<Article>>("/articles", {
+      searchParams: {
+        locale,
+        page: params.page,
+        perPage: params.perPage,
+        search: params.search,
+        sort: params.sort ?? "-publishedAt",
+        "filter[category]": params.category,
+      },
+    });
+
+    return {
+      ...response,
+      data: response.data.map(toArticleSummary),
+    };
+  } catch {
+    return emptyArticlesPage(params);
+  }
 }
 
 export async function getArticleBySlug(slug: string, locale: Locale): Promise<ArticleDetail | null> {
