@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import { websiteSessionKey } from "@/shared/api/website-session";
-import { writeStoredCheckoutItems } from "../checkout-storage";
+import { websiteSessionCookieName, websiteSessionKey } from "@/shared/api/website-session";
+import { readStoredCheckoutItems, writeStoredCheckoutItems } from "../checkout-storage";
 import type { CheckoutItemType } from "../checkout.types";
 
 type ProtectedCheckoutButtonProps = Readonly<{
@@ -18,19 +18,30 @@ function checkoutPath(itemType: CheckoutItemType, itemId: string | number): stri
   return `/checkout?itemType=${encodeURIComponent(itemType)}&itemId=${encodeURIComponent(String(itemId))}`;
 }
 
+function hasSessionCookie(): boolean {
+  return document.cookie.split(";").some((cookie) => cookie.trim().startsWith(`${websiteSessionCookieName}=`));
+}
+
+function hasWebsiteSession(): boolean {
+  return Boolean(window.localStorage.getItem(websiteSessionKey) || hasSessionCookie());
+}
+
 export function ProtectedCheckoutButton({ itemType, itemId, children, className }: ProtectedCheckoutButtonProps) {
   const router = useRouter();
 
   function handleClick() {
     const nextPath = checkoutPath(itemType, itemId);
-    const hasSession = window.localStorage.getItem(websiteSessionKey);
 
-    if (!hasSession) {
+    if (!hasWebsiteSession()) {
       router.push(`/login?redirectTo=${encodeURIComponent(nextPath)}`);
       return;
     }
 
-    writeStoredCheckoutItems([{ type: itemType, id: Number(itemId), quantity: 1 }]);
+    const numericId = Number(itemId);
+    const currentItems = readStoredCheckoutItems();
+    const exists = currentItems.some((item) => item.type === itemType && item.id === numericId);
+
+    writeStoredCheckoutItems(exists ? currentItems : [...currentItems, { type: itemType, id: numericId, quantity: 1 }]);
     router.push(nextPath);
   }
 
