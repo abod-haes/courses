@@ -19,17 +19,21 @@ export async function getCatalogCategoryOptions(
   locale: "ar" | "en",
   allLabel: string,
 ): Promise<CatalogCategoryOption[]> {
-  const response = await apiFetch<CategoriesResponse>("/categories", {
-    searchParams: {
-      locale,
-      "filter[type]": type,
-      "filter[isActive]": true,
-    },
-  });
+  try {
+    const response = await apiFetch<CategoriesResponse>("/categories", {
+      searchParams: {
+        locale,
+        "filter[type]": type,
+        "filter[isActive]": true,
+      },
+    });
 
-  const categories = getCategoriesPayload(response)
-    .filter((category) => category.isActive !== false && category.type === type)
-    .map((category) => ({ key: category.slug, label: category.name }));
+    const categories = getCategoriesPayload(response)
+      .filter((category) => category.isActive !== false && category.type === type)
+      .map((category) => ({ key: category.slug, label: category.name }));
 
-  return [{ key: "all", label: allLabel }, ...categories];
+    return [{ key: "all", label: allLabel }, ...categories];
+  } catch {
+    return [{ key: "all", label: allLabel }];
+  }
 }
