@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight, Globe2, LogIn, Menu, MoonStar, ShoppingCart, SunMedium, UserRound, X } from "lucide-react";
+import { ChevronRight, Globe2, LogIn, LogOut, Menu, MoonStar, ShoppingCart, SunMedium, UserRound, X } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
@@ -11,6 +11,7 @@ import { usePreferences } from "@/components/preferences-provider";
 import { SiteContainer } from "@/shared/components/layout/site-container";
 import { Button } from "@/shared/components/ui/button";
 import { websiteSessionCookieName, websiteSessionKey } from "@/shared/api/website-session";
+import { logoutUser } from "@/features/auth/api/auth.api";
 import { readStoredCheckoutItems } from "@/features/checkout/checkout-storage";
 import type { HomeMessages } from "../home.types";
 import { HomeHeaderControls } from "./home-header-controls.component";
@@ -58,6 +59,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   const [portalReady, setPortalReady] = useState(false);
   const [currentHash, setCurrentHash] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [cartHref, setCartHref] = useState("/checkout?empty=1");
   const pathname = usePathname();
@@ -68,6 +70,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   const homeLabel = copy.navigation.home ?? (isArabic ? "الرئيسية" : "Home");
   const cartLabel = isArabic ? "السلة" : "Cart";
   const libraryLabel = isArabic ? "مكتبتي" : "My library";
+  const logoutLabel = isArabic ? "تسجيل الخروج" : "Logout";
 
   const navItems = useMemo(
     () => [
@@ -161,6 +164,26 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
     };
   }, [menuOpen]);
 
+  async function handleLogout() {
+    if (isLoggingOut) return;
+
+    setIsLoggingOut(true);
+
+    try {
+      await logoutUser();
+    } finally {
+      setMenuOpen(false);
+      setIsAuthenticated(false);
+      setCartCount(0);
+      setCartHref("/checkout?empty=1");
+      setIsLoggingOut(false);
+
+      if (window.location.pathname !== "/") {
+        window.location.assign("/");
+      }
+    }
+  }
+
   const cartButton = (
     <Button href={cartHref} variant="secondary" size="sm" className="relative rounded-full px-3" onClick={() => setMenuOpen(false)}>
       <ShoppingCart className="h-4 w-4" aria-hidden="true" />
@@ -173,6 +196,13 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
     </Button>
   );
 
+  const logoutButton = (
+    <Button type="button" variant="secondary" size="sm" className="rounded-full px-3" onClick={handleLogout} disabled={isLoggingOut}>
+      <LogOut className="h-4 w-4" aria-hidden="true" />
+      {isLoggingOut ? (isArabic ? "جاري الخروج..." : "Logging out...") : logoutLabel}
+    </Button>
+  );
+
   const desktopActions = isAuthenticated ? (
     <>
       {cartButton}
@@ -180,6 +210,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
         <UserRound className="h-4 w-4" aria-hidden="true" />
         {libraryLabel}
       </Button>
+      {logoutButton}
     </>
   ) : (
     <>
@@ -277,6 +308,10 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                     <Button href="/library" variant="primary" size="sm" className="w-full rounded-full" onClick={() => setMenuOpen(false)}>
                       <UserRound className="h-4 w-4" aria-hidden="true" />
                       {libraryLabel}
+                    </Button>
+                    <Button type="button" variant="secondary" size="sm" className="w-full rounded-full" onClick={handleLogout} disabled={isLoggingOut}>
+                      <LogOut className="h-4 w-4" aria-hidden="true" />
+                      {isLoggingOut ? (isArabic ? "جاري الخروج..." : "Logging out...") : logoutLabel}
                     </Button>
                   </>
                 ) : (
