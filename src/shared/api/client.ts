@@ -25,22 +25,6 @@ function withProtocol(url: string): string {
   return /^https?:\/\//i.test(url) ? url : `https://${url}`;
 }
 
-function resolveSiteUrl(): string {
-  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-
-  if (configuredSiteUrl) {
-    return withProtocol(configuredSiteUrl);
-  }
-
-  const vercelUrl = process.env.VERCEL_URL?.trim() ?? process.env.NEXT_PUBLIC_VERCEL_URL?.trim();
-
-  if (vercelUrl) {
-    return withProtocol(vercelUrl);
-  }
-
-  return "http://localhost:3000";
-}
-
 function normalizeApiBaseUrl(baseUrl: string): string {
   const trimmed = baseUrl.trim().replace(/\/+$/, "");
 
@@ -65,32 +49,25 @@ function normalizeApiBaseUrl(baseUrl: string): string {
   }
 }
 
-function resolveMockBaseUrl(): string {
-  if (typeof window !== "undefined") {
-    return "/api/mock";
-  }
-
-  return `${resolveSiteUrl()}/api/mock`;
+function isMockApiBaseUrl(baseUrl: string): boolean {
+  const normalized = baseUrl.trim().replace(/\/+$/, "").toLowerCase();
+  return normalized === "/api/mock" || normalized.endsWith("/api/mock");
 }
 
-function shouldUseMockFallback(): boolean {
-  return process.env.API_ENABLE_MOCK_FALLBACK !== "false" && process.env.NEXT_PUBLIC_API_ENABLE_MOCK_FALLBACK !== "false";
-}
-
-function resolveApiBaseUrls(): { primary: string; fallback: string | null } {
+function resolveApiBaseUrl(): string {
   const configuredApiUrl = process.env.API_BASE_URL?.trim() ?? process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
-  const mockBaseUrl = resolveMockBaseUrl();
 
   if (!configuredApiUrl) {
-    return { primary: mockBaseUrl, fallback: null };
+    throw new ApiError("API base URL is not configured. Set API_BASE_URL or NEXT_PUBLIC_API_BASE_URL.", 0);
   }
 
-  const primary = normalizeApiBaseUrl(configuredApiUrl);
+  const apiBaseUrl = normalizeApiBaseUrl(configuredApiUrl);
 
-  return {
-    primary,
-    fallback: shouldUseMockFallback() && primary !== mockBaseUrl ? mockBaseUrl : null,
-  };
+  if (!apiBaseUrl || isMockApiBaseUrl(apiBaseUrl)) {
+    throw new ApiError("Mock API is disabled. Configure a real Laravel API base URL.", 0);
+  }
+
+  return apiBaseUrl;
 }
 
 function appendSearchParams(url: string, params?: Record<string, SearchParamValue>): string {
@@ -169,10 +146,6 @@ function redirectClientToLogin(): void {
   window.location.assign(`/login?redirectTo=${encodeURIComponent(currentPath)}&sessionExpired=1`);
 }
 
-function isNetworkFailure(error: unknown): boolean {
-  return error instanceof TypeError || (error instanceof Error && /fetch failed|network|failed/i.test(error.message));
-}
-
 async function sendRequest(url: string, init: RequestInit): Promise<Response> {
   return fetch(url, init);
 }
@@ -180,7 +153,7 @@ async function sendRequest(url: string, init: RequestInit): Promise<Response> {
 export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
   const { searchParams, headers: initHeaders, ...init } = options;
   const headers = new Headers(initHeaders);
-  const { primary, fallback } = resolveApiBaseUrls();
+  const apiBaseUrl = resolveApiBaseUrl();
 
   if (!headers.has("Accept")) {
     headers.set("Accept", "application/json");
@@ -202,17 +175,9 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   let response: Response;
 
   try {
-    response = await sendRequest(buildApiUrl(primary, path, searchParams), requestInit);
+    response = await sendRequest(buildApiUrl(apiBaseUrl, path, searchParams), requestInit);
   } catch (error) {
-    if (!fallback || !isNetworkFailure(error)) {
-      throw new ApiError("Unable to reach the API server.", 0, error);
-    }
-
-    response = await sendRequest(buildApiUrl(fallback, path, searchParams), requestInit);
-  }
-
-  if (!response.ok && fallback && response.status >= 500) {
-    response = await sendRequest(buildApiUrl(fallback, path, searchParams), requestInit);
+    throw new ApiError("Unable to reach the API server.", 0, error);
   }
 
   if (!response.ok) {
