@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight, Globe2, LogIn, LogOut, Menu, MoonStar, ShoppingCart, SunMedium, UserRound, X } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePreferences } from "@/components/preferences-provider";
 import { SiteContainer } from "@/shared/components/layout/site-container";
@@ -56,12 +56,14 @@ function getCartHref(): string {
 export function HomeHeader({ copy }: HomeHeaderProps) {
   const { locale, theme, toggleLocale, toggleTheme } = usePreferences();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [portalReady, setPortalReady] = useState(false);
   const [currentHash, setCurrentHash] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [cartHref, setCartHref] = useState("/checkout?empty=1");
+  const accountMenuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const isArabic = locale === "ar";
   const isDark = theme === "dark";
@@ -71,6 +73,8 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   const cartLabel = isArabic ? "السلة" : "Cart";
   const libraryLabel = isArabic ? "مكتبتي" : "My library";
   const logoutLabel = isArabic ? "تسجيل الخروج" : "Logout";
+  const accountLabel = isArabic ? "حسابي" : "My account";
+  const quickActionsLabel = isArabic ? "إجراءات سريعة" : "Quick actions";
 
   const navItems = useMemo(
     () => [
@@ -131,12 +135,26 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setMenuOpen(false);
+        setAccountMenuOpen(false);
       }
     }
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  useEffect(() => {
+    if (!accountMenuOpen) return;
+
+    function handlePointerDown(event: PointerEvent) {
+      if (!accountMenuRef.current?.contains(event.target as Node)) {
+        setAccountMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [accountMenuOpen]);
 
   useEffect(() => {
     function syncHash() {
@@ -173,6 +191,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
       await logoutUser();
     } finally {
       setMenuOpen(false);
+      setAccountMenuOpen(false);
       setIsAuthenticated(false);
       setCartCount(0);
       setCartHref("/checkout?empty=1");
@@ -184,34 +203,131 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
     }
   }
 
-  const cartButton = (
-    <Button href={cartHref} variant="secondary" size="sm" className="relative rounded-full px-3" onClick={() => setMenuOpen(false)}>
-      <ShoppingCart className="h-4 w-4" aria-hidden="true" />
-      <span>{cartLabel}</span>
-      {cartCount > 0 ? (
-        <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[0.6rem] font-black text-white rtl:-left-1 rtl:right-auto">
-          {cartCount}
-        </span>
-      ) : null}
-    </Button>
-  );
+  const accountMenu = (
+    <div ref={accountMenuRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setAccountMenuOpen((isOpen) => !isOpen)}
+        className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-primary/15 bg-white/88 text-primary shadow-[0_10px_26px_rgba(15,23,42,0.08)] ring-1 ring-white/60 transition duration-200 hover:-translate-y-0.5 hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-white/10 dark:bg-white/10 dark:text-white dark:ring-white/12 dark:hover:bg-primary"
+        aria-haspopup="menu"
+        aria-expanded={accountMenuOpen}
+        aria-label={accountLabel}
+      >
+        <UserRound className="h-4.5 w-4.5" aria-hidden="true" />
+        {cartCount > 0 ? (
+          <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[0.6rem] font-black text-white rtl:-left-1 rtl:right-auto">
+            {cartCount}
+          </span>
+        ) : null}
+      </button>
 
-  const logoutButton = (
-    <Button type="button" variant="secondary" size="sm" className="rounded-full px-3" onClick={handleLogout} disabled={isLoggingOut}>
-      <LogOut className="h-4 w-4" aria-hidden="true" />
-      {isLoggingOut ? (isArabic ? "جاري الخروج..." : "Logging out...") : logoutLabel}
-    </Button>
+      <AnimatePresence>
+        {accountMenuOpen ? (
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.98 }}
+            transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+            className={`absolute top-full z-[80] mt-3 w-72 overflow-hidden rounded-[1.15rem] border border-border/70 bg-background/98 p-2 text-start shadow-[0_24px_70px_rgba(15,23,42,0.18)] ring-1 ring-white/75 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/98 dark:ring-white/10 ${isArabic ? "left-0" : "right-0"}`}
+            role="menu"
+          >
+            <div className="mb-1 flex items-center gap-3 rounded-[0.95rem] bg-primary/7 px-3 py-3 dark:bg-white/8">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-[0_10px_24px_rgba(29,23,213,0.22)]">
+                <UserRound className="h-4.5 w-4.5" aria-hidden="true" />
+              </span>
+              <span>
+                <span className="block text-sm font-black text-foreground dark:text-white">{accountLabel}</span>
+                <span className="block text-xs font-semibold text-foreground/50 dark:text-white/45">{quickActionsLabel}</span>
+              </span>
+            </div>
+
+            <Link
+              href={cartHref}
+              onClick={() => setAccountMenuOpen(false)}
+              className="flex w-full items-center justify-between rounded-[0.9rem] px-3 py-3 text-sm font-semibold text-foreground/78 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/78 dark:hover:bg-white/10 dark:hover:text-white"
+              role="menuitem"
+            >
+              <span className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-white/12 dark:text-white">
+                  <ShoppingCart className="h-4 w-4" aria-hidden="true" />
+                </span>
+                {cartLabel}
+              </span>
+              {cartCount > 0 ? <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-black text-white">{cartCount}</span> : null}
+            </Link>
+
+            <Link
+              href="/library"
+              onClick={() => setAccountMenuOpen(false)}
+              className="mt-1 flex w-full items-center gap-3 rounded-[0.9rem] px-3 py-3 text-sm font-semibold text-foreground/78 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/78 dark:hover:bg-white/10 dark:hover:text-white"
+              role="menuitem"
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-white/12 dark:text-white">
+                <UserRound className="h-4 w-4" aria-hidden="true" />
+              </span>
+              {libraryLabel}
+            </Link>
+
+            <div className="my-2 h-px bg-border/60 dark:bg-white/10" />
+
+            <button
+              type="button"
+              onClick={() => {
+                toggleLocale();
+                setAccountMenuOpen(false);
+              }}
+              className="flex w-full items-center justify-between rounded-[0.9rem] px-3 py-3 text-start text-sm font-semibold text-foreground/78 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/78 dark:hover:bg-white/10 dark:hover:text-white"
+              role="menuitem"
+            >
+              <span className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-white/12 dark:text-white">
+                  <Globe2 className="h-4 w-4" aria-hidden="true" />
+                </span>
+                {copy.controls.language}
+              </span>
+              <span className="text-xs font-black tracking-[0.14em] text-primary dark:text-white" dir="ltr">{languageLabel}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                toggleTheme();
+                setAccountMenuOpen(false);
+              }}
+              className="mt-1 flex w-full items-center justify-between rounded-[0.9rem] px-3 py-3 text-start text-sm font-semibold text-foreground/78 transition duration-200 hover:bg-primary/8 hover:text-primary dark:text-white/78 dark:hover:bg-white/10 dark:hover:text-white"
+              role="menuitem"
+            >
+              <span className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-white/12 dark:text-white">
+                  {isDark ? <SunMedium className="h-4 w-4" aria-hidden="true" /> : <MoonStar className="h-4 w-4" aria-hidden="true" />}
+                </span>
+                {copy.controls.theme}
+              </span>
+              <span className="text-xs font-bold text-foreground/48 dark:text-white/45">{isDark ? copy.controls.dark : copy.controls.light}</span>
+            </button>
+
+            <div className="my-2 h-px bg-border/60 dark:bg-white/10" />
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="flex w-full items-center gap-3 rounded-[0.9rem] px-3 py-3 text-start text-sm font-black text-red-600 transition duration-200 hover:bg-red-50 disabled:pointer-events-none disabled:opacity-60 dark:text-red-300 dark:hover:bg-red-500/10"
+              role="menuitem"
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-300">
+                <LogOut className="h-4 w-4" aria-hidden="true" />
+              </span>
+              {isLoggingOut ? (isArabic ? "جاري الخروج..." : "Logging out...") : logoutLabel}
+            </button>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </div>
   );
 
   const desktopActions = isAuthenticated ? (
-    <>
-      {cartButton}
-      <Button href="/library" variant="ghost" size="sm" className="rounded-full px-3">
-        <UserRound className="h-4 w-4" aria-hidden="true" />
-        {libraryLabel}
-      </Button>
-      {logoutButton}
-    </>
+    accountMenu
   ) : (
     <>
       <Button href="/login" variant="secondary" size="sm" className="rounded-full px-3">
@@ -304,7 +420,11 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               <div className="mt-5 grid gap-3">
                 {isAuthenticated ? (
                   <>
-                    {cartButton}
+                    <Button href={cartHref} variant="secondary" size="sm" className="relative w-full rounded-full" onClick={() => setMenuOpen(false)}>
+                      <ShoppingCart className="h-4 w-4" aria-hidden="true" />
+                      <span>{cartLabel}</span>
+                      {cartCount > 0 ? <span className="ms-1 rounded-full bg-primary px-2 py-0.5 text-[0.65rem] font-black text-white">{cartCount}</span> : null}
+                    </Button>
                     <Button href="/library" variant="primary" size="sm" className="w-full rounded-full" onClick={() => setMenuOpen(false)}>
                       <UserRound className="h-4 w-4" aria-hidden="true" />
                       {libraryLabel}
@@ -442,7 +562,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
               <div className="ms-auto hidden shrink-0 items-center gap-1 min-[1120px]:flex min-[1500px]:gap-2.5">
                 {desktopActions}
-                <HomeHeaderControls copy={copy.controls} />
+                {!isAuthenticated ? <HomeHeaderControls copy={copy.controls} /> : null}
               </div>
 
               <div className="ms-auto flex items-center gap-2 min-[1120px]:hidden">
