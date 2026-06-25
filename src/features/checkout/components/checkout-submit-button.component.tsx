@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LockKeyhole } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import { websiteSessionKey } from "@/shared/api/website-session";
+import { websiteSessionCookieName, websiteSessionKey } from "@/shared/api/website-session";
 import type { CheckoutItemView } from "../checkout.types";
 
 type CheckoutSubmitButtonProps = Readonly<{
@@ -12,6 +12,14 @@ type CheckoutSubmitButtonProps = Readonly<{
   label: string;
   loginRequiredLabel: string;
 }>;
+
+function hasSessionCookie(): boolean {
+  return document.cookie.split(";").some((cookie) => cookie.trim().startsWith(`${websiteSessionCookieName}=`));
+}
+
+function hasWebsiteSession(): boolean {
+  return Boolean(window.localStorage.getItem(websiteSessionKey) || hasSessionCookie());
+}
 
 function paymentUnavailableMessage(): string {
   const isArabic = document.documentElement.lang === "ar" || document.documentElement.dir === "rtl";
@@ -24,10 +32,9 @@ export function CheckoutSubmitButton({ items, label, loginRequiredLabel }: Check
   const [error, setError] = useState<string | null>(null);
 
   function handleCheckout() {
-    const hasSession = window.localStorage.getItem(websiteSessionKey);
     const currentPath = `${window.location.pathname}${window.location.search}`;
 
-    if (!hasSession) {
+    if (!hasWebsiteSession()) {
       router.push(`/login?redirectTo=${encodeURIComponent(currentPath)}`);
       return;
     }
