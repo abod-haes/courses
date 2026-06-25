@@ -160,29 +160,21 @@ export async function getCheckoutSelectionFromApi(
   itemId?: string,
   isEmpty?: boolean,
 ): Promise<CheckoutItemView[]> {
-  if (isEmpty) return [];
+  if (isEmpty || !itemType || !itemId) return [];
 
-  if (itemType === "course" && itemId) {
+  if (itemType === "course") {
     const page = await getCourses({ locale, page: 1, perPage: 100 });
     const course = page.data.find((entry) => entry.id === itemId);
     return course ? [courseToCheckoutItem(course, copy)] : [];
   }
 
-  if (itemType === "book" && itemId) {
+  if (itemType === "book") {
     const page = await getBooks({ locale, page: 1, perPage: 100 });
     const book = page.data.find((entry) => entry.id === itemId);
     return book ? [bookToCheckoutItem(book, copy)] : [];
   }
 
-  const [courses, books] = await Promise.all([
-    getCourses({ locale, page: 1, perPage: 1 }),
-    getBooks({ locale, page: 1, perPage: 1 }),
-  ]);
-
-  return [
-    ...courses.data.slice(0, 1).map((course) => courseToCheckoutItem(course, copy)),
-    ...books.data.slice(0, 1).map((book) => bookToCheckoutItem(book, copy)),
-  ];
+  return [];
 }
 
 export async function createCheckoutSession(items: readonly CheckoutItemView[]): Promise<string> {
