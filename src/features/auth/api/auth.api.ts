@@ -41,6 +41,7 @@ function saveSession(session: string, user?: User): void {
   }
 
   document.cookie = `${websiteSessionCookieName}=${encodeURIComponent(session)}; path=/; max-age=2592000; SameSite=Lax`;
+  window.dispatchEvent(new Event("iass:website-session-changed"));
 }
 
 export async function loginUser(payload: LoginPayload): Promise<User | undefined> {
