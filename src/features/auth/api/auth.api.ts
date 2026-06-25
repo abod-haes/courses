@@ -1,4 +1,4 @@
-import { apiFetch } from "@/shared/api/client";
+import { apiFetch, clearWebsiteClientSession } from "@/shared/api/client";
 import type { User } from "@/shared/api/types";
 import { websiteSessionCookieName, websiteSessionKey, websiteUserKey } from "@/shared/api/website-session";
 
@@ -79,6 +79,16 @@ export async function registerUser(payload: RegisterPayload): Promise<User | und
   }
 
   return user;
+}
+
+export async function logoutUser(): Promise<void> {
+  try {
+    await apiFetch<unknown>("/auth/logout", {
+      method: "POST",
+    });
+  } finally {
+    clearWebsiteClientSession();
+  }
 }
 
 export async function requestPasswordReset(email: string): Promise<void> {
