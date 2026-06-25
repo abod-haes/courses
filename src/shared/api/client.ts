@@ -7,6 +7,8 @@ type ApiFetchOptions = RequestInit &
     searchParams?: Record<string, SearchParamValue>;
   }>;
 
+const checkoutCartStorageKey = "iass:checkout:cart";
+
 export class ApiError extends Error {
   readonly status: number;
   readonly details: unknown;
@@ -40,7 +42,7 @@ function resolveSiteUrl(): string {
 }
 
 function normalizeApiBaseUrl(baseUrl: string): string {
-  const trimmed = baseUrl.trim().replace(/\/$/, "");
+  const trimmed = baseUrl.trim().replace(/\/+$/, "");
 
   if (!trimmed || trimmed.startsWith("/")) {
     return trimmed;
@@ -50,14 +52,14 @@ function normalizeApiBaseUrl(baseUrl: string): string {
 
   try {
     const url = new URL(withScheme);
-    const pathname = url.pathname.replace(/\/$/, "");
+    const pathname = url.pathname.replace(/\/+$/, "");
 
     if (!pathname || pathname === "") {
       url.pathname = "/api";
-      return url.toString().replace(/\/$/, "");
+      return url.toString().replace(/\/+$/, "");
     }
 
-    return url.toString().replace(/\/$/, "");
+    return url.toString().replace(/\/+$/, "");
   } catch {
     return withScheme;
   }
@@ -106,7 +108,7 @@ function appendSearchParams(url: string, params?: Record<string, SearchParamValu
 }
 
 function buildApiUrl(baseUrl: string, path: string, searchParams?: Record<string, SearchParamValue>): string {
-  const normalizedBaseUrl = baseUrl.replace(/\/$/, "");
+  const normalizedBaseUrl = baseUrl.replace(/\/+$/, "");
   const apiPath = path.startsWith("/") ? path : `/${path}`;
 
   if (normalizedBaseUrl.startsWith("/")) {
@@ -148,8 +150,10 @@ export function clearWebsiteClientSession(): void {
 
   window.localStorage.removeItem(websiteSessionKey);
   window.localStorage.removeItem(websiteUserKey);
+  window.localStorage.removeItem(checkoutCartStorageKey);
   document.cookie = `${websiteSessionCookieName}=; path=/; max-age=0; SameSite=Lax`;
   window.dispatchEvent(new Event("iass:website-session-changed"));
+  window.dispatchEvent(new Event("iass:checkout-cart-changed"));
 }
 
 function redirectClientToLogin(): void {
