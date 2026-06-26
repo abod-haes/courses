@@ -3,6 +3,11 @@ import type { Article, Book, Course } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { HomeCatalog, HomeCatalogItem, HomeMessages } from "../home.types";
 
+type RawRecord = Record<string, unknown>;
+type RawCourse = Course & RawRecord;
+type RawBook = Book & RawRecord;
+type RawArticle = Article & RawRecord;
+
 type HomeApiResponse = Readonly<{
   data: Readonly<{
     hero?: Readonly<{
@@ -15,9 +20,9 @@ type HomeApiResponse = Readonly<{
     stats?: Partial<HomeMessages["stats"]>;
     aboutUs?: Partial<HomeMessages["aboutUs"]>;
     founder?: Partial<HomeMessages["founder"]>;
-    latestCourses?: Course[];
-    latestBooks?: Book[];
-    latestArticles?: Article[];
+    latestCourses?: RawCourse[];
+    latestBooks?: RawBook[];
+    latestArticles?: RawArticle[];
   }>;
 }>;
 
@@ -29,6 +34,23 @@ function emptyHomeCatalog(): HomeCatalog {
   };
 }
 
+function rawObject(value: unknown): RawRecord | null {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as RawRecord) : null;
+}
+
+function text(value: unknown, fallback = ""): string {
+  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
+function numberValue(value: unknown, fallback = 0): number {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const parsed = Number.parseFloat(value.replace(/[^0-9.-]/g, ""));
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return fallback;
+}
+
 function formatPrice(value: number, currency: string, locale: Locale): string {
   return new Intl.NumberFormat(locale === "ar" ? "ar" : "en-US", {
     style: "currency",
@@ -37,50 +59,80 @@ function formatPrice(value: number, currency: string, locale: Locale): string {
   }).format(value);
 }
 
-function courseModules(course: Course): number {
-  const sections = course.sections ?? [];
-  const lessons = sections.reduce((sum, section) => sum + section.lessons.length, 0);
-  return sections.length || Math.max(1, lessons);
+function categoryName(item: RawRecord, fallback: string): string {
+  const category = rawObject(item.category);
+  return text(category?.name ?? item.categoryName ?? item.category_name, fallback);
 }
 
-function toCourseItem(course: Course, locale: Locale): HomeCatalogItem {
+function mediaFrom(item: RawRecord, key: "thumbnail" | "cover" | "image"): { url: string; alt: string } | null {
+  const media = rawObject(item[key]) ?? rawObject(item.media) ?? rawObject(item.image) ?? rawObject(item.thumbnail) ?? rawObject(item.cover);
+  const directUrl = text(item[key] ?? item[`${key}Url`] ?? item[`${key}_url`] ?? item.imageUrl ?? item.image_url ?? item.thumbnailUrl ?? item.thumbnail_url ?? item.coverUrl ?? item.cover_url);
+  const url = text(media?.url, directUrl);
+
+  if (!url) return null;
+
   return {
-    category: course.category.name,
-    title: course.title,
+    url,
+    alt: text(media?.alt ?? media?.altText ?? media?.alt_text ?? item.title, text(item.title, "Image")),
+  };
+}
+
+function courseModules(course: RawCourse): number {
+  const sections = Array.isArray(course.sections) ? course.sections : [];
+  const lessons = sections.reduce((sum, section) => {
+    const record = rawObject(section) ?? {};
+    return sum + (Array.isArray(record.lessons) ? record.lessons.length : 0);
+  }, 0);
+  return numberValue(course.sectionsCount ?? course.sections_count ?? course.modulesCount ?? course.modules_count, sections.length || Math.max(1, lessons));
+}
+
+function toCourseItem(course: RawCourse, locale: Locale): HomeCatalogItem {
+  const image = mediaFrom(course, "thumbnail");
+  const title = text(course.title, locale === "ar" ? "كورس طبي" : "Medical course");
+
+  return {
+    category: categoryName(course, "Course"),
+    title,
     author: locale === "ar" ? "د. إياس عكاري" : "Dr. Iyas Akkari",
     modules: courseModules(course),
-    description: course.shortDescription,
-    price: formatPrice(course.price, course.currency, locale),
-    image: course.thumbnail?.url ?? "/images/course-1.png",
-    alt: course.thumbnail?.alt ?? course.title,
-    href: `/courses/${course.slug}`,
+    description: text(course.shortDescription ?? course.short_description ?? course.excerpt, title),
+    price: formatPrice(numberValue(course.price, 0), text(course.currency, "USD"), locale),
+    image: image?.url ?? "/images/course-1.png",
+    alt: image?.alt ?? title,
+    href: `/courses/${text(course.slug, String(course.id))}`,
   };
 }
 
-function toBookItem(book: Book, locale: Locale): HomeCatalogItem {
+function toBookItem(book: RawBook, locale: Locale): HomeCatalogItem {
+  const image = mediaFrom(book, "cover");
+  const title = text(book.title, locale === "ar" ? "كتاب طبي" : "Medical book");
+
   return {
-    category: book.category.name,
-    title: book.title,
+    category: categoryName(book, "Book"),
+    title,
     author: locale === "ar" ? "فريق IASS الأكاديمي" : "IASS Academic Team",
     modules: 0,
-    description: book.shortDescription,
-    price: formatPrice(book.price, book.currency, locale),
-    image: book.cover?.url ?? "/images/book-1.png",
-    alt: book.cover?.alt ?? book.title,
-    href: `/books/${book.slug}`,
+    description: text(book.shortDescription ?? book.short_description ?? book.excerpt, title),
+    price: formatPrice(numberValue(book.price, 0), text(book.currency, "USD"), locale),
+    image: image?.url ?? "/images/book-1.png",
+    alt: image?.alt ?? title,
+    href: `/books/${text(book.slug, String(book.id))}`,
   };
 }
 
-function toArticleItem(article: Article): HomeCatalogItem {
+function toArticleItem(article: RawArticle): HomeCatalogItem {
+  const image = mediaFrom(article, "image");
+  const title = text(article.title, "Article");
+
   return {
-    category: article.category.name,
-    title: article.title,
-    author: article.author ?? "IASS Academic Team",
+    category: categoryName(article, "Article"),
+    title,
+    author: text(article.author, "IASS Academic Team"),
     modules: 0,
-    description: article.excerpt,
-    image: article.image?.url ?? "/images/course-1.png",
-    alt: article.image?.alt ?? article.title,
-    href: `/articles/${article.slug}`,
+    description: text(article.excerpt ?? article.shortDescription ?? article.short_description, title),
+    image: image?.url ?? "/images/course-1.png",
+    alt: image?.alt ?? title,
+    href: `/articles/${text(article.slug, String(article.id))}`,
   };
 }
 
@@ -140,12 +192,15 @@ export async function getHomePageData(
         articlesLimit: 3,
       },
     });
+    const catalog = toHomeCatalog(response.data, locale);
+    console.log("[home-api] backend home catalog", { response, catalog });
 
     return {
       copy: mergeHomeCopy(fallbackMessages, response.data),
-      catalog: toHomeCatalog(response.data, locale),
+      catalog,
     };
-  } catch {
+  } catch (error) {
+    console.error("[home-api] failed to load home data from backend", error);
     return {
       copy: fallbackMessages,
       catalog: emptyHomeCatalog(),
@@ -163,9 +218,12 @@ export async function getHomeCatalog(locale: Locale): Promise<HomeCatalog> {
         articlesLimit: 3,
       },
     });
+    const catalog = toHomeCatalog(response.data, locale);
+    console.log("[home-api] backend catalog refresh", { response, catalog });
 
-    return toHomeCatalog(response.data, locale);
-  } catch {
+    return catalog;
+  } catch (error) {
+    console.error("[home-api] failed to refresh home catalog from backend", error);
     return emptyHomeCatalog();
   }
 }
