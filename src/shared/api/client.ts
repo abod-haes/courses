@@ -8,6 +8,7 @@ type ApiFetchOptions = RequestInit &
   }>;
 
 const checkoutCartStorageKey = "iass:checkout:cart";
+const defaultApiBaseUrl = "https://medical-courses.mustafafares.com/api";
 
 export class ApiError extends Error {
   readonly status: number;
@@ -55,12 +56,7 @@ function isMockApiBaseUrl(baseUrl: string): boolean {
 }
 
 function resolveApiBaseUrl(): string {
-  const configuredApiUrl = process.env.API_BASE_URL?.trim() ?? process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
-
-  if (!configuredApiUrl) {
-    throw new ApiError("API base URL is not configured. Set API_BASE_URL or NEXT_PUBLIC_API_BASE_URL.", 0);
-  }
-
+  const configuredApiUrl = process.env.API_BASE_URL?.trim() || process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || defaultApiBaseUrl;
   const apiBaseUrl = normalizeApiBaseUrl(configuredApiUrl);
 
   if (!apiBaseUrl || isMockApiBaseUrl(apiBaseUrl)) {
@@ -147,7 +143,10 @@ function redirectClientToLogin(): void {
 }
 
 async function sendRequest(url: string, init: RequestInit): Promise<Response> {
-  return fetch(url, init);
+  console.log("[apiFetch] request", { method: init.method ?? "GET", url });
+  const response = await fetch(url, init);
+  console.log("[apiFetch] response", { status: response.status, ok: response.ok, url });
+  return response;
 }
 
 export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
@@ -173,15 +172,18 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   };
 
   let response: Response;
+  const url = buildApiUrl(apiBaseUrl, path, searchParams);
 
   try {
-    response = await sendRequest(buildApiUrl(apiBaseUrl, path, searchParams), requestInit);
+    response = await sendRequest(url, requestInit);
   } catch (error) {
+    console.error("[apiFetch] unable to reach API", { url, error });
     throw new ApiError("Unable to reach the API server.", 0, error);
   }
 
   if (!response.ok) {
     const details = await readErrorDetails(response);
+    console.error("[apiFetch] API request failed", { url, status: response.status, details });
 
     if (response.status === 401) {
       redirectClientToLogin();
