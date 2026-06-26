@@ -26,6 +26,8 @@ type HomeApiResponse = Readonly<{
   }>;
 }>;
 
+const backendOrigin = "https://medical-courses.mustafafares.com";
+
 function emptyHomeCatalog(): HomeCatalog {
   return {
     courses: [],
@@ -51,12 +53,25 @@ function numberValue(value: unknown, fallback = 0): number {
   return fallback;
 }
 
-function formatPrice(value: number, currency: string, locale: Locale): string {
+function currencyCode(value: unknown): string {
+  const normalized = text(value, "USD").toUpperCase();
+  return /^[A-Z]{3}$/.test(normalized) ? normalized : "USD";
+}
+
+function formatPrice(value: number, currency: unknown, locale: Locale): string {
   return new Intl.NumberFormat(locale === "ar" ? "ar" : "en-US", {
     style: "currency",
-    currency,
+    currency: currencyCode(currency),
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+function absoluteMediaUrl(value: unknown, fallback: string): string {
+  const url = text(value);
+  if (!url) return fallback;
+  if (url.startsWith("/") || /^https?:\/\//i.test(url)) return url;
+  if (url.startsWith("//")) return `https:${url}`;
+  return `${backendOrigin}/${url.replace(/^\/+/, "")}`;
 }
 
 function categoryName(item: RawRecord, fallback: string): string {
@@ -72,7 +87,7 @@ function mediaFrom(item: RawRecord, key: "thumbnail" | "cover" | "image"): { url
   if (!url) return null;
 
   return {
-    url,
+    url: absoluteMediaUrl(url, key === "cover" ? "/images/book-1.png" : "/images/course-1.png"),
     alt: text(media?.alt ?? media?.altText ?? media?.alt_text ?? item.title, text(item.title, "Image")),
   };
 }
@@ -93,10 +108,10 @@ function toCourseItem(course: RawCourse, locale: Locale): HomeCatalogItem {
   return {
     category: categoryName(course, "Course"),
     title,
-    author: locale === "ar" ? "د. إياس عكاري" : "Dr. Iyas Akkari",
+    author: text(course.instructor ?? course.teacherName ?? course.teacher_name, locale === "ar" ? "د. إياس عكاري" : "Dr. Iyas Akkari"),
     modules: courseModules(course),
     description: text(course.shortDescription ?? course.short_description ?? course.excerpt, title),
-    price: formatPrice(numberValue(course.price, 0), text(course.currency, "USD"), locale),
+    price: formatPrice(numberValue(course.price, 0), course.currency, locale),
     image: image?.url ?? "/images/course-1.png",
     alt: image?.alt ?? title,
     href: `/courses/${text(course.slug, String(course.id))}`,
@@ -110,10 +125,10 @@ function toBookItem(book: RawBook, locale: Locale): HomeCatalogItem {
   return {
     category: categoryName(book, "Book"),
     title,
-    author: locale === "ar" ? "فريق IASS الأكاديمي" : "IASS Academic Team",
+    author: text(book.author, locale === "ar" ? "فريق IASS الأكاديمي" : "IASS Academic Team"),
     modules: 0,
     description: text(book.shortDescription ?? book.short_description ?? book.excerpt, title),
-    price: formatPrice(numberValue(book.price, 0), text(book.currency, "USD"), locale),
+    price: formatPrice(numberValue(book.price, 0), book.currency, locale),
     image: image?.url ?? "/images/book-1.png",
     alt: image?.alt ?? title,
     href: `/books/${text(book.slug, String(book.id))}`,
