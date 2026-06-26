@@ -6,12 +6,32 @@ import type { BookItemView } from "../books.types";
 
 type RawRecord = Record<string, unknown>;
 type RawBook = Book & RawRecord;
-type RawPaginatedResponse<T> = PaginatedEnvelope<T> | T[] | { data?: T[] | { data?: T[]; meta?: RawRecord }; meta?: RawRecord; current_page?: number; per_page?: number; last_page?: number; total?: number };
+type RawPaginatedResponse<T> = PaginatedEnvelope<T> | T[] | { data?: T[] | { data?: T[]; meta?: RawRecord }; meta?: RawRecord; current_page?: number; per_page?: number; last_page?: number; total?: number; from?: number | null; to?: number | null };
 
-function formatPrice(value: number, currency: string, locale: Locale): string {
+const backendOrigin = "https://medical-courses.mustafafares.com";
+
+function text(value: unknown, fallback = ""): string {
+  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
+function numberValue(value: unknown, fallback = 0): number {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const parsed = Number.parseFloat(value.replace(/[^0-9.-]/g, ""));
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return fallback;
+}
+
+function currencyCode(value: unknown): string {
+  const normalized = text(value, "USD").toUpperCase();
+  return /^[A-Z]{3}$/.test(normalized) ? normalized : "USD";
+}
+
+function formatPrice(value: number, currency: unknown, locale: Locale): string {
   return new Intl.NumberFormat(locale === "ar" ? "ar" : "en-US", {
     style: "currency",
-    currency,
+    currency: currencyCode(currency),
     maximumFractionDigits: 0,
   }).format(value);
 }
@@ -27,17 +47,12 @@ function rawObject(value: unknown): RawRecord | null {
   return value && typeof value === "object" && !Array.isArray(value) ? (value as RawRecord) : null;
 }
 
-function text(value: unknown, fallback = ""): string {
-  return typeof value === "string" && value.trim() ? value.trim() : fallback;
-}
-
-function numberValue(value: unknown, fallback = 0): number {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string") {
-    const parsed = Number.parseFloat(value.replace(/[^0-9.-]/g, ""));
-    if (Number.isFinite(parsed)) return parsed;
-  }
-  return fallback;
+function absoluteMediaUrl(value: unknown, fallback: string): string {
+  const url = text(value);
+  if (!url) return fallback;
+  if (url.startsWith("/") || /^https?:\/\//i.test(url)) return url;
+  if (url.startsWith("//")) return `https:${url}`;
+  return `${backendOrigin}/${url.replace(/^\/+/, "")}`;
 }
 
 function normalizePaginatedResponse<T>(response: RawPaginatedResponse<T>, params: CatalogListParams): PaginatedEnvelope<T> {
@@ -77,7 +92,7 @@ function readCover(book: RawRecord): { url: string; alt: string } | null {
   const directUrl = text(book.cover ?? book.coverUrl ?? book.cover_url ?? book.imageUrl ?? book.image_url);
   const url = text(cover?.url, directUrl);
   if (!url) return null;
-  return { url, alt: text(cover?.alt ?? cover?.altText ?? cover?.alt_text ?? book.title, text(book.title, "Book cover")) };
+  return { url: absoluteMediaUrl(url, "/images/book-1.png"), alt: text(cover?.alt ?? cover?.altText ?? cover?.alt_text ?? book.title, text(book.title, "Book cover")) };
 }
 
 function toBookView(book: RawBook, locale: Locale): BookItemView {
@@ -87,17 +102,16 @@ function toBookView(book: RawBook, locale: Locale): BookItemView {
   const shortDescription = text(book.shortDescription ?? book.short_description ?? book.excerpt, title);
   const description = text(book.description, shortDescription);
   const price = numberValue(book.price, 0);
-  const currency = text(book.currency, "USD");
   const slug = text(book.slug, String(book.id));
 
   return {
     id: String(book.id),
     title,
-    author: locale === "ar" ? "د. إياس عكاري" : "Dr. Iyas Akkari",
+    author: text(book.author, locale === "ar" ? "د. إياس عكاري" : "Dr. Iyas Akkari"),
     categoryKey: category.slug,
     category: category.name,
     description: shortDescription,
-    price: formatPrice(price, currency, locale),
+    price: formatPrice(price, book.currency, locale),
     isbn: text(book.isbn, `IASS-${book.id}`),
     href: `/books/${slug}`,
     image: cover?.url ?? "/images/book-1.png",
