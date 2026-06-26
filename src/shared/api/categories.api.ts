@@ -6,12 +6,57 @@ export type CatalogCategoryOption = Readonly<{
   label: string;
 }>;
 
-type CategoriesResponse = Readonly<{
-  data?: Category[];
-}> | Category[];
+type RawCategory = Partial<Category> &
+  Readonly<{
+    is_active?: boolean | number | string;
+    category_type?: string;
+    title?: string;
+  }>;
 
-function getCategoriesPayload(response: CategoriesResponse): Category[] {
-  return Array.isArray(response) ? response : response.data ?? [];
+type CategoriesResponse =
+  | Readonly<{ data?: RawCategory[] | Readonly<{ data?: RawCategory[] }> }>
+  | RawCategory[];
+
+function arrayFromPayload(value: unknown): RawCategory[] {
+  if (Array.isArray(value)) return value as RawCategory[];
+
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+
+    if (Array.isArray(record.data)) return record.data as RawCategory[];
+
+    if (record.data && typeof record.data === "object") {
+      const nested = record.data as Record<string, unknown>;
+      if (Array.isArray(nested.data)) return nested.data as RawCategory[];
+    }
+  }
+
+  return [];
+}
+
+function normalizeType(value: unknown): CategoryType | null {
+  if (value === "course" || value === "courses") return "course";
+  if (value === "book" || value === "books") return "book";
+  if (value === "article" || value === "articles") return "article";
+  return null;
+}
+
+function isActiveCategory(category: RawCategory): boolean {
+  const value = category.isActive ?? category.is_active;
+
+  if (value === undefined || value === null) return true;
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value === 1;
+
+  return value === "1" || value === "true" || value === "active";
+}
+
+function getCategoryLabel(category: RawCategory): string {
+  return String(category.name ?? category.title ?? "").trim();
+}
+
+function getCategoryKey(category: RawCategory): string {
+  return String(category.slug ?? category.id ?? getCategoryLabel(category)).trim();
 }
 
 export async function getCatalogCategoryOptions(
@@ -28,9 +73,10 @@ export async function getCatalogCategoryOptions(
       },
     });
 
-    const categories = getCategoriesPayload(response)
-      .filter((category) => category.isActive !== false && category.type === type)
-      .map((category) => ({ key: category.slug, label: category.name }));
+    const categories = arrayFromPayload(response)
+      .filter((category) => isActiveCategory(category) && normalizeType(category.type ?? category.category_type) === type)
+      .map((category) => ({ key: getCategoryKey(category), label: getCategoryLabel(category) }))
+      .filter((category) => category.key && category.label);
 
     return [{ key: "all", label: allLabel }, ...categories];
   } catch {
