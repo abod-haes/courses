@@ -6,7 +6,9 @@ import type { ArticleDetail, ArticleSummary } from "../articles.types";
 
 type RawRecord = Record<string, unknown>;
 type RawArticle = Article & RawRecord;
-type RawPaginatedResponse<T> = PaginatedEnvelope<T> | T[] | { data?: T[] | { data?: T[]; meta?: RawRecord }; meta?: RawRecord; current_page?: number; per_page?: number; last_page?: number; total?: number };
+type RawPaginatedResponse<T> = PaginatedEnvelope<T> | T[] | { data?: T[] | { data?: T[]; meta?: RawRecord }; meta?: RawRecord; current_page?: number; per_page?: number; last_page?: number; total?: number; from?: number | null; to?: number | null };
+
+const backendOrigin = "https://medical-courses.mustafafares.com";
 
 function emptyArticlesPage(params: CatalogListParams): PaginatedEnvelope<ArticleSummary> {
   return {
@@ -30,6 +32,19 @@ function numberValue(value: unknown, fallback = 0): number {
     if (Number.isFinite(parsed)) return parsed;
   }
   return fallback;
+}
+
+function absoluteMediaUrl(value: unknown, fallback: string): string {
+  const url = text(value);
+  if (!url) return fallback;
+  if (url.startsWith("/") || /^https?:\/\//i.test(url)) return url;
+  if (url.startsWith("//")) return `https:${url}`;
+  return `${backendOrigin}/${url.replace(/^\/+/, "")}`;
+}
+
+function safePublishedAt(value: unknown): string {
+  const date = new Date(text(value));
+  return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
 }
 
 function normalizePaginatedResponse<T>(response: RawPaginatedResponse<T>, params: CatalogListParams): PaginatedEnvelope<T> {
@@ -66,7 +81,7 @@ function readImage(article: RawRecord): { url: string; alt: string } | null {
   const directUrl = text(article.image ?? article.imageUrl ?? article.image_url ?? article.thumbnail ?? article.thumbnailUrl ?? article.thumbnail_url);
   const url = text(image?.url, directUrl);
   if (!url) return null;
-  return { url, alt: text(image?.alt ?? image?.altText ?? image?.alt_text ?? article.title, text(article.title, "Article image")) };
+  return { url: absoluteMediaUrl(url, "/images/course-1.png"), alt: text(image?.alt ?? image?.altText ?? image?.alt_text ?? article.title, text(article.title, "Article image")) };
 }
 
 function toArticleSummary(article: RawArticle): ArticleSummary {
@@ -84,7 +99,7 @@ function toArticleSummary(article: RawArticle): ArticleSummary {
     author: text(article.author, "IASS Academic Team"),
     image: image?.url ?? "/images/course-1.png",
     alt: image?.alt ?? title,
-    publishedAt: text(article.publishedAt ?? article.published_at, new Date().toISOString()),
+    publishedAt: safePublishedAt(article.publishedAt ?? article.published_at),
     href: `/articles/${slug}`,
   };
 }
