@@ -90,7 +90,8 @@ function readCategory(course: RawRecord): { id: number; name: string; slug: stri
 
 function readThumbnail(course: RawRecord): { url: string; alt: string } | null {
   const thumbnail = rawObject(course.thumbnail) ?? rawObject(course.media) ?? rawObject(course.image);
-  const url = text(thumbnail?.url ?? course.thumbnailUrl ?? course.thumbnail_url ?? course.imageUrl ?? course.image_url);
+  const directUrl = text(course.thumbnail ?? course.thumbnailUrl ?? course.thumbnail_url ?? course.imageUrl ?? course.image_url);
+  const url = text(thumbnail?.url, directUrl);
 
   if (!url) return null;
 
@@ -126,6 +127,10 @@ function emptyCoursesPage(params: CatalogListParams): PaginatedEnvelope<CourseIt
     data: [],
     meta: buildPageMeta(0, params.page, params.perPage ?? defaultCatalogPerPage),
   };
+}
+
+function logCoursesDebug(label: string, value: unknown): void {
+  console.log(`[courses-api] ${label}`, value);
 }
 
 function toCourseView(course: RawCourse, locale: Locale): CourseItemView {
@@ -184,13 +189,20 @@ export async function getCourses(params: CatalogListParams): Promise<PaginatedEn
         "filter[category]": params.category,
       },
     });
+
+    logCoursesDebug("raw backend response", response);
+
     const normalized = normalizePaginatedResponse(response, params);
+    const courses = normalized.data.map((course) => toCourseView(course, locale));
+
+    logCoursesDebug("normalized courses", { count: courses.length, meta: normalized.meta, courses });
 
     return {
       ...normalized,
-      data: normalized.data.map((course) => toCourseView(course, locale)),
+      data: courses,
     };
-  } catch {
+  } catch (error) {
+    console.error("[courses-api] failed to load courses from backend", error);
     return emptyCoursesPage(params);
   }
 }
@@ -204,7 +216,8 @@ export async function getCourseBySlug(slug: string, locale: Locale): Promise<Cou
     const payload = record?.data && rawObject(record.data) ? record.data as RawCourse : response as RawCourse;
 
     return toCourseView(payload, locale);
-  } catch {
+  } catch (error) {
+    console.error("[courses-api] failed to load course detail from backend", { slug, error });
     return null;
   }
 }
