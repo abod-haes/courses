@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LockKeyhole } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { ApiError } from "@/shared/api/client";
 import { websiteSessionCookieName, websiteSessionKey } from "@/shared/api/website-session";
+import { createCheckoutSession } from "../checkout.api";
 import type { CheckoutItemView } from "../checkout.types";
 
 type CheckoutSubmitButtonProps = Readonly<{
@@ -21,9 +23,18 @@ function hasWebsiteSession(): boolean {
   return Boolean(window.localStorage.getItem(websiteSessionKey) || hasSessionCookie());
 }
 
-function paymentUnavailableMessage(): string {
+function checkoutErrorMessage(error: unknown): string {
   const isArabic = document.documentElement.lang === "ar" || document.documentElement.dir === "rtl";
-  return isArabic ? "لم يتم بناء ميزة الدفع بعد. سنربط Stripe عندما يجهز الباك." : "Payment has not been built yet. Stripe will be connected when the backend is ready.";
+
+  if (error instanceof ApiError && error.status === 422) {
+    return isArabic ? "تعذر إنشاء عملية الدفع. تأكد من أن العناصر ما زالت متاحة." : "Could not create checkout. Please make sure the selected items are still available.";
+  }
+
+  if (error instanceof ApiError && error.status === 401) {
+    return isArabic ? "انتهت الجلسة. سجّل الدخول من جديد للمتابعة." : "Your session expired. Please log in again to continue.";
+  }
+
+  return isArabic ? "حدث خطأ أثناء بدء الدفع. حاول مرة أخرى." : "Something went wrong while starting checkout. Please try again.";
 }
 
 export function CheckoutSubmitButton({ items, label, loginRequiredLabel }: CheckoutSubmitButtonProps) {
@@ -31,7 +42,7 @@ export function CheckoutSubmitButton({ items, label, loginRequiredLabel }: Check
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function handleCheckout() {
+  async function handleCheckout() {
     const currentPath = `${window.location.pathname}${window.location.search}`;
 
     if (!hasWebsiteSession()) {
@@ -42,10 +53,13 @@ export function CheckoutSubmitButton({ items, label, loginRequiredLabel }: Check
     setIsPending(true);
     setError(null);
 
-    window.setTimeout(() => {
-      setError(paymentUnavailableMessage() || loginRequiredLabel);
+    try {
+      const checkoutUrl = await createCheckoutSession(items);
+      window.location.assign(checkoutUrl);
+    } catch (checkoutError) {
+      setError(checkoutErrorMessage(checkoutError) || loginRequiredLabel);
       setIsPending(false);
-    }, 180);
+    }
   }
 
   return (
