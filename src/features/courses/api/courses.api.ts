@@ -200,7 +200,8 @@ export async function getCourseBySlug(slug: string, locale: Locale): Promise<Cou
     const response = await apiFetch<{ data?: RawCourse } | RawCourse>(`/courses/${slug}`, {
       searchParams: { locale },
     });
-    const payload = rawObject(response) && rawObject(response).data ? rawObject(response).data as RawCourse : response as RawCourse;
+    const record = rawObject(response);
+    const payload = record?.data && rawObject(record.data) ? record.data as RawCourse : response as RawCourse;
 
     return toCourseView(payload, locale);
   } catch {
