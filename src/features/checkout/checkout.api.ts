@@ -2,7 +2,7 @@ import { getBooks } from "@/features/books/api/books.api";
 import type { BookItemView } from "@/features/books/books.types";
 import { getCourses } from "@/features/courses/api/courses.api";
 import type { CourseItemView } from "@/features/courses/courses.types";
-import { apiFetch } from "@/shared/api/client";
+import { ApiError, apiFetch } from "@/shared/api/client";
 import type { Book, CheckoutItemType, Course, Order, OrderItem, PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { CheckoutCopy, CheckoutItemView, OrderView } from "./checkout.types";
@@ -148,6 +148,11 @@ function authHeaders(token?: string): HeadersInit | undefined {
   return token ? { Authorization: `Bearer ${token}` } : undefined;
 }
 
+function checkoutReturnUrl(path: "/checkout/success" | "/checkout/cancel"): string {
+  if (typeof window === "undefined") return path;
+  return `${window.location.origin}${path}`;
+}
+
 export function getCheckoutTotal(items: readonly CheckoutItemView[], locale: Locale): string {
   const total = items.reduce((sum, item) => sum + item.amount, 0);
   return formatPrice(total, "USD", locale);
@@ -183,11 +188,19 @@ export async function createCheckoutSession(items: readonly CheckoutItemView[]):
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       items: items.map((item) => ({ type: item.type, id: Number(item.id) })),
+      successUrl: checkoutReturnUrl("/checkout/success"),
+      cancelUrl: checkoutReturnUrl("/checkout/cancel"),
     }),
   });
 
   const payload = response.data ?? response;
-  return payload.checkoutUrl ?? payload.paymentUrl ?? payload.url ?? "/checkout/success";
+  const checkoutUrl = payload.checkoutUrl ?? payload.paymentUrl ?? payload.url;
+
+  if (!checkoutUrl) {
+    throw new ApiError("Checkout URL was not returned by the API.", 502, response);
+  }
+
+  return checkoutUrl;
 }
 
 export async function getOrdersFromApi(locale: Locale, copy: CheckoutCopy, token?: string): Promise<OrderView[]> {
