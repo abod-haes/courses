@@ -4,6 +4,10 @@ import type { Book, CatalogListParams, PaginatedEnvelope } from "@/shared/api/ty
 import type { Locale } from "@/shared/lib/types";
 import type { BookItemView } from "../books.types";
 
+type RawRecord = Record<string, unknown>;
+type RawBook = Book & RawRecord;
+type RawPaginatedResponse<T> = PaginatedEnvelope<T> | T[] | { data?: T[] | { data?: T[]; meta?: RawRecord }; meta?: RawRecord; current_page?: number; per_page?: number; last_page?: number; total?: number };
+
 function formatPrice(value: number, currency: string, locale: Locale): string {
   return new Intl.NumberFormat(locale === "ar" ? "ar" : "en-US", {
     style: "currency",
@@ -19,21 +23,85 @@ function emptyBooksPage(params: CatalogListParams): PaginatedEnvelope<BookItemVi
   };
 }
 
-function toBookView(book: Book, locale: Locale): BookItemView {
-  const description = book.description ?? book.shortDescription;
+function rawObject(value: unknown): RawRecord | null {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as RawRecord) : null;
+}
+
+function text(value: unknown, fallback = ""): string {
+  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
+function numberValue(value: unknown, fallback = 0): number {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const parsed = Number.parseFloat(value.replace(/[^0-9.-]/g, ""));
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return fallback;
+}
+
+function normalizePaginatedResponse<T>(response: RawPaginatedResponse<T>, params: CatalogListParams): PaginatedEnvelope<T> {
+  if (Array.isArray(response)) return { data: response, meta: buildPageMeta(response.length, params.page, params.perPage ?? defaultCatalogPerPage) };
+
+  const record = rawObject(response) ?? {};
+  const nested = rawObject(record.data);
+  const data = Array.isArray(record.data) ? record.data as T[] : Array.isArray(nested?.data) ? nested.data as T[] : [];
+  const meta = (rawObject(record.meta) ?? rawObject(nested?.meta) ?? nested ?? record) as RawRecord;
+  const page = numberValue(meta.currentPage ?? meta.current_page, params.page ?? 1);
+  const perPage = numberValue(meta.perPage ?? meta.per_page, params.perPage ?? defaultCatalogPerPage);
+  const total = numberValue(meta.total, data.length);
+
+  return {
+    data,
+    meta: {
+      currentPage: Math.max(1, page),
+      perPage: Math.max(1, perPage),
+      total,
+      lastPage: numberValue(meta.lastPage ?? meta.last_page, Math.max(1, Math.ceil(total / Math.max(1, perPage)))),
+      from: meta.from === null || meta.from === undefined ? (total ? (Math.max(1, page) - 1) * Math.max(1, perPage) + 1 : null) : numberValue(meta.from, 1),
+      to: meta.to === null || meta.to === undefined ? (total ? Math.min(Math.max(1, page) * Math.max(1, perPage), total) : null) : numberValue(meta.to, data.length),
+    },
+  };
+}
+
+function readCategory(book: RawRecord): { name: string; slug: string } {
+  const category = rawObject(book.category);
+  return {
+    name: text(category?.name ?? book.categoryName ?? book.category_name, "Book"),
+    slug: text(category?.slug ?? book.categorySlug ?? book.category_slug, "book"),
+  };
+}
+
+function readCover(book: RawRecord): { url: string; alt: string } | null {
+  const cover = rawObject(book.cover) ?? rawObject(book.media) ?? rawObject(book.image);
+  const directUrl = text(book.cover ?? book.coverUrl ?? book.cover_url ?? book.imageUrl ?? book.image_url);
+  const url = text(cover?.url, directUrl);
+  if (!url) return null;
+  return { url, alt: text(cover?.alt ?? cover?.altText ?? cover?.alt_text ?? book.title, text(book.title, "Book cover")) };
+}
+
+function toBookView(book: RawBook, locale: Locale): BookItemView {
+  const category = readCategory(book);
+  const cover = readCover(book);
+  const title = text(book.title, locale === "ar" ? "كتاب طبي" : "Medical book");
+  const shortDescription = text(book.shortDescription ?? book.short_description ?? book.excerpt, title);
+  const description = text(book.description, shortDescription);
+  const price = numberValue(book.price, 0);
+  const currency = text(book.currency, "USD");
+  const slug = text(book.slug, String(book.id));
 
   return {
     id: String(book.id),
-    title: book.title,
+    title,
     author: locale === "ar" ? "د. إياس عكاري" : "Dr. Iyas Akkari",
-    categoryKey: book.category.slug,
-    category: book.category.name,
-    description: book.shortDescription,
-    price: formatPrice(book.price, book.currency, locale),
-    isbn: book.isbn ?? `IASS-${book.id}`,
-    href: `/books/${book.slug}`,
-    image: book.cover?.url ?? "/images/book-1.png",
-    imageAlt: book.cover?.alt ?? book.title,
+    categoryKey: category.slug,
+    category: category.name,
+    description: shortDescription,
+    price: formatPrice(price, currency, locale),
+    isbn: text(book.isbn, `IASS-${book.id}`),
+    href: `/books/${slug}`,
+    image: cover?.url ?? "/images/book-1.png",
+    imageAlt: cover?.alt ?? title,
     details: {
       availability: locale === "ar" ? "متوفر كمرجع رقمي" : "Available as a digital reference",
       accessNote: locale === "ar" ? "يتم فتح المرجع الرقمي بعد إتمام الشراء بنجاح." : "Digital access is unlocked after successful purchase.",
@@ -53,7 +121,7 @@ export async function getBooks(params: CatalogListParams): Promise<PaginatedEnve
   const locale = params.locale ?? "en";
 
   try {
-    const response = await apiFetch<PaginatedEnvelope<Book>>("/books", {
+    const response = await apiFetch<RawPaginatedResponse<RawBook>>("/books", {
       searchParams: {
         locale,
         page: params.page,
@@ -63,24 +131,32 @@ export async function getBooks(params: CatalogListParams): Promise<PaginatedEnve
         "filter[category]": params.category,
       },
     });
+    console.log("[books-api] raw backend response", response);
+    const normalized = normalizePaginatedResponse(response, params);
+    const books = normalized.data.map((book) => toBookView(book, locale));
+    console.log("[books-api] normalized books", { count: books.length, meta: normalized.meta, books });
 
     return {
-      ...response,
-      data: response.data.map((book) => toBookView(book, locale)),
+      ...normalized,
+      data: books,
     };
-  } catch {
+  } catch (error) {
+    console.error("[books-api] failed to load books from backend", error);
     return emptyBooksPage(params);
   }
 }
 
 export async function getBookBySlug(slug: string, locale: Locale): Promise<BookItemView | null> {
   try {
-    const response = await apiFetch<{ data: Book }>(`/books/${slug}`, {
+    const response = await apiFetch<{ data?: RawBook } | RawBook>(`/books/${slug}`, {
       searchParams: { locale },
     });
+    const record = rawObject(response);
+    const payload = record?.data && rawObject(record.data) ? record.data as RawBook : response as RawBook;
 
-    return toBookView(response.data, locale);
-  } catch {
+    return toBookView(payload, locale);
+  } catch (error) {
+    console.error("[books-api] failed to load book detail from backend", { slug, error });
     return null;
   }
 }
