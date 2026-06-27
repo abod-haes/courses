@@ -65,14 +65,14 @@ html.dark {
   --surface-soft: rgba(255, 255, 255, 0.04);
   --section-bg: #08111d;
   --border: rgba(226, 232, 240, 0.14);
-  --border-soft: rgba(180, 197, 255, 0.16);
-  --primary: #b4c5ff;
-  --primary-strong: #dbe1ff;
-  --primary-soft: rgba(180, 197, 255, 0.16);
-  --brand: #b4c5ff;
-  --brand-strong: #dbe1ff;
-  --brand-soft: rgba(180, 197, 255, 0.16);
-  --medical-blue: rgba(180, 197, 255, 0.14);
+  --border-soft: rgba(31, 111, 235, 0.2);
+  --primary: #3b82f6;
+  --primary-strong: #60a5fa;
+  --primary-soft: rgba(59, 130, 246, 0.16);
+  --brand: #3b82f6;
+  --brand-strong: #60a5fa;
+  --brand-soft: rgba(59, 130, 246, 0.16);
+  --medical-blue: rgba(59, 130, 246, 0.14);
   --text-main: #f8fafc;
   --text-muted: #cbd5e1;
   --success: #6ee7b7;
@@ -257,56 +257,4 @@ body {
   33% {
     transform: translate3d(28px, -18px, 0) scale(1.04);
   }
-
-  66% {
-    transform: translate3d(-18px, 16px, 0) scale(0.98);
-  }
-}
-
-@keyframes clinical-shimmer {
-  0% {
-    transform: translateX(-120%);
-  }
-
-  100% {
-    transform: translateX(120%);
-  }
-}
-
-@keyframes ecg-draw {
-  0% {
-    stroke-dashoffset: 360;
-    opacity: 0.25;
-  }
-
-  18% {
-    opacity: 1;
-  }
-
-  72%,
-  100% {
-    stroke-dashoffset: 0;
-    opacity: 0.85;
-  }
-}
-
-* {
-  box-sizing: border-box;
-}
-
-::selection {
-  background: rgba(0, 74, 198, 0.16);
-  color: #111c2d;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-input,
-textarea,
-select,
-button {
-  font: inherit;
 }
