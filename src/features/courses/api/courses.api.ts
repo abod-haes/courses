@@ -168,7 +168,7 @@ function toCourseView(course: RawCourse, locale: Locale): CourseItemView {
     id: String(course.id),
     title,
     instructor: text(course.instructor ?? course.teacherName ?? course.teacher_name, locale === "ar" ? "د. إياس عكاري" : "Dr. Iyas Akkari"),
-    categoryKey: category.slug,
+    categoryKey: category.id ? String(category.id) : category.slug,
     category: category.name,
     description: shortDescription,
     longDescription: description,
@@ -202,7 +202,7 @@ export async function getCourses(params: CatalogListParams): Promise<PaginatedEn
         perPage: params.perPage,
         search: params.search,
         sort: params.sort ?? "-publishedAt",
-        "filter[category]": params.category,
+        "filter[categoryId]": params.category,
       },
     });
 
