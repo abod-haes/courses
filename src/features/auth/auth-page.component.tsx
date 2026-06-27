@@ -48,10 +48,10 @@ export async function AuthPage({ mode }: AuthPageProps) {
   const modeCopy = authCopy.modes[mode];
 
   return (
-    <main className="relative overflow-hidden bg-[linear-gradient(135deg,rgba(248,250,255,0.99),rgba(242,246,255,0.92))] dark:bg-section-bg">
-      <div className="pointer-events-none absolute -left-24 top-8 h-56 w-56 rounded-full bg-primary/7 blur-3xl" />
-      <div className="pointer-events-none absolute -right-24 bottom-4 h-60 w-60 rounded-full bg-primary/6 blur-3xl" />
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[30rem] w-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/45 blur-3xl" />
+    <main className="relative overflow-hidden bg-[radial-gradient(circle_at_18%_18%,rgba(0,74,198,0.10),transparent_28%),linear-gradient(135deg,rgba(248,250,255,0.99),rgba(242,246,255,0.92))] dark:bg-[radial-gradient(circle_at_18%_18%,rgba(59,130,246,0.18),transparent_30%),radial-gradient(circle_at_82%_82%,rgba(0,106,97,0.12),transparent_34%),linear-gradient(135deg,#06101f,#08111d_48%,#07111f)]">
+      <div className="pointer-events-none absolute -left-24 top-8 h-56 w-56 rounded-full bg-primary/7 blur-3xl dark:bg-primary/16" />
+      <div className="pointer-events-none absolute -right-24 bottom-4 h-60 w-60 rounded-full bg-primary/6 blur-3xl dark:bg-secondary/12" />
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[30rem] w-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/45 blur-3xl dark:bg-primary/8" />
 
       <SiteContainer
         as="section"
