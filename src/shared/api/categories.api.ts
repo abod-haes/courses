@@ -52,7 +52,7 @@ function readLocalized(value: unknown, locale: "ar" | "en"): string {
 }
 
 function getCategoryLabel(category: RawCategory): string {
-  return String(category.name ?? category.title ?? "").trim();
+  return readLocalized(category.name ?? category.title, "en") || String(category.name ?? category.title ?? "").trim();
 }
 
 function getCategoryKey(category: RawCategory): string {
