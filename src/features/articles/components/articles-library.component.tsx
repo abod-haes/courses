@@ -47,6 +47,15 @@ function ArticlesEmptyState({ title, description }: Readonly<{ title: string; de
   );
 }
 
+function LoadingNotice({ locale }: Readonly<{ locale: Locale }>) {
+  return (
+    <div className="mt-5 flex items-center justify-center gap-2 rounded-[14px] border border-primary/12 bg-primary/5 px-4 py-3 text-sm font-bold text-primary shadow-[0_10px_28px_rgba(29,23,213,0.06)]">
+      <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary/25 border-t-primary" aria-hidden="true" />
+      {locale === "ar" ? "جاري جلب البيانات..." : "Fetching data..."}
+    </div>
+  );
+}
+
 function useDebouncedValue(value: string, delay = 300): string {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -69,6 +78,7 @@ export function ArticlesLibrary({ copy, initialPage, locale }: ArticlesLibraryPr
   const [activeCategory, setActiveCategory] = useState<ArticleCategoryFilter>("all");
   const [page, setPage] = useState(1);
   const debouncedSearch = useDebouncedValue(searchTerm.trim());
+  const isSearchDebouncing = searchTerm.trim() !== debouncedSearch;
   const isInitialQuery = debouncedSearch.length === 0 && activeCategory === "all" && page === 1;
 
   useEffect(() => {
@@ -86,6 +96,7 @@ export function ArticlesLibrary({ copy, initialPage, locale }: ArticlesLibraryPr
         category: activeCategory === "all" ? undefined : activeCategory,
       }),
     initialData: isInitialQuery ? initialPage : undefined,
+    placeholderData: (previousData) => previousData,
   });
 
   const fallbackCategoryOptions = useMemo<ArticleCategoryOption[]>(() => {
@@ -112,7 +123,8 @@ export function ArticlesLibrary({ copy, initialPage, locale }: ArticlesLibraryPr
   const articles = pageData.data;
   const categoryOptions = categoriesQuery.data ?? fallbackCategoryOptions;
   const showInitialLoading = query.isFetching && articles.length === 0;
-  const showEmpty = !showInitialLoading && articles.length === 0;
+  const showFilterLoading = !showInitialLoading && (query.isFetching || isSearchDebouncing);
+  const showEmpty = !showInitialLoading && !showFilterLoading && articles.length === 0;
 
   return (
     <div className="min-h-full bg-section-bg">
@@ -133,8 +145,10 @@ export function ArticlesLibrary({ copy, initialPage, locale }: ArticlesLibraryPr
           onCategoryChange={setActiveCategory}
         />
 
+        {showFilterLoading ? <LoadingNotice locale={locale} /> : null}
+
         {articles.length > 0 ? (
-          <StaggerList className="mt-7 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          <StaggerList className={`mt-7 grid gap-5 sm:grid-cols-2 xl:grid-cols-3 ${showFilterLoading ? "opacity-50" : "opacity-100"}`}>
             {articles.map((article) => (
               <ArticleCard key={article.slug} article={article} copy={copy} />
             ))}
@@ -142,7 +156,7 @@ export function ArticlesLibrary({ copy, initialPage, locale }: ArticlesLibraryPr
         ) : null}
 
         {pageData.meta.total > 0 ? (
-          <CatalogPagination meta={pageData.meta} copy={paginationCopy(locale)} isLoading={query.isFetching} onPageChange={setPage} />
+          <CatalogPagination meta={pageData.meta} copy={paginationCopy(locale)} isLoading={query.isFetching || isSearchDebouncing} onPageChange={setPage} />
         ) : null}
 
         {showInitialLoading ? (
