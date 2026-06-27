@@ -82,6 +82,47 @@ function toArticleSummary(article: RawArticle, locale: Locale): ArticleSummary {
   };
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function hasHtml(value: string): boolean {
+  return /<\/?[a-z][\s\S]*>/i.test(value);
+}
+
+function plainTextToHtml(value: string): string {
+  return value
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+    .map((paragraph) => `<p>${escapeHtml(paragraph).replace(/\n/g, "<br />")}</p>`)
+    .join("");
+}
+
+function sanitizeArticleHtml(value: string): string {
+  return value
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, "")
+    .replace(/<iframe[\s\S]*?>[\s\S]*?<\/iframe>/gi, "")
+    .replace(/<object[\s\S]*?>[\s\S]*?<\/object>/gi, "")
+    .replace(/<embed[\s\S]*?>[\s\S]*?<\/embed>/gi, "")
+    .replace(/\son\w+="[^"]*"/gi, "")
+    .replace(/\son\w+='[^']*'/gi, "")
+    .replace(/\s(href|src)=(['"])\s*javascript:[^'"]*\2/gi, "")
+    .replace(/\s(href|src)=(['"])\s*data:[^'"]*\2/gi, "");
+}
+
+function normalizeArticleBody(value: string): string {
+  const body = value.trim();
+  if (!body) return "";
+  return sanitizeArticleHtml(hasHtml(body) ? body : plainTextToHtml(body));
+}
+
 export async function getArticles(params: CatalogListParams): Promise<PaginatedEnvelope<ArticleSummary>> {
   const locale = params.locale ?? "en";
 
@@ -116,10 +157,11 @@ export async function getArticleBySlug(slug: string, locale: Locale): Promise<Ar
     });
     const record = rawObject(response);
     const payload = record?.data && rawObject(record.data) ? record.data as RawArticle : response as RawArticle;
+    const fallbackBody = text(payload.excerpt, "", locale);
 
     return {
       ...toArticleSummary(payload, locale),
-      body: text(payload.body, text(payload.excerpt, "", locale), locale).split("\n\n").filter(Boolean),
+      bodyHtml: normalizeArticleBody(text(payload.body, fallbackBody, locale)),
     };
   } catch (error) {
     console.error("[articles-api] failed to load article detail from backend", { slug, error });
