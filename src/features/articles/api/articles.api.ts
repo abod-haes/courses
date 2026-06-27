@@ -114,7 +114,8 @@ function sanitizeArticleHtml(value: string): string {
     .replace(/\son\w+="[^"]*"/gi, "")
     .replace(/\son\w+='[^']*'/gi, "")
     .replace(/\s(href|src)=(['"])\s*javascript:[^'"]*\2/gi, "")
-    .replace(/\s(href|src)=(['"])\s*data:[^'"]*\2/gi, "");
+    .replace(/\shref=(['"])\s*data:[^'"]*\1/gi, "")
+    .replace(/\ssrc=(['"])(?!\s*data:image\/)[^'"]*data:[^'"]*\1/gi, "");
 }
 
 function normalizeArticleBody(value: string): string {
