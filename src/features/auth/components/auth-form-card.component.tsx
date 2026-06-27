@@ -50,11 +50,11 @@ function AuthInput({ field, config }: Readonly<{ field: AuthFieldCopy; config: F
 
   return (
     <label className={cn("block", config.className)} htmlFor={inputId}>
-      <span className="mb-1.5 block text-[0.72rem] font-black leading-none text-foreground/62">
+      <span className="mb-1.5 block text-[0.72rem] font-black leading-none text-foreground/62 dark:text-foreground/68">
         {field.label}
       </span>
-      <span className="flex h-11 items-center gap-2.5 rounded-[10px] border border-border/75 bg-background/95 px-3 text-foreground/74 shadow-[0_6px_18px_rgba(15,23,42,0.025)] transition duration-200 focus-within:border-primary/45 focus-within:bg-surface focus-within:ring-4 focus-within:ring-primary/10">
-        <Icon className="h-4 w-4 shrink-0 text-primary/72" aria-hidden="true" />
+      <span className="flex h-11 items-center gap-2.5 rounded-[10px] border border-border/75 bg-background/95 px-3 text-foreground/74 shadow-[0_6px_18px_rgba(15,23,42,0.025)] transition duration-200 focus-within:border-primary/45 focus-within:bg-surface focus-within:ring-4 focus-within:ring-primary/10 dark:border-white/10 dark:bg-white/[0.045] dark:text-foreground/78 dark:shadow-none dark:focus-within:border-primary/55 dark:focus-within:bg-white/[0.065] dark:focus-within:ring-primary/15">
+        <Icon className="h-4 w-4 shrink-0 text-primary/72 dark:text-primary" aria-hidden="true" />
         <Input
           id={inputId}
           type={inputType}
@@ -63,12 +63,12 @@ function AuthInput({ field, config }: Readonly<{ field: AuthFieldCopy; config: F
           placeholder={field.placeholder}
           required
           minLength={isPassword ? 8 : undefined}
-          className="h-auto min-w-0 flex-1 border-0 bg-transparent px-0 py-0 text-[0.86rem] font-semibold text-foreground shadow-none outline-none placeholder:text-[0.8rem] placeholder:font-medium placeholder:text-foreground/36 focus:border-transparent focus:bg-transparent focus:ring-0"
+          className="h-auto min-w-0 flex-1 border-0 bg-transparent px-0 py-0 text-[0.86rem] font-semibold text-foreground shadow-none outline-none placeholder:text-[0.8rem] placeholder:font-medium placeholder:text-foreground/36 focus:border-transparent focus:bg-transparent focus:ring-0 dark:text-foreground dark:placeholder:text-foreground/42"
         />
         {isPassword ? (
           <button
             type="button"
-            className="-me-1 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-primary/58 transition duration-200 hover:bg-primary/8 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25"
+            className="-me-1 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-primary/58 transition duration-200 hover:bg-primary/8 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 dark:text-primary/78 dark:hover:bg-primary/12 dark:hover:text-primary-strong"
             aria-label={isPasswordVisible ? "Hide password" : "Show password"}
             aria-pressed={isPasswordVisible}
             onClick={() => setIsPasswordVisible((currentValue) => !currentValue)}
@@ -92,14 +92,14 @@ function AuthCheckbox({
   return (
     <label
       className={cn(
-        "group inline-flex cursor-pointer items-start text-start text-foreground/62 transition duration-200 hover:text-foreground/78",
-        isCard ? "mt-3 w-full gap-2.5 rounded-[12px] border border-border/65 bg-background/72 p-3 text-[0.72rem] leading-5 hover:border-primary/25 hover:bg-surface" : "items-center gap-2 text-[0.72rem] font-semibold",
+        "group inline-flex cursor-pointer items-start text-start text-foreground/62 transition duration-200 hover:text-foreground/78 dark:text-foreground/66 dark:hover:text-foreground/86",
+        isCard ? "mt-3 w-full gap-2.5 rounded-[12px] border border-border/65 bg-background/72 p-3 text-[0.72rem] leading-5 hover:border-primary/25 hover:bg-surface dark:border-white/10 dark:bg-white/[0.035] dark:hover:border-primary/35 dark:hover:bg-white/[0.055]" : "items-center gap-2 text-[0.72rem] font-semibold",
       )}
     >
       <input type="checkbox" checked={checked} onChange={(event) => onChange?.(event.target.checked)} className="peer sr-only" />
       <span
         className={cn(
-          "mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded border border-border bg-surface text-white transition duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-primary/25 peer-checked:border-primary peer-checked:bg-primary",
+          "mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded border border-border bg-surface text-white transition duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-primary/25 peer-checked:border-primary peer-checked:bg-primary dark:border-white/14 dark:bg-white/[0.06] dark:peer-checked:bg-primary",
           !isCard && "mt-0",
         )}
         aria-hidden="true"
@@ -211,12 +211,12 @@ export function AuthFormCard({ mode, copy }: AuthFormCardProps) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        "relative mx-auto w-full overflow-hidden rounded-[18px] border border-border/70 bg-surface/98 p-4 text-center shadow-[0_18px_48px_rgba(17,24,39,0.06)] backdrop-blur sm:p-5",
+        "relative mx-auto w-full overflow-hidden rounded-[18px] border border-border/70 bg-surface/98 p-4 text-center shadow-[0_18px_48px_rgba(17,24,39,0.06)] backdrop-blur sm:p-5 dark:border-white/10 dark:bg-[#0b1424]/88 dark:shadow-[0_22px_70px_rgba(0,0,0,0.28)] dark:ring-1 dark:ring-white/5",
         isRegister ? "max-w-[29rem]" : "max-w-[24.5rem]",
       )}
     >
-      <div className="pointer-events-none absolute -right-24 -top-28 h-48 w-48 rounded-full bg-primary/6 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-28 left-5 h-48 w-48 rounded-full bg-primary/5 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 -top-28 h-48 w-48 rounded-full bg-primary/6 blur-3xl dark:bg-primary/14" />
+      <div className="pointer-events-none absolute -bottom-28 left-5 h-48 w-48 rounded-full bg-primary/5 blur-3xl dark:bg-secondary/10" />
 
       <div className="relative z-10">
         <div className="mb-5 flex items-center justify-center">
@@ -230,7 +230,7 @@ export function AuthFormCard({ mode, copy }: AuthFormCardProps) {
         <h1 className="text-[1.35rem] font-black leading-tight tracking-[-0.03em] text-foreground sm:text-[1.65rem]">
           {copy.title}
         </h1>
-        <p className="mx-auto mt-2 max-w-[24rem] text-[0.82rem] leading-6 text-foreground/62">
+        <p className="mx-auto mt-2 max-w-[24rem] text-[0.82rem] leading-6 text-foreground/62 dark:text-foreground/70">
           {copy.subtitle}
         </p>
 
@@ -243,7 +243,7 @@ export function AuthFormCard({ mode, copy }: AuthFormCardProps) {
           })}</div>
 
           {isLogin ? (
-            <div className="mt-3 flex items-center justify-between gap-3 text-[0.72rem] font-semibold text-foreground/62">
+            <div className="mt-3 flex items-center justify-between gap-3 text-[0.72rem] font-semibold text-foreground/62 dark:text-foreground/66">
               <AuthCheckbox>{copy.rememberLabel}</AuthCheckbox>
               <Link href="/forgot-password" className="font-black text-primary transition hover:text-primary-strong">
                 {copy.forgotPasswordLabel}
@@ -254,7 +254,7 @@ export function AuthFormCard({ mode, copy }: AuthFormCardProps) {
           {isRegister && copy.termsLabel ? <AuthCheckbox variant="card" checked={acceptedTerms} onChange={setAcceptedTerms}>{copy.termsLabel}</AuthCheckbox> : null}
 
           {copy.helperText ? (
-            <p className="mt-3 rounded-[12px] border border-primary/10 bg-primary/6 p-2.5 text-[0.72rem] leading-5 text-foreground/62">
+            <p className="mt-3 rounded-[12px] border border-primary/10 bg-primary/6 p-2.5 text-[0.72rem] leading-5 text-foreground/62 dark:border-primary/20 dark:bg-primary/10 dark:text-foreground/70">
               {copy.helperText}
             </p>
           ) : null}
@@ -266,18 +266,18 @@ export function AuthFormCard({ mode, copy }: AuthFormCardProps) {
           ) : null}
 
           {statusMessage ? (
-            <p className="mt-3 rounded-[10px] border border-emerald-500/15 bg-emerald-500/8 p-2.5 text-[0.76rem] font-semibold leading-5 text-emerald-700">
+            <p className="mt-3 rounded-[10px] border border-emerald-500/15 bg-emerald-500/8 p-2.5 text-[0.76rem] font-semibold leading-5 text-emerald-700 dark:text-emerald-300">
               {statusMessage}
             </p>
           ) : null}
 
-          <Button type="submit" disabled={isSubmitting} className="mt-4 h-11 w-full rounded-[10px] text-[0.86rem] font-black shadow-[0_12px_28px_rgba(29,23,213,0.16)]" size="md">
+          <Button type="submit" disabled={isSubmitting} className="mt-4 h-11 w-full rounded-[10px] text-[0.86rem] font-black shadow-[0_12px_28px_rgba(0,74,198,0.16)] dark:shadow-[0_14px_34px_rgba(59,130,246,0.18)]" size="md">
             {isSubmitting ? "..." : copy.submitLabel}
             <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
           </Button>
         </form>
 
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[0.75rem] text-foreground/58">
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[0.75rem] text-foreground/58 dark:text-foreground/66">
           <span className="h-1 w-1 rounded-full bg-border" aria-hidden="true" />
           <p>
             {copy.switchPrompt} {" "}
