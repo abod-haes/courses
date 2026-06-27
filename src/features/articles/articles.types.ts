@@ -17,7 +17,8 @@ export type ArticleSummary = Readonly<{
 
 export type ArticleDetail = ArticleSummary &
   Readonly<{
-    bodyHtml: string;
+    bodyHtml?: string;
+    body?: readonly string[];
   }>;
 
 export type ArticlePageCopy = Readonly<{
