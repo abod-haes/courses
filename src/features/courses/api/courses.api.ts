@@ -1,10 +1,10 @@
 import { apiFetch } from "@/shared/api/client";
 import { buildPageMeta, defaultCatalogPerPage } from "@/shared/api/paging";
+import { absoluteMediaUrl, formatMoney, localizedText, numberValue, rawObject, type RawRecord } from "@/shared/api/normalizers";
 import type { CatalogListParams, Course, PaginatedEnvelope, PaginationMeta } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { CourseItemView } from "../courses.types";
 
-type RawRecord = Record<string, unknown>;
 type RawCourse = Course & RawRecord;
 
 type RawPaginatedResponse<T> =
@@ -21,47 +21,12 @@ type RawPaginatedResponse<T> =
       to?: number | null;
     }>;
 
-const backendOrigin = "https://medical-courses.mustafafares.com";
-
-function text(value: unknown, fallback = ""): string {
-  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+function text(value: unknown, fallback = "", locale: Locale = "en"): string {
+  return localizedText(value, fallback, locale);
 }
 
-function numberValue(value: unknown, fallback = 0): number {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string") {
-    const parsed = Number.parseFloat(value.replace(/[^0-9.-]/g, ""));
-    if (Number.isFinite(parsed)) return parsed;
-  }
-
-  return fallback;
-}
-
-function currencyCode(value: unknown): string {
-  const normalized = text(value, "USD").toUpperCase();
-  return /^[A-Z]{3}$/.test(normalized) ? normalized : "USD";
-}
-
-function formatPrice(value: number, currency: unknown, locale: Locale): string {
-  return new Intl.NumberFormat(locale === "ar" ? "ar" : "en-US", {
-    style: "currency",
-    currency: currencyCode(currency),
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
-function rawObject(value: unknown): RawRecord | null {
-  return value && typeof value === "object" && !Array.isArray(value) ? (value as RawRecord) : null;
-}
-
-function absoluteMediaUrl(value: unknown, fallback: string): string {
-  const url = text(value);
-
-  if (!url) return fallback;
-  if (url.startsWith("/") || /^https?:\/\//i.test(url)) return url;
-  if (url.startsWith("//")) return `https:${url}`;
-
-  return `${backendOrigin}/${url.replace(/^\/+/, "")}`;
+function formatPrice(value: unknown, currency: unknown, locale: Locale): string {
+  return formatMoney(value, currency, locale, { maximumFractionDigits: 0 });
 }
 
 function normalizeMeta(source: RawRecord | undefined, dataLength: number, params: CatalogListParams): PaginationMeta {
@@ -96,25 +61,27 @@ function normalizePaginatedResponse<T>(response: RawPaginatedResponse<T>, params
   };
 }
 
-function readCategory(course: RawRecord): { id: number; name: string; slug: string; type: "course" } {
+function readCategory(course: RawRecord, locale: Locale): { id: number; name: string; slug: string; type: "course" } {
   const category = rawObject(course.category);
   const id = numberValue(category?.id ?? course.categoryId ?? course.category_id, 0);
-  const name = text(category?.name ?? course.categoryName ?? course.category_name, "Course");
-  const slug = text(category?.slug ?? course.categorySlug ?? course.category_slug ?? id, "course");
+  const name = text(category?.name ?? course.categoryName ?? course.category_name, "Course", locale);
+  const slug = text(category?.slug ?? course.categorySlug ?? course.category_slug ?? id, "course", locale);
 
   return { id, name, slug, type: "course" };
 }
 
-function readThumbnail(course: RawRecord): { url: string; alt: string } | null {
+function readThumbnail(course: RawRecord, locale: Locale): { url: string; alt: string } | null {
   const thumbnail = rawObject(course.thumbnail) ?? rawObject(course.media) ?? rawObject(course.image);
-  const directUrl = text(course.thumbnail ?? course.thumbnailUrl ?? course.thumbnail_url ?? course.imageUrl ?? course.image_url);
-  const url = text(thumbnail?.url, directUrl);
+  const directUrl = text(course.thumbnail ?? course.thumbnailUrl ?? course.thumbnail_url ?? course.imageUrl ?? course.image_url, "", locale);
+  const url = text(thumbnail?.url, directUrl, locale);
 
   if (!url) return null;
 
+  const title = text(course.title, "Medical course", locale);
+
   return {
     url: absoluteMediaUrl(url, "/images/course-1.png"),
-    alt: text(thumbnail?.alt ?? thumbnail?.altText ?? thumbnail?.alt_text ?? course.title, text(course.title, "Course image")),
+    alt: text(thumbnail?.alt ?? thumbnail?.altText ?? thumbnail?.alt_text ?? course.title, title, locale),
   };
 }
 
@@ -151,28 +118,27 @@ function emptyCoursesPage(params: CatalogListParams): PaginatedEnvelope<CourseIt
 }
 
 function toCourseView(course: RawCourse, locale: Locale): CourseItemView {
-  const category = readCategory(course);
+  const category = readCategory(course, locale);
   const sections = readSections(course);
   const lessons = totalLessons(course);
   const minutes = totalMinutes(course);
   const hours = minutes > 0 ? Math.max(1, Math.ceil(minutes / 60)) : Math.max(1, numberValue(course.hours, 1));
-  const title = text(course.title, locale === "ar" ? "كورس طبي" : "Medical course");
-  const slug = text(course.slug, String(course.id));
-  const shortDescription = text(course.shortDescription ?? course.short_description ?? course.excerpt, title);
-  const description = text(course.description ?? course.longDescription ?? course.long_description, shortDescription);
-  const thumbnail = readThumbnail(course);
-  const price = numberValue(course.price, 0);
+  const title = text(course.title, "Medical course", locale);
+  const slug = text(course.slug, String(course.id), locale);
+  const shortDescription = text(course.shortDescription ?? course.short_description ?? course.excerpt, title, locale);
+  const description = text(course.description ?? course.longDescription ?? course.long_description, shortDescription, locale);
+  const thumbnail = readThumbnail(course, locale);
   const modulesCount = numberValue(course.sectionsCount ?? course.sections_count ?? course.modulesCount ?? course.modules_count, sections.length || Math.max(1, lessons));
 
   return {
     id: String(course.id),
     title,
-    instructor: text(course.instructor ?? course.teacherName ?? course.teacher_name, locale === "ar" ? "د. إياس عكاري" : "Dr. Iyas Akkari"),
+    instructor: text(course.instructor ?? course.teacherName ?? course.teacher_name, locale === "ar" ? "د. إياس عكاري" : "Dr. Iyas Akkari", locale),
     categoryKey: category.id ? String(category.id) : category.slug,
     category: category.name,
     description: shortDescription,
     longDescription: description,
-    price: formatPrice(price, course.currency, locale),
+    price: formatPrice(course.price, course.currency, locale),
     image: thumbnail?.url ?? "/images/course-1.png",
     imageAlt: thumbnail?.alt ?? title,
     hours: String(hours),
@@ -182,8 +148,8 @@ function toCourseView(course: RawCourse, locale: Locale): CourseItemView {
     includes: locale === "ar" ? ["محتوى منظم", "ملفات مرجعية", "خطوات عملية"] : ["Structured content", "Reference files", "Practical steps"],
     curriculum: sections.flatMap((section) =>
       readLessons(section).map((lesson) => ({
-        title: text(lesson.title, locale === "ar" ? "درس" : "Lesson"),
-        description: text(lesson.summary, ""),
+        title: text(lesson.title, "Lesson", locale),
+        description: text(lesson.summary, "", locale),
         duration: `${numberValue(lesson.durationMinutes ?? lesson.duration_minutes, 0)}:00`,
       })),
     ),
@@ -206,12 +172,8 @@ export async function getCourses(params: CatalogListParams): Promise<PaginatedEn
       },
     });
 
-    console.log("[courses-api] raw backend response", response);
-
     const normalized = normalizePaginatedResponse(response, params);
     const courses = normalized.data.map((course) => toCourseView(course, locale));
-
-    console.log("[courses-api] normalized courses", { count: courses.length, meta: normalized.meta, courses });
 
     return {
       ...normalized,
