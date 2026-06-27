@@ -79,9 +79,11 @@ function normalizePaginatedResponse<T>(response: RawPaginatedResponse<T>, params
   };
 }
 
-function readCategory(book: RawRecord): { name: string; slug: string } {
+function readCategory(book: RawRecord): { id: number; name: string; slug: string } {
   const category = rawObject(book.category);
+  const id = numberValue(category?.id ?? book.categoryId ?? book.category_id, 0);
   return {
+    id,
     name: text(category?.name ?? book.categoryName ?? book.category_name, "Book"),
     slug: text(category?.slug ?? book.categorySlug ?? book.category_slug, "book"),
   };
@@ -108,7 +110,7 @@ function toBookView(book: RawBook, locale: Locale): BookItemView {
     id: String(book.id),
     title,
     author: text(book.author, locale === "ar" ? "د. إياس عكاري" : "Dr. Iyas Akkari"),
-    categoryKey: category.slug,
+    categoryKey: category.id ? String(category.id) : category.slug,
     category: category.name,
     description: shortDescription,
     price: formatPrice(price, book.currency, locale),
@@ -142,7 +144,7 @@ export async function getBooks(params: CatalogListParams): Promise<PaginatedEnve
         perPage: params.perPage,
         search: params.search,
         sort: params.sort ?? "-publishedAt",
-        "filter[category]": params.category,
+        "filter[categoryId]": params.category,
       },
     });
     console.log("[books-api] raw backend response", response);
