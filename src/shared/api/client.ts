@@ -9,6 +9,7 @@ type ApiFetchOptions = RequestInit &
 
 const checkoutCartStorageKey = "iass:checkout:cart";
 const defaultApiBaseUrl = "https://medical-courses.mustafafares.com/api";
+const transportOnlySearchParams = new Set(["locale"]);
 
 export class ApiError extends Error {
   readonly status: number;
@@ -66,13 +67,18 @@ function resolveApiBaseUrl(): string {
   return apiBaseUrl;
 }
 
+function languageFromSearchParams(params?: Record<string, SearchParamValue>): "ar" | "en" | null {
+  const value = params?.locale;
+  return value === "ar" || value === "en" ? value : null;
+}
+
 function appendSearchParams(url: string, params?: Record<string, SearchParamValue>): string {
   if (!params) return url;
 
   const searchParams = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === "") return;
+    if (transportOnlySearchParams.has(key) || value === undefined || value === null || value === "") return;
     searchParams.set(key, String(value));
   });
 
@@ -153,9 +159,18 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   const { searchParams, headers: initHeaders, ...init } = options;
   const headers = new Headers(initHeaders);
   const apiBaseUrl = resolveApiBaseUrl();
+  const locale = languageFromSearchParams(searchParams);
 
   if (!headers.has("Accept")) {
     headers.set("Accept", "application/json");
+  }
+
+  if (locale && !headers.has("Accept-Language")) {
+    headers.set("Accept-Language", locale);
+  }
+
+  if (locale && !headers.has("X-Accept-Language")) {
+    headers.set("X-Accept-Language", locale);
   }
 
   if (!headers.has("Authorization")) {
