@@ -41,22 +41,12 @@ function normalizeType(value: unknown): CategoryType | null {
   return null;
 }
 
-function isActiveCategory(category: RawCategory): boolean {
-  const value = category.isActive ?? category.is_active;
-
-  if (value === undefined || value === null) return true;
-  if (typeof value === "boolean") return value;
-  if (typeof value === "number") return value === 1;
-
-  return value === "1" || value === "true" || value === "active";
-}
-
 function getCategoryLabel(category: RawCategory): string {
   return String(category.name ?? category.title ?? "").trim();
 }
 
 function getCategoryKey(category: RawCategory): string {
-  return String(category.slug ?? category.id ?? getCategoryLabel(category)).trim();
+  return String(category.id ?? category.slug ?? getCategoryLabel(category)).trim();
 }
 
 export async function getCatalogCategoryOptions(
@@ -69,12 +59,11 @@ export async function getCatalogCategoryOptions(
       searchParams: {
         locale,
         "filter[type]": type,
-        "filter[isActive]": true,
       },
     });
 
     const categories = arrayFromPayload(response)
-      .filter((category) => isActiveCategory(category) && normalizeType(category.type ?? category.category_type) === type)
+      .filter((category) => normalizeType(category.type ?? category.category_type) === type)
       .map((category) => ({ key: getCategoryKey(category), label: getCategoryLabel(category) }))
       .filter((category) => category.key && category.label);
 
