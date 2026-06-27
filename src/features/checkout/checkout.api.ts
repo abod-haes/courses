@@ -32,12 +32,30 @@ type LibraryResponse = Readonly<{
   books?: Book[];
 }>;
 
-function formatPrice(value: number, currency: string, locale: Locale): string {
+function numberValue(value: unknown, fallback = 0): number {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const parsed = Number.parseFloat(value.replace(/[^0-9.-]/g, ""));
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return fallback;
+}
+
+function text(value: unknown, fallback = ""): string {
+  if (typeof value === "string" && value.trim()) return value.trim();
+  if (!value || typeof value !== "object" || Array.isArray(value)) return fallback;
+  const record = value as Record<string, unknown>;
+  return text(record.en) || text(record.ar) || fallback;
+}
+
+function formatPrice(value: unknown, currency: unknown, locale: Locale): string {
+  const amount = numberValue(value, 0);
+  const currencyCode = text(currency, "USD").toUpperCase();
   return new Intl.NumberFormat(locale === "ar" ? "ar" : "en-US", {
     style: "currency",
-    currency,
-    maximumFractionDigits: value % 1 === 0 ? 0 : 2,
-  }).format(value);
+    currency: /^[A-Z]{3}$/.test(currencyCode) ? currencyCode : "USD",
+    maximumFractionDigits: amount % 1 === 0 ? 0 : 2,
+  }).format(amount);
 }
 
 function parseAmount(price: string): number {
@@ -98,13 +116,13 @@ function rawCourseToCheckoutItem(course: Course, locale: Locale, copy: CheckoutC
     id: String(course.id),
     type: "course",
     typeLabel: copy.labels.course,
-    title: course.title,
-    description: course.shortDescription,
-    category: course.category.name,
+    title: text(course.title, copy.labels.course),
+    description: text(course.shortDescription, text(course.title, copy.labels.course)),
+    category: text(course.category.name, copy.labels.course),
     price: formatPrice(course.price, course.currency, locale),
-    amount: course.price,
+    amount: numberValue(course.price, 0),
     image: course.thumbnail?.url ?? "/images/course-1.png",
-    imageAlt: course.thumbnail?.alt ?? course.title,
+    imageAlt: course.thumbnail?.alt ?? text(course.title, copy.labels.course),
     href: `/courses/${course.slug}`,
     accessLabel: copy.labels.lifetimeAccess,
   };
@@ -115,13 +133,13 @@ function rawBookToCheckoutItem(book: Book, locale: Locale, copy: CheckoutCopy): 
     id: String(book.id),
     type: "book",
     typeLabel: copy.labels.book,
-    title: book.title,
-    description: book.shortDescription,
-    category: book.category.name,
+    title: text(book.title, copy.labels.book),
+    description: text(book.shortDescription, text(book.title, copy.labels.book)),
+    category: text(book.category.name, copy.labels.book),
     price: formatPrice(book.price, book.currency, locale),
-    amount: book.price,
+    amount: numberValue(book.price, 0),
     image: book.cover?.url ?? "/images/book-1.png",
-    imageAlt: book.cover?.alt ?? book.title,
+    imageAlt: book.cover?.alt ?? text(book.title, copy.labels.book),
     href: `/books/${book.slug}`,
     accessLabel: copy.labels.digitalAccess,
   };
@@ -136,7 +154,7 @@ function orderItemToCheckoutItem(item: OrderItem, locale: Locale, copy: Checkout
     description: item.type === "course" ? copy.labels.lifetimeAccess : copy.labels.digitalAccess,
     category: item.type === "course" ? copy.labels.course : copy.labels.book,
     price: formatPrice(item.price, item.currency, locale),
-    amount: item.price,
+    amount: numberValue(item.price, 0),
     image: item.type === "course" ? "/images/course-1.png" : "/images/book-1.png",
     imageAlt: item.title,
     href: item.type === "course" ? `/courses/${item.itemId}` : `/books/${item.itemId}`,
