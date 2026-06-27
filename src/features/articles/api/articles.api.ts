@@ -115,7 +115,7 @@ export async function getArticles(params: CatalogListParams): Promise<PaginatedE
         perPage: params.perPage,
         search: params.search,
         sort: params.sort ?? "-publishedAt",
-        "filter[category]": params.category,
+        "filter[categoryId]": params.category,
       },
     });
     console.log("[articles-api] raw backend response", response);
