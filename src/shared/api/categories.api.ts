@@ -41,6 +41,16 @@ function normalizeType(value: unknown): CategoryType | null {
   return null;
 }
 
+function readLocalized(value: unknown, locale: "ar" | "en"): string {
+  if (typeof value === "string") return value.trim();
+  if (!value || typeof value !== "object" || Array.isArray(value)) return "";
+  const record = value as Record<string, unknown>;
+  const first = record[locale];
+  const second = record.en;
+  const third = record.ar;
+  return readLocalized(first, locale) || readLocalized(second, "en") || readLocalized(third, "ar");
+}
+
 function getCategoryLabel(category: RawCategory): string {
   return String(category.name ?? category.title ?? "").trim();
 }
