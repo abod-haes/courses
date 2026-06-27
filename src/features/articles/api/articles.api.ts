@@ -1,14 +1,12 @@
 import { apiFetch } from "@/shared/api/client";
 import { buildPageMeta, defaultCatalogPerPage } from "@/shared/api/paging";
+import { absoluteMediaUrl, localizedText, numberValue, rawObject, type RawRecord } from "@/shared/api/normalizers";
 import type { Article, CatalogListParams, PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { ArticleDetail, ArticleSummary } from "../articles.types";
 
-type RawRecord = Record<string, unknown>;
 type RawArticle = Article & RawRecord;
 type RawPaginatedResponse<T> = PaginatedEnvelope<T> | T[] | { data?: T[] | { data?: T[]; meta?: RawRecord }; meta?: RawRecord; current_page?: number; per_page?: number; last_page?: number; total?: number; from?: number | null; to?: number | null };
-
-const backendOrigin = "https://medical-courses.mustafafares.com";
 
 function emptyArticlesPage(params: CatalogListParams): PaginatedEnvelope<ArticleSummary> {
   return {
@@ -17,29 +15,8 @@ function emptyArticlesPage(params: CatalogListParams): PaginatedEnvelope<Article
   };
 }
 
-function rawObject(value: unknown): RawRecord | null {
-  return value && typeof value === "object" && !Array.isArray(value) ? (value as RawRecord) : null;
-}
-
-function text(value: unknown, fallback = ""): string {
-  return typeof value === "string" && value.trim() ? value.trim() : fallback;
-}
-
-function numberValue(value: unknown, fallback = 0): number {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string") {
-    const parsed = Number.parseFloat(value.replace(/[^0-9.-]/g, ""));
-    if (Number.isFinite(parsed)) return parsed;
-  }
-  return fallback;
-}
-
-function absoluteMediaUrl(value: unknown, fallback: string): string {
-  const url = text(value);
-  if (!url) return fallback;
-  if (url.startsWith("/") || /^https?:\/\//i.test(url)) return url;
-  if (url.startsWith("//")) return `https:${url}`;
-  return `${backendOrigin}/${url.replace(/^\/+/, "")}`;
+function text(value: unknown, fallback = "", locale: Locale = "en"): string {
+  return localizedText(value, fallback, locale);
 }
 
 function safePublishedAt(value: unknown): string {
@@ -71,32 +48,33 @@ function normalizePaginatedResponse<T>(response: RawPaginatedResponse<T>, params
   };
 }
 
-function readCategory(article: RawRecord): string {
+function readCategory(article: RawRecord, locale: Locale): string {
   const category = rawObject(article.category);
-  return text(category?.name ?? article.categoryName ?? article.category_name, "Article");
+  return text(category?.name ?? article.categoryName ?? article.category_name, "Article", locale);
 }
 
-function readImage(article: RawRecord): { url: string; alt: string } | null {
+function readImage(article: RawRecord, locale: Locale): { url: string; alt: string } | null {
   const image = rawObject(article.image) ?? rawObject(article.media) ?? rawObject(article.thumbnail);
-  const directUrl = text(article.image ?? article.imageUrl ?? article.image_url ?? article.thumbnail ?? article.thumbnailUrl ?? article.thumbnail_url);
-  const url = text(image?.url, directUrl);
+  const directUrl = text(article.image ?? article.imageUrl ?? article.image_url ?? article.articleImage ?? article.article_image ?? article.thumbnail ?? article.thumbnailUrl ?? article.thumbnail_url, "", locale);
+  const url = text(image?.url, directUrl, locale);
   if (!url) return null;
-  return { url: absoluteMediaUrl(url, "/images/course-1.png"), alt: text(image?.alt ?? image?.altText ?? image?.alt_text ?? article.title, text(article.title, "Article image")) };
+  const title = text(article.title, "Article", locale);
+  return { url: absoluteMediaUrl(url, "/images/course-1.png"), alt: text(image?.alt ?? image?.altText ?? image?.alt_text ?? article.title, title, locale) };
 }
 
-function toArticleSummary(article: RawArticle): ArticleSummary {
-  const image = readImage(article);
-  const title = text(article.title, "Article");
-  const slug = text(article.slug, String(article.id));
-  const excerpt = text(article.excerpt ?? article.shortDescription ?? article.short_description, title);
+function toArticleSummary(article: RawArticle, locale: Locale): ArticleSummary {
+  const image = readImage(article, locale);
+  const title = text(article.title, "Article", locale);
+  const slug = text(article.slug, String(article.id), locale);
+  const excerpt = text(article.excerpt ?? article.shortDescription ?? article.short_description, title, locale);
 
   return {
     id: numberValue(article.id, 0),
     slug,
     title,
     excerpt,
-    category: readCategory(article),
-    author: text(article.author, "IASS Academic Team"),
+    category: readCategory(article, locale),
+    author: text(article.author, "IASS Academic Team", locale),
     image: image?.url ?? "/images/course-1.png",
     alt: image?.alt ?? title,
     publishedAt: safePublishedAt(article.publishedAt ?? article.published_at),
@@ -118,10 +96,8 @@ export async function getArticles(params: CatalogListParams): Promise<PaginatedE
         "filter[categoryId]": params.category,
       },
     });
-    console.log("[articles-api] raw backend response", response);
     const normalized = normalizePaginatedResponse(response, params);
-    const articles = normalized.data.map(toArticleSummary);
-    console.log("[articles-api] normalized articles", { count: articles.length, meta: normalized.meta, articles });
+    const articles = normalized.data.map((article) => toArticleSummary(article, locale));
 
     return {
       ...normalized,
@@ -142,8 +118,8 @@ export async function getArticleBySlug(slug: string, locale: Locale): Promise<Ar
     const payload = record?.data && rawObject(record.data) ? record.data as RawArticle : response as RawArticle;
 
     return {
-      ...toArticleSummary(payload),
-      body: text(payload.body, text(payload.excerpt)).split("\n\n").filter(Boolean),
+      ...toArticleSummary(payload, locale),
+      body: text(payload.body, text(payload.excerpt, "", locale), locale).split("\n\n").filter(Boolean),
     };
   } catch (error) {
     console.error("[articles-api] failed to load article detail from backend", { slug, error });
