@@ -41,7 +41,10 @@ function rawObject(value: unknown): RawRecord | null {
 }
 
 function text(value: unknown, fallback = ""): string {
-  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+  if (typeof value === "string" && value.trim()) return value.trim();
+  const record = rawObject(value);
+  if (!record) return fallback;
+  return text(record.en) || text(record.ar) || fallback;
 }
 
 function numberValue(value: unknown, fallback = 0): number {
@@ -194,49 +197,25 @@ function toHomeCatalog(data: HomeApiResponse["data"], locale: Locale): HomeCatal
   };
 }
 
-export async function getHomePageData(
-  locale: Locale,
-  fallbackMessages: HomeMessages,
-): Promise<{ copy: HomeMessages; catalog: HomeCatalog }> {
+export async function getHomePageData(locale: Locale, fallbackMessages: HomeMessages): Promise<{ copy: HomeMessages; catalog: HomeCatalog }> {
   try {
     const response = await apiFetch<HomeApiResponse>("/home", {
-      searchParams: {
-        locale,
-        coursesLimit: 3,
-        booksLimit: 3,
-        articlesLimit: 3,
-      },
+      searchParams: { locale, coursesLimit: 3, booksLimit: 3, articlesLimit: 3 },
     });
     const catalog = toHomeCatalog(response.data, locale);
-    console.log("[home-api] backend home catalog", { response, catalog });
-
-    return {
-      copy: mergeHomeCopy(fallbackMessages, response.data),
-      catalog,
-    };
+    return { copy: mergeHomeCopy(fallbackMessages, response.data), catalog };
   } catch (error) {
     console.error("[home-api] failed to load home data from backend", error);
-    return {
-      copy: fallbackMessages,
-      catalog: emptyHomeCatalog(),
-    };
+    return { copy: fallbackMessages, catalog: emptyHomeCatalog() };
   }
 }
 
 export async function getHomeCatalog(locale: Locale): Promise<HomeCatalog> {
   try {
     const response = await apiFetch<HomeApiResponse>("/home", {
-      searchParams: {
-        locale,
-        coursesLimit: 3,
-        booksLimit: 3,
-        articlesLimit: 3,
-      },
+      searchParams: { locale, coursesLimit: 3, booksLimit: 3, articlesLimit: 3 },
     });
-    const catalog = toHomeCatalog(response.data, locale);
-    console.log("[home-api] backend catalog refresh", { response, catalog });
-
-    return catalog;
+    return toHomeCatalog(response.data, locale);
   } catch (error) {
     console.error("[home-api] failed to refresh home catalog from backend", error);
     return emptyHomeCatalog();
