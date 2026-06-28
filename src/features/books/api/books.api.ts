@@ -1,4 +1,4 @@
-import { apiFetch } from "@/shared/api/client";
+import { apiFetch, describeApiError } from "@/shared/api/client";
 import { buildPageMeta, defaultCatalogPerPage } from "@/shared/api/paging";
 import { absoluteMediaUrl, formatMoney, localizedText, numberValue, rawObject, type RawRecord } from "@/shared/api/normalizers";
 import type { Book, CatalogListParams, PaginatedEnvelope } from "@/shared/api/types";
@@ -123,7 +123,7 @@ export async function getBooks(params: CatalogListParams): Promise<PaginatedEnve
       data: books,
     };
   } catch (error) {
-    console.error("[books-api] failed to load books from backend", error);
+    console.error("[books-api] failed to load books from backend", describeApiError(error));
     return emptyBooksPage(params);
   }
 }
@@ -138,7 +138,7 @@ export async function getBookBySlug(slug: string, locale: Locale): Promise<BookI
 
     return toBookView(payload, locale);
   } catch (error) {
-    console.error("[books-api] failed to load book detail from backend", { slug, error });
+    console.error("[books-api] failed to load book detail from backend", { slug, error: describeApiError(error) });
     return null;
   }
 }
