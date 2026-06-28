@@ -1,4 +1,4 @@
-import { apiFetch } from "@/shared/api/client";
+import { apiFetch, describeApiError } from "@/shared/api/client";
 import type { Article, Book, Course } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { HomeCatalog, HomeCatalogItem, HomeMessages } from "../home.types";
@@ -205,7 +205,7 @@ export async function getHomePageData(locale: Locale, fallbackMessages: HomeMess
     const catalog = toHomeCatalog(response.data, locale);
     return { copy: mergeHomeCopy(fallbackMessages, response.data), catalog };
   } catch (error) {
-    console.error("[home-api] failed to load home data from backend", error);
+    console.error("[home-api] failed to load home data from backend", describeApiError(error));
     return { copy: fallbackMessages, catalog: emptyHomeCatalog() };
   }
 }
@@ -217,7 +217,7 @@ export async function getHomeCatalog(locale: Locale): Promise<HomeCatalog> {
     });
     return toHomeCatalog(response.data, locale);
   } catch (error) {
-    console.error("[home-api] failed to refresh home catalog from backend", error);
+    console.error("[home-api] failed to refresh home catalog from backend", describeApiError(error));
     return emptyHomeCatalog();
   }
 }
