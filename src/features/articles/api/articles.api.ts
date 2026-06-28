@@ -1,4 +1,4 @@
-import { apiFetch } from "@/shared/api/client";
+import { apiFetch, describeApiError } from "@/shared/api/client";
 import { buildPageMeta, defaultCatalogPerPage } from "@/shared/api/paging";
 import { absoluteMediaUrl, localizedText, numberValue, rawObject, type RawRecord } from "@/shared/api/normalizers";
 import type { Article, CatalogListParams, PaginatedEnvelope } from "@/shared/api/types";
@@ -146,7 +146,7 @@ export async function getArticles(params: CatalogListParams): Promise<PaginatedE
       data: articles,
     };
   } catch (error) {
-    console.error("[articles-api] failed to load articles from backend", error);
+    console.error("[articles-api] failed to load articles from backend", describeApiError(error));
     return emptyArticlesPage(params);
   }
 }
@@ -165,7 +165,7 @@ export async function getArticleBySlug(slug: string, locale: Locale): Promise<Ar
       bodyHtml: normalizeArticleBody(text(payload.body, fallbackBody, locale)),
     };
   } catch (error) {
-    console.error("[articles-api] failed to load article detail from backend", { slug, error });
+    console.error("[articles-api] failed to load article detail from backend", { slug, error: describeApiError(error) });
     return null;
   }
 }
