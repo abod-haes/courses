@@ -1,4 +1,4 @@
-import { apiFetch } from "@/shared/api/client";
+import { apiFetch, describeApiError } from "@/shared/api/client";
 import { buildPageMeta, defaultCatalogPerPage } from "@/shared/api/paging";
 import { absoluteMediaUrl, formatMoney, localizedText, numberValue, rawObject, type RawRecord } from "@/shared/api/normalizers";
 import type { CatalogListParams, Course, PaginatedEnvelope, PaginationMeta } from "@/shared/api/types";
@@ -180,7 +180,7 @@ export async function getCourses(params: CatalogListParams): Promise<PaginatedEn
       data: courses,
     };
   } catch (error) {
-    console.error("[courses-api] failed to load courses from backend", error);
+    console.error("[courses-api] failed to load courses from backend", describeApiError(error));
     return emptyCoursesPage(params);
   }
 }
@@ -195,7 +195,7 @@ export async function getCourseBySlug(slug: string, locale: Locale): Promise<Cou
 
     return toCourseView(payload, locale);
   } catch (error) {
-    console.error("[courses-api] failed to load course detail from backend", { slug, error });
+    console.error("[courses-api] failed to load course detail from backend", { slug, error: describeApiError(error) });
     return null;
   }
 }
