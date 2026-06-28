@@ -1,4 +1,4 @@
-import { apiFetch } from "./client";
+import { apiFetch, describeApiError } from "./client";
 import type { Category, CategoryType } from "./types";
 
 export type CatalogCategoryOption = Readonly<{
@@ -78,7 +78,8 @@ export async function getCatalogCategoryOptions(
       .filter((category) => category.key && category.label);
 
     return [{ key: "all", label: allLabel }, ...categories];
-  } catch {
+  } catch (error) {
+    console.error("[categories-api] failed to load category options from backend", { type, error: describeApiError(error) });
     return [{ key: "all", label: allLabel }];
   }
 }
