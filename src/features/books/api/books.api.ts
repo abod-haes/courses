@@ -17,10 +17,7 @@ function formatPrice(value: unknown, currency: unknown, locale: Locale): string 
 }
 
 function emptyBooksPage(params: CatalogListParams): PaginatedEnvelope<BookItemView> {
-  return {
-    data: [],
-    meta: buildPageMeta(0, params.page, params.perPage ?? defaultCatalogPerPage),
-  };
+  return { data: [], meta: buildPageMeta(0, params.page, params.perPage ?? defaultCatalogPerPage) };
 }
 
 function normalizePaginatedResponse<T>(response: RawPaginatedResponse<T>, params: CatalogListParams): PaginatedEnvelope<T> {
@@ -50,11 +47,7 @@ function normalizePaginatedResponse<T>(response: RawPaginatedResponse<T>, params
 function readCategory(book: RawRecord, locale: Locale): { id: number; name: string; slug: string } {
   const category = rawObject(book.category);
   const id = numberValue(category?.id ?? book.categoryId ?? book.category_id, 0);
-  return {
-    id,
-    name: text(category?.name ?? book.categoryName ?? book.category_name, "Book", locale),
-    slug: text(category?.slug ?? book.categorySlug ?? book.category_slug, "book", locale),
-  };
+  return { id, name: text(category?.name ?? book.categoryName ?? book.category_name, "Book", locale), slug: text(category?.slug ?? book.categorySlug ?? book.category_slug, "book", locale) };
 }
 
 function readCover(book: RawRecord, locale: Locale): { url: string; alt: string } | null {
@@ -64,6 +57,26 @@ function readCover(book: RawRecord, locale: Locale): { url: string; alt: string 
   if (!url) return null;
   const title = text(book.title, "Medical book", locale);
   return { url: absoluteMediaUrl(url, "/images/book-1.png"), alt: text(cover?.alt ?? cover?.altText ?? cover?.alt_text ?? book.title, title, locale) };
+}
+
+function readStringList(value: unknown, locale: Locale): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.map((item) => text(item, "", locale)).filter(Boolean);
+}
+
+function readProductDetails(book: RawRecord, locale: Locale): BookItemView["details"]["productDetails"] {
+  const details = book.productDetails ?? book.product_details;
+  if (!Array.isArray(details)) return [];
+
+  return details
+    .map((item) => {
+      const record = rawObject(item);
+      if (!record) return null;
+      const label = text(record.label, "", locale);
+      const value = text(record.value, "", locale);
+      return label && value ? { label, value } : null;
+    })
+    .filter((item): item is { label: string; value: string } => Boolean(item));
 }
 
 function toBookView(book: RawBook, locale: Locale): BookItemView {
@@ -77,26 +90,23 @@ function toBookView(book: RawBook, locale: Locale): BookItemView {
   return {
     id: String(book.id),
     title,
-    author: text(book.author, locale === "ar" ? "د. إياس عكاري" : "Dr. Iyas Akkari", locale),
+    author: text(book.author, "", locale),
     categoryKey: category.id ? String(category.id) : category.slug,
     category: category.name,
     description: shortDescription,
     price: formatPrice(book.price, book.currency, locale),
-    isbn: text(book.isbn, `IASS-${book.id}`, locale),
+    isbn: text(book.isbn, "", locale),
     href: `/books/${slug}`,
     image: cover?.url ?? "/images/book-1.png",
     imageAlt: cover?.alt ?? title,
     details: {
-      availability: locale === "ar" ? "متوفر كمرجع رقمي" : "Available as a digital reference",
-      accessNote: locale === "ar" ? "يتم فتح المرجع الرقمي بعد إتمام الشراء بنجاح." : "Digital access is unlocked after successful purchase.",
-      description: [description],
-      highlights: locale === "ar" ? ["تنظيم أكاديمي واضح", "نقاط أمان عملية", "مناسب للمراجعة السريعة"] : ["Clear academic structure", "Practical safety notes", "Built for fast review"],
-      tableOfContents: locale === "ar" ? ["المدخل العلمي", "إطار التقييم", "خطوات التطبيق", "مراجعة الأمان"] : ["Scientific overview", "Assessment framework", "Application steps", "Safety review"],
-      authorBio: locale === "ar" ? ["محتوى صادر عن فريق IASS الأكاديمي تحت إشراف الدكتور إياس عكاري."] : ["Prepared by the IASS academic team under the supervision of Dr. Iyas Akkari."],
-      productDetails: [
-        { label: locale === "ar" ? "الصيغة" : "Format", value: locale === "ar" ? "مرجع رقمي" : "Digital reference" },
-        { label: locale === "ar" ? "اللغة" : "Language", value: locale === "ar" ? "العربية والإنجليزية" : "Arabic and English" },
-      ],
+      availability: text(book.availability, "", locale),
+      accessNote: text(book.accessNote ?? book.access_note, "", locale),
+      description: description ? [description] : [],
+      highlights: readStringList(book.highlights, locale),
+      tableOfContents: readStringList(book.tableOfContents ?? book.table_of_contents, locale),
+      authorBio: readStringList(book.authorBio ?? book.author_bio, locale),
+      productDetails: readProductDetails(book, locale),
     },
   };
 }
@@ -118,10 +128,7 @@ export async function getBooks(params: CatalogListParams): Promise<PaginatedEnve
     const normalized = normalizePaginatedResponse(response, params);
     const books = normalized.data.map((book) => toBookView(book, locale));
 
-    return {
-      ...normalized,
-      data: books,
-    };
+    return { ...normalized, data: books };
   } catch (error) {
     console.error("[books-api] failed to load books from backend", describeApiError(error));
     return emptyBooksPage(params);
@@ -130,9 +137,7 @@ export async function getBooks(params: CatalogListParams): Promise<PaginatedEnve
 
 export async function getBookBySlug(slug: string, locale: Locale): Promise<BookItemView | null> {
   try {
-    const response = await apiFetch<{ data?: RawBook } | RawBook>(`/books/${slug}`, {
-      searchParams: { locale },
-    });
+    const response = await apiFetch<{ data?: RawBook } | RawBook>(`/books/${slug}`, { searchParams: { locale } });
     const record = rawObject(response);
     const payload = record?.data && rawObject(record.data) ? record.data as RawBook : response as RawBook;
 
