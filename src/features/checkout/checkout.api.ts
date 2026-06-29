@@ -3,7 +3,7 @@ import type { BookItemView } from "@/features/books/books.types";
 import { getCourses } from "@/features/courses/api/courses.api";
 import type { CourseItemView } from "@/features/courses/courses.types";
 import { ApiError, apiFetch } from "@/shared/api/client";
-import type { Book, CheckoutItemType, Course, Order, OrderItem, PaginatedEnvelope } from "@/shared/api/types";
+import type { ApiEnvelope, Book, CheckoutItemType, Course, Order, OrderItem, PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { CheckoutCopy, CheckoutItemView, OrderView } from "./checkout.types";
 
@@ -30,6 +30,14 @@ type LibraryResponse = Readonly<{
   }>;
   courses?: Course[];
   books?: Book[];
+}>;
+
+export type BookAccessResponse = Readonly<{
+  bookId: number;
+  title: string | Record<string, string | null>;
+  accessType: "external_url" | "signed_url";
+  accessUrl: string;
+  expiresAt: string | null;
 }>;
 
 function numberValue(value: unknown, fallback = 0): number {
@@ -171,6 +179,11 @@ function checkoutReturnUrl(path: "/checkout/success" | "/checkout/cancel"): stri
   return `${window.location.origin}${path}`;
 }
 
+function unwrap<T>(response: ApiEnvelope<T> | T): T {
+  if (response && typeof response === "object" && "data" in response) return (response as ApiEnvelope<T>).data;
+  return response as T;
+}
+
 export function getCheckoutTotal(items: readonly CheckoutItemView[], locale: Locale): string {
   const total = items.reduce((sum, item) => sum + item.amount, 0);
   return formatPrice(total, "USD", locale);
@@ -254,4 +267,13 @@ export async function getLibraryFromApi(locale: Locale, copy: CheckoutCopy, toke
     courses: (payload.courses ?? []).map((course) => rawCourseToCheckoutItem(course, locale, copy)),
     books: (payload.books ?? []).map((book) => rawBookToCheckoutItem(book, locale, copy)),
   };
+}
+
+export async function getBookAccessFromApi(bookId: string | number, locale: Locale, token?: string): Promise<BookAccessResponse> {
+  const response = await apiFetch<ApiEnvelope<BookAccessResponse> | BookAccessResponse>(`/my/books/${bookId}/access`, {
+    headers: authHeaders(token),
+    searchParams: { locale },
+  });
+
+  return unwrap(response);
 }
