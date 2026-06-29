@@ -82,20 +82,8 @@ export default async function Page({ searchParams }: LibraryPageProps) {
             </div>
 
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/70 bg-surface p-1 shadow-[0_8px_22px_rgba(15,23,42,0.04)]">
-              <LibraryTabLink
-                href="/library?tab=courses"
-                isActive={activeTab === "courses"}
-                icon="course"
-                label={copy.library.coursesTab}
-                count={library.courses.length}
-              />
-              <LibraryTabLink
-                href="/library?tab=books"
-                isActive={activeTab === "books"}
-                icon="book"
-                label={copy.library.booksTab}
-                count={library.books.length}
-              />
+              <LibraryTabLink href="/library?tab=courses" isActive={activeTab === "courses"} icon="course" label={copy.library.coursesTab} count={library.courses.length} />
+              <LibraryTabLink href="/library?tab=books" isActive={activeTab === "books"} icon="book" label={copy.library.booksTab} count={library.books.length} />
             </div>
           </Reveal>
         </div>
@@ -121,56 +109,25 @@ export default async function Page({ searchParams }: LibraryPageProps) {
         {activeItems.length > 0 ? (
           <div className="grid gap-4">
             {activeItems.map((item) => (
-              <LibraryResourceCard
-                key={`${item.type}-${item.id}`}
-                item={item}
-                copy={copy}
-                actionLabel={item.type === "course" ? copy.library.continueLearning : copy.library.accessBook}
-              />
+              <LibraryResourceCard key={`${item.type}-${item.id}`} item={item} copy={copy} actionLabel={item.type === "course" ? copy.library.continueLearning : copy.library.accessBook} />
             ))}
           </div>
         ) : (
-          <LibraryEmptyState
-            copy={copy}
-            href={activeTab === "courses" ? "/courses" : "/books"}
-            label={activeTab === "courses" ? copy.library.browseCourses : copy.library.browseBooks}
-          />
+          <LibraryEmptyState copy={copy} href={activeTab === "courses" ? "/courses" : "/books"} label={activeTab === "courses" ? copy.library.browseCourses : copy.library.browseBooks} />
         )}
       </section>
     </div>
   );
 }
 
-function LibraryTabLink({
-  href,
-  isActive,
-  icon,
-  label,
-  count,
-}: Readonly<{
-  href: string;
-  isActive: boolean;
-  icon: "course" | "book";
-  label: string;
-  count: number;
-}>) {
+function LibraryTabLink({ href, isActive, icon, label, count }: Readonly<{ href: string; isActive: boolean; icon: "course" | "book"; label: string; count: number }>) {
   const Icon = icon === "course" ? GraduationCap : BookOpen;
 
   return (
-    <Button
-      href={href}
-      variant={isActive ? "primary" : "ghost"}
-      className={
-        isActive
-          ? "rounded-full px-4 py-2 text-xs shadow-[0_8px_18px_rgba(0,74,198,0.14)]"
-          : "rounded-full px-4 py-2 text-xs text-foreground/64 hover:bg-primary/7 hover:text-primary"
-      }
-    >
+    <Button href={href} variant={isActive ? "primary" : "ghost"} className={isActive ? "rounded-full px-4 py-2 text-xs shadow-[0_8px_18px_rgba(0,74,198,0.14)]" : "rounded-full px-4 py-2 text-xs text-foreground/64 hover:bg-primary/7 hover:text-primary"}>
       <Icon className="h-4 w-4" aria-hidden="true" />
       <span>{label}</span>
-      <span className={isActive ? "rounded-full bg-white/18 px-2 py-0.5 text-[0.68rem]" : "rounded-full bg-primary/8 px-2 py-0.5 text-[0.68rem] text-primary"}>
-        {count}
-      </span>
+      <span className={isActive ? "rounded-full bg-white/18 px-2 py-0.5 text-[0.68rem]" : "rounded-full bg-primary/8 px-2 py-0.5 text-[0.68rem] text-primary"}>{count}</span>
     </Button>
   );
 }
@@ -178,18 +135,14 @@ function LibraryTabLink({
 function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: CheckoutItemView; copy: CheckoutCopy; actionLabel: string }>) {
   const isCourse = item.type === "course";
   const Icon = isCourse ? PlayCircle : FileText;
+  const actionHref = isCourse ? `/learn/courses/${item.id}` : item.href;
 
   return (
     <Reveal preset="fadeUp">
       <Card className="group overflow-hidden rounded-[18px] border border-border/70 bg-surface shadow-[0_10px_28px_rgba(15,23,42,0.045)] transition duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-[0_16px_38px_rgba(15,23,42,0.075)]">
         <div className="grid gap-0 md:grid-cols-[11rem_minmax(0,1fr)_13rem]">
           <div className="relative min-h-[11rem] overflow-hidden bg-primary/6 md:min-h-full">
-            <div
-              className="absolute inset-0 bg-cover bg-center transition duration-500 group-hover:scale-105"
-              style={{ backgroundImage: `url(${item.image})` }}
-              role="img"
-              aria-label={item.imageAlt}
-            />
+            <div className="absolute inset-0 bg-cover bg-center transition duration-500 group-hover:scale-105" style={{ backgroundImage: `url(${item.image})` }} role="img" aria-label={item.imageAlt} />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/10 to-transparent" />
             <span className="absolute bottom-3 start-3 inline-flex items-center gap-1.5 rounded-full bg-white/92 px-3 py-1 text-[0.7rem] font-black text-primary shadow-[0_8px_18px_rgba(15,23,42,0.12)]">
               <Icon className="h-3.5 w-3.5" aria-hidden="true" />
@@ -202,24 +155,16 @@ function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: Check
               <span className="rounded-full bg-primary/7 px-3 py-1 text-[0.68rem] font-black text-primary">{item.category}</span>
               <span className="rounded-full bg-section-bg px-3 py-1 text-[0.68rem] font-bold text-foreground/58">{item.accessLabel}</span>
             </div>
-
-            <h3 className="mt-3 line-clamp-2 text-lg font-black text-foreground sm:text-xl">
-              {item.title}
-            </h3>
+            <h3 className="mt-3 line-clamp-2 text-lg font-black text-foreground sm:text-xl">{item.title}</h3>
             <p className="mt-2 line-clamp-2 text-sm text-foreground/62">{item.description}</p>
           </div>
 
           <div className="flex flex-col justify-between gap-4 border-t border-border/70 bg-section-bg/70 p-5 md:border-s md:border-t-0">
             <div>
-              <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-foreground/42">
-                {isCourse ? copy.labels.lifetimeAccess : copy.labels.digitalAccess}
-              </p>
+              <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-foreground/42">{isCourse ? copy.labels.lifetimeAccess : copy.labels.digitalAccess}</p>
               <p className="mt-2 text-xl font-black text-foreground">{item.price}</p>
             </div>
-
-            <Button href={item.href} className="w-full rounded-full">
-              {actionLabel}
-            </Button>
+            <Button href={actionHref} className="w-full rounded-full">{actionLabel}</Button>
           </div>
         </div>
       </Card>
@@ -236,9 +181,7 @@ function LibraryEmptyState({ copy, href, label }: Readonly<{ copy: CheckoutCopy;
         </span>
         <h3 className="mt-4 text-lg font-black text-foreground">{copy.library.emptyTitle}</h3>
         <p className="mx-auto mt-2 max-w-md text-sm text-foreground/60">{copy.library.emptyDescription}</p>
-        <Button href={href} className="mt-5 rounded-full">
-          {label}
-        </Button>
+        <Button href={href} className="mt-5 rounded-full">{label}</Button>
       </div>
     </Reveal>
   );
