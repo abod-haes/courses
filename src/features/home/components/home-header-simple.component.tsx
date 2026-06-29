@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight, LogIn, LogOut, Menu, ShoppingCart, X } from "lucide-react";
+import { ChevronRight, LibraryBig, LogIn, LogOut, Menu, ShoppingCart, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { usePreferences } from "@/components/preferences-provider";
 import { SiteContainer } from "@/shared/components/layout/site-container";
@@ -27,10 +27,7 @@ function hasSessionCookie(): boolean {
 }
 
 function getCartHref(): string {
-  const items = readStoredCheckoutItems();
-  const firstItem = items[0];
-  if (!firstItem) return "/checkout?empty=1";
-  return `/checkout?itemType=${encodeURIComponent(firstItem.type)}&itemId=${encodeURIComponent(String(firstItem.id))}`;
+  return "/checkout";
 }
 
 export function HomeHeader({ copy }: HomeHeaderProps) {
@@ -43,10 +40,11 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [cartCount, setCartCount] = useState(0);
-  const [cartHref, setCartHref] = useState("/checkout?empty=1");
+  const [cartHref, setCartHref] = useState("/checkout");
 
   const homeLabel = copy.navigation.home ?? (isArabic ? "الرئيسية" : "Home");
   const cartLabel = isArabic ? "السلة" : "Cart";
+  const libraryLabel = isArabic ? "مكتبتي" : "My Library";
   const logoutLabel = isArabic ? "تسجيل الخروج" : "Logout";
 
   const navItems = useMemo(
@@ -124,7 +122,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
       setMenuOpen(false);
       setIsAuthenticated(false);
       setCartCount(0);
-      setCartHref("/checkout?empty=1");
+      setCartHref("/checkout");
       setIsLoggingOut(false);
       if (window.location.pathname !== "/") window.location.assign("/");
     }
@@ -176,11 +174,17 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
             <div className="ms-auto hidden shrink-0 items-center gap-1 min-[1120px]:flex min-[1500px]:gap-2.5">
               {isAuthenticated ? (
-                <Button href={cartHref} variant="secondary" size="sm" className="relative rounded-full px-4">
-                  <ShoppingCart className="h-4 w-4" aria-hidden="true" />
-                  <span>{cartLabel}</span>
-                  {cartCount > 0 ? <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[0.6rem] font-black text-white rtl:-left-1 rtl:right-auto">{cartCount}</span> : null}
-                </Button>
+                <>
+                  <Button href="/library" variant="secondary" size="sm" className="rounded-full px-4">
+                    <LibraryBig className="h-4 w-4" aria-hidden="true" />
+                    <span>{libraryLabel}</span>
+                  </Button>
+                  <Button href={cartHref} variant="secondary" size="sm" className="relative rounded-full px-4">
+                    <ShoppingCart className="h-4 w-4" aria-hidden="true" />
+                    <span>{cartLabel}</span>
+                    {cartCount > 0 ? <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[0.6rem] font-black text-white rtl:-left-1 rtl:right-auto">{cartCount}</span> : null}
+                  </Button>
+                </>
               ) : null}
               {authAction}
               <HomeHeaderControls copy={copy.controls} />
@@ -188,11 +192,17 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
             <div className="ms-auto flex items-center gap-2 min-[1120px]:hidden">
               {isAuthenticated ? (
-                <Link href={cartHref} className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/78 text-primary shadow-[0_10px_26px_rgba(15,23,42,0.08)] ring-1 ring-primary/14 transition duration-200 hover:-translate-y-0.5 hover:bg-primary hover:text-white dark:bg-white/12 dark:text-white dark:ring-white/14 dark:hover:bg-primary">
-                  <ShoppingCart className="h-4 w-4" aria-hidden="true" />
-                  {cartCount > 0 ? <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[0.6rem] font-black text-white rtl:-left-1 rtl:right-auto">{cartCount}</span> : null}
-                  <span className="sr-only">{cartLabel}</span>
-                </Link>
+                <>
+                  <Link href="/library" className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/78 text-primary shadow-[0_10px_26px_rgba(15,23,42,0.08)] ring-1 ring-primary/14 transition duration-200 hover:-translate-y-0.5 hover:bg-primary hover:text-white dark:bg-white/12 dark:text-white dark:ring-white/14 dark:hover:bg-primary">
+                    <LibraryBig className="h-4 w-4" aria-hidden="true" />
+                    <span className="sr-only">{libraryLabel}</span>
+                  </Link>
+                  <Link href={cartHref} className="relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/78 text-primary shadow-[0_10px_26px_rgba(15,23,42,0.08)] ring-1 ring-primary/14 transition duration-200 hover:-translate-y-0.5 hover:bg-primary hover:text-white dark:bg-white/12 dark:text-white dark:ring-white/14 dark:hover:bg-primary">
+                    <ShoppingCart className="h-4 w-4" aria-hidden="true" />
+                    {cartCount > 0 ? <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[0.6rem] font-black text-white rtl:-left-1 rtl:right-auto">{cartCount}</span> : null}
+                    <span className="sr-only">{cartLabel}</span>
+                  </Link>
+                </>
               ) : null}
               <button type="button" onClick={() => setMenuOpen(true)} className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/78 text-primary shadow-[0_10px_26px_rgba(15,23,42,0.08)] ring-1 ring-primary/14 transition duration-200 hover:-translate-y-0.5 hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 dark:bg-white/12 dark:text-white dark:ring-white/14 dark:hover:bg-primary" aria-expanded={menuOpen} aria-controls="mobile-navigation" aria-label={isArabic ? "فتح القائمة" : "Open menu"}>
                 <Menu className="h-4 w-4" aria-hidden="true" />
@@ -231,10 +241,16 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               <div className="mt-5 grid gap-3">
                 {authReady ? (
                   isAuthenticated ? (
-                    <Button type="button" variant="secondary" size="sm" className="w-full rounded-full text-red-600 dark:text-red-300" onClick={handleLogout} disabled={isLoggingOut}>
-                      <LogOut className="h-4 w-4" aria-hidden="true" />
-                      {isLoggingOut ? (isArabic ? "جاري الخروج..." : "Logging out...") : logoutLabel}
-                    </Button>
+                    <>
+                      <Button href="/library" variant="primary" size="sm" className="w-full rounded-full" onClick={() => setMenuOpen(false)}>
+                        <LibraryBig className="h-4 w-4" aria-hidden="true" />
+                        {libraryLabel}
+                      </Button>
+                      <Button type="button" variant="secondary" size="sm" className="w-full rounded-full text-red-600 dark:text-red-300" onClick={handleLogout} disabled={isLoggingOut}>
+                        <LogOut className="h-4 w-4" aria-hidden="true" />
+                        {isLoggingOut ? (isArabic ? "جاري الخروج..." : "Logging out...") : logoutLabel}
+                      </Button>
+                    </>
                   ) : (
                     <Button href="/login" variant="primary" size="sm" className="w-full rounded-full" onClick={() => setMenuOpen(false)}>
                       <LogIn className="h-4 w-4" aria-hidden="true" />
