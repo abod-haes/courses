@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock3, FileText, MonitorPlay, Smartphone } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { Card } from "@/shared/components/ui/card";
 import { ProtectedCheckoutButton } from "@/features/checkout/components/protected-checkout-button.component";
 import type { CourseDetailCopy, CourseItemView } from "../courses.types";
@@ -9,25 +9,6 @@ type CoursePurchasePanelProps = Readonly<{
 }>;
 
 export function CoursePurchasePanel({ course, copy }: CoursePurchasePanelProps) {
-  const isArabic = copy.addToCart.includes("أضف");
-  const fallbackIncludes = isArabic
-    ? [
-        `${course.hours} ساعة من الفيديو عند الطلب`,
-        `${course.lessons} درسًا تعليميًا شاملًا`,
-        "حالات تطبيقية منظمة",
-        "وصول دائم للمحتوى",
-        "إمكانية الوصول من الهاتف والحاسوب",
-      ]
-    : [
-        `${course.hours} hours of on-demand video`,
-        `${course.lessons} comprehensive lessons`,
-        "Structured applied cases",
-        "Full lifetime access",
-        "Access on mobile and desktop",
-      ];
-  const includes = course.includes.length > 0 ? course.includes : fallbackIncludes;
-  const icons = [MonitorPlay, FileText, CheckCircle2, Clock3, Smartphone];
-
   return (
     <Card className="rounded-[12px] bg-surface p-5 shadow-[0_10px_30px_rgba(17,24,39,0.08)]">
       <div className="text-center">
@@ -42,21 +23,19 @@ export function CoursePurchasePanel({ course, copy }: CoursePurchasePanelProps) 
         <p className="mt-4 text-center text-[0.74rem] leading-5 text-foreground/55">{copy.unlockNote}</p>
       </div>
 
-      <div className="mt-5 border-t border-border/70 pt-5">
-        <h3 className="text-[0.8rem] font-black text-foreground">{copy.includesTitle}</h3>
-        <ul className="mt-3 space-y-2.5">
-          {includes.map((item, index) => {
-            const Icon = icons[index] ?? CheckCircle2;
-
-            return (
+      {course.includes.length > 0 ? (
+        <div className="mt-5 border-t border-border/70 pt-5">
+          <h3 className="text-[0.8rem] font-black text-foreground">{copy.includesTitle}</h3>
+          <ul className="mt-3 space-y-2.5">
+            {course.includes.map((item) => (
               <li key={item} className="flex items-start gap-2 text-[0.78rem] leading-5 text-foreground/66">
-                <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
+                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
                 <span>{item}</span>
               </li>
-            );
-          })}
-        </ul>
-      </div>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </Card>
   );
 }
