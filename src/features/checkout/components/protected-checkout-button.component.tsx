@@ -14,9 +14,7 @@ type ProtectedCheckoutButtonProps = Readonly<{
   className?: string;
 }>;
 
-function checkoutPath(itemType: CheckoutItemType, itemId: string | number): string {
-  return `/checkout?itemType=${encodeURIComponent(itemType)}&itemId=${encodeURIComponent(String(itemId))}`;
-}
+const checkoutPath = "/checkout";
 
 function hasSessionCookie(): boolean {
   return document.cookie.split(";").some((cookie) => cookie.trim().startsWith(`${websiteSessionCookieName}=`));
@@ -30,19 +28,17 @@ export function ProtectedCheckoutButton({ itemType, itemId, children, className 
   const router = useRouter();
 
   function handleClick() {
-    const nextPath = checkoutPath(itemType, itemId);
-
-    if (!hasWebsiteSession()) {
-      router.push(`/login?redirectTo=${encodeURIComponent(nextPath)}`);
-      return;
-    }
-
     const numericId = Number(itemId);
     const currentItems = readStoredCheckoutItems();
     const exists = currentItems.some((item) => item.type === itemType && item.id === numericId);
-
     writeStoredCheckoutItems(exists ? currentItems : [...currentItems, { type: itemType, id: numericId, quantity: 1 }]);
-    router.push(nextPath);
+
+    if (!hasWebsiteSession()) {
+      router.push(`/login?redirectTo=${encodeURIComponent(checkoutPath)}`);
+      return;
+    }
+
+    router.push(checkoutPath);
   }
 
   return (
