@@ -75,9 +75,7 @@ export default async function Page({ searchParams }: LibraryPageProps) {
           <Reveal preset="fadeUp" className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
               <p className="text-[0.68rem] font-black uppercase tracking-[0.16em] text-primary">{copy.library.eyebrow}</p>
-              <h1 className="mt-3 text-4xl font-black text-foreground sm:text-5xl">
-                {copy.library.title}
-              </h1>
+              <h1 className="mt-3 text-4xl font-black text-foreground sm:text-5xl">{copy.library.title}</h1>
               <p className="mt-3 max-w-2xl text-sm text-foreground/68 sm:text-base">{copy.library.subtitle}</p>
             </div>
 
@@ -92,13 +90,9 @@ export default async function Page({ searchParams }: LibraryPageProps) {
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
         <Reveal preset="fadeUp" className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-xl font-black text-foreground">
-              {activeTab === "courses" ? copy.library.coursesTab : copy.library.booksTab}
-            </h2>
+            <h2 className="text-xl font-black text-foreground">{activeTab === "courses" ? copy.library.coursesTab : copy.library.booksTab}</h2>
             <p className="mt-1 text-sm text-foreground/58">
-              {activeItems.length > 0
-                ? `${activeItems.length} ${activeTab === "courses" ? copy.labels.course : copy.labels.book}`
-                : copy.library.emptyDescription}
+              {activeItems.length > 0 ? `${activeItems.length} ${activeTab === "courses" ? copy.labels.course : copy.labels.book}` : copy.library.emptyDescription}
             </p>
           </div>
           <Button href={activeTab === "courses" ? "/courses" : "/books"} variant="secondary" className="w-fit rounded-full">
@@ -135,7 +129,7 @@ function LibraryTabLink({ href, isActive, icon, label, count }: Readonly<{ href:
 function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: CheckoutItemView; copy: CheckoutCopy; actionLabel: string }>) {
   const isCourse = item.type === "course";
   const Icon = isCourse ? PlayCircle : FileText;
-  const actionHref = isCourse ? `/learn/courses/${item.id}` : item.href;
+  const actionHref = isCourse ? `/learn/courses/${item.id}` : `/library/books/${item.id}/download`;
 
   return (
     <Reveal preset="fadeUp">
