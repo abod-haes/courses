@@ -6,6 +6,9 @@ import { StaggerList } from "@/shared/components/animation/stagger-list.componen
 import { SiteContainer } from "@/shared/components/layout/site-container";
 import { CatalogPagination } from "@/shared/components/catalog/catalog-pagination.component";
 import { getCatalogCategoryOptions } from "@/shared/api/categories.api";
+import { websiteSessionCookieName, websiteSessionKey } from "@/shared/api/website-session";
+import { getLibraryFromApi } from "@/features/checkout/checkout.api";
+import { getCheckoutCopy } from "@/features/checkout/checkout.data";
 import type { PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import { getCourses } from "../api/courses.api";
@@ -19,6 +22,16 @@ type CoursesLibraryProps = Readonly<{
   initialPage: PaginatedEnvelope<CourseItemView>;
   locale: Locale;
 }>;
+
+function hasSessionCookie(): boolean {
+  if (typeof document === "undefined") return false;
+  return document.cookie.split(";").some((cookie) => cookie.trim().startsWith(`${websiteSessionCookieName}=`));
+}
+
+function hasClientSession(): boolean {
+  if (typeof window === "undefined") return false;
+  return Boolean(window.localStorage.getItem(websiteSessionKey) || hasSessionCookie());
+}
 
 function useDebouncedValue(value: string, delay = 300): string {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -50,6 +63,7 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState<CoursesCategoryFilter>("all");
   const [page, setPage] = useState(1);
+  const [canLoadLibrary, setCanLoadLibrary] = useState(false);
   const debouncedSearch = useDebouncedValue(searchTerm.trim());
   const isSearchDebouncing = searchTerm.trim() !== debouncedSearch;
   const isInitialQuery = debouncedSearch.length === 0 && activeCategory === "all" && page === 1;
@@ -57,6 +71,22 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
   useEffect(() => {
     setPage(1);
   }, [debouncedSearch, activeCategory]);
+
+  useEffect(() => {
+    function syncSession() {
+      setCanLoadLibrary(hasClientSession());
+    }
+
+    syncSession();
+    window.addEventListener("storage", syncSession);
+    window.addEventListener("focus", syncSession);
+    window.addEventListener("iass:website-session-changed", syncSession);
+    return () => {
+      window.removeEventListener("storage", syncSession);
+      window.removeEventListener("focus", syncSession);
+      window.removeEventListener("iass:website-session-changed", syncSession);
+    };
+  }, []);
 
   const query = useQuery({
     queryKey: ["courses", locale, debouncedSearch, activeCategory, page, initialPage.meta.perPage],
@@ -71,6 +101,16 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
     initialData: isInitialQuery ? initialPage : undefined,
     placeholderData: (previousData) => previousData,
   });
+
+  const libraryQuery = useQuery({
+    enabled: canLoadLibrary,
+    queryKey: ["my-library-course-ids", locale],
+    queryFn: () => getLibraryFromApi(locale, getCheckoutCopy(locale)),
+    retry: false,
+    staleTime: 30 * 1000,
+  });
+
+  const purchasedCourseIds = useMemo(() => new Set((libraryQuery.data?.courses ?? []).map((course) => String(course.id))), [libraryQuery.data]);
 
   const fallbackCategoryOptions = useMemo<CoursesCategoryOption[]>(() => {
     const categoryLabels = new Map<CourseCategoryKey, string>();
@@ -98,6 +138,8 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
   const showInitialLoading = query.isFetching && courses.length === 0;
   const showFilterLoading = !showInitialLoading && (query.isFetching || isSearchDebouncing);
   const showEmpty = !showInitialLoading && !showFilterLoading && courses.length === 0;
+  const purchasedLabel = locale === "ar" ? "مشتَرى" : "Purchased";
+  const continueLabel = locale === "ar" ? "متابعة التعلم" : "Continue learning";
 
   return (
     <div className="min-h-full bg-section-bg">
@@ -123,7 +165,7 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
           <div className="relative">
             <StaggerList className={`mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4 ${showFilterLoading ? "opacity-50" : "opacity-100"}`}>
               {courses.map((course) => (
-                <CourseTileView key={course.id} course={course} viewDetailsLabel={copy.labels.viewDetails} />
+                <CourseTileView key={course.id} course={course} viewDetailsLabel={copy.labels.viewDetails} isPurchased={purchasedCourseIds.has(course.id)} purchasedLabel={purchasedLabel} continueLabel={continueLabel} />
               ))}
             </StaggerList>
           </div>
