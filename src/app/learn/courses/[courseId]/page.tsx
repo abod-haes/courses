@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
-import { notFound, redirect } from "next/navigation";
-import { BookOpenCheck, PlayCircle } from "lucide-react";
+import { redirect } from "next/navigation";
+import { AlertCircle, BookOpenCheck, PlayCircle } from "lucide-react";
 import { ApiError } from "@/shared/api/client";
 import { websiteSessionCookieName } from "@/shared/api/website-session";
 import { Reveal } from "@/shared/components/animation/reveal.component";
@@ -9,11 +9,16 @@ import { Card } from "@/shared/components/ui/card";
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
 import { localeCookieName } from "@/shared/lib/preferences";
 import type { Locale } from "@/shared/lib/types";
-import { getLearningCourse } from "@/features/learning/learning.api";
+import { getLearningCourse, type LearningCourse } from "@/features/learning/learning.api";
 
 export const dynamic = "force-dynamic";
 
 type PageProps = Readonly<{ params: Promise<{ courseId: string }> }>;
+
+type LearningLoadResult = Readonly<{
+  course: LearningCourse | null;
+  status: number | null;
+}>;
 
 async function currentLocale(): Promise<Locale> {
   const cookieStore = await cookies();
@@ -27,10 +32,41 @@ async function requireToken(returnTo: string): Promise<string> {
   return token;
 }
 
-function handleError(error: unknown, returnTo: string): never {
-  if (error instanceof ApiError && error.status === 401) redirect(`/login?redirectTo=${encodeURIComponent(returnTo)}&sessionExpired=1`);
-  if (error instanceof ApiError && (error.status === 403 || error.status === 404)) notFound();
-  throw error;
+async function loadLearningCourse(courseId: string, locale: Locale, token: string, returnTo: string): Promise<LearningLoadResult> {
+  try {
+    return { course: await getLearningCourse(courseId, locale, token), status: null };
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) redirect(`/login?redirectTo=${encodeURIComponent(returnTo)}&sessionExpired=1`);
+    if (error instanceof ApiError && (error.status === 403 || error.status === 404)) return { course: null, status: error.status };
+    throw error;
+  }
+}
+
+function LearningUnavailable({ locale, status }: Readonly<{ locale: Locale; status: number | null }>) {
+  const isArabic = locale === "ar";
+  const title = status === 403
+    ? (isArabic ? "الكورس غير مفتوح لهذا الحساب" : "This course is not unlocked for this account")
+    : (isArabic ? "تعذر فتح صفحة التعلم" : "Could not open the learning page");
+
+  return (
+    <section className="flex min-h-[62vh] items-center justify-center bg-section-bg px-4 py-12 text-center">
+      <Card className="mx-auto max-w-xl rounded-[22px] bg-surface p-8 shadow-[0_18px_55px_rgba(17,24,39,0.08)]">
+        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/8 text-primary">
+          <AlertCircle className="h-7 w-7" aria-hidden="true" />
+        </span>
+        <h1 className="mt-5 text-2xl font-black text-foreground sm:text-3xl">{title}</h1>
+        <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-foreground/62">
+          {isArabic
+            ? "إذا اشتريت الكورس للتو، تأكد أن الطلب أصبح مدفوعاً وأن الباك محدث على السيرفر. بعدها افتح الكورس من مكتبتي."
+            : "If you just purchased this course, make sure the order is marked as paid and the backend is updated on the server. Then open the course from My Library."}
+        </p>
+        <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+          <Button href="/library" className="rounded-full">{isArabic ? "الذهاب إلى مكتبتي" : "Go to My Library"}</Button>
+          <Button href="/courses" variant="secondary" className="rounded-full">{isArabic ? "تصفح الكورسات" : "Browse courses"}</Button>
+        </div>
+      </Card>
+    </section>
+  );
 }
 
 export default async function Page({ params }: PageProps) {
@@ -39,7 +75,10 @@ export default async function Page({ params }: PageProps) {
   const returnTo = `/learn/courses/${courseId}`;
   const token = await requireToken(returnTo);
   const isArabic = locale === "ar";
-  const course = await getLearningCourse(courseId, locale, token).catch((error) => handleError(error, returnTo));
+  const { course, status } = await loadLearningCourse(courseId, locale, token, returnTo);
+
+  if (!course) return <LearningUnavailable locale={locale} status={status} />;
+
   const lessonsCount = course.sections.reduce((sum, section) => sum + section.lessons.length, 0);
 
   return (
