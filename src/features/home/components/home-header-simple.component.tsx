@@ -46,6 +46,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   const cartLabel = isArabic ? "السلة" : "Cart";
   const libraryLabel = isArabic ? "مكتبتي" : "My Library";
   const logoutLabel = isArabic ? "تسجيل الخروج" : "Logout";
+  const loggingOutLabel = isArabic ? "جاري الخروج..." : "Logging out...";
 
   const navItems = useMemo(
     () => [
@@ -130,10 +131,16 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
   const authAction = authReady ? (
     isAuthenticated ? (
-      <Button type="button" variant="secondary" size="sm" className="rounded-full px-3 text-red-600 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-500/10" onClick={handleLogout} disabled={isLoggingOut}>
+      <button
+        type="button"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-red-500/15 bg-red-500/5 text-red-600 transition duration-200 hover:-translate-y-0.5 hover:bg-red-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/25 dark:text-red-300"
+        onClick={handleLogout}
+        disabled={isLoggingOut}
+        aria-label={isLoggingOut ? loggingOutLabel : logoutLabel}
+        title={isLoggingOut ? loggingOutLabel : logoutLabel}
+      >
         <LogOut className="h-4 w-4" aria-hidden="true" />
-        {isLoggingOut ? (isArabic ? "جاري الخروج..." : "Logging out...") : logoutLabel}
-      </Button>
+      </button>
     ) : (
       <Button href="/login" variant="primary" size="sm" className="rounded-full px-3 shadow-[0_8px_22px_rgba(0,74,198,0.14)]">
         <LogIn className="h-4 w-4" aria-hidden="true" />
@@ -155,7 +162,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               <span className="sr-only">{copy.brand}</span>
             </Link>
 
-            <nav className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 min-[1120px]:flex min-[1500px]:gap-1">
+            <nav className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 min-[1240px]:flex min-[1500px]:gap-1">
               {navItems.map((item) => {
                 const isActive = resolveNavState(item.href);
                 return (
@@ -163,7 +170,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                     key={item.href}
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
-                    className={`group relative flex items-center rounded-md px-3 py-1.5 text-[0.66rem] font-semibold leading-none transition duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background min-[1280px]:text-[0.72rem] min-[1500px]:py-2 min-[1500px]:text-[0.84rem] ${isActive ? "bg-primary !text-white shadow-[0_10px_26px_rgba(0,74,198,0.18)]" : "text-foreground/68 hover:bg-white/72 hover:text-primary hover:shadow-[0_8px_20px_rgba(15,23,42,0.06)] dark:text-white/68 dark:hover:bg-white/12 dark:hover:text-white"}`}
+                    className={`group relative flex items-center rounded-md px-2.5 py-1.5 text-[0.66rem] font-semibold leading-none transition duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background min-[1500px]:px-3 min-[1500px]:py-2 min-[1500px]:text-[0.84rem] ${isActive ? "bg-primary !text-white shadow-[0_10px_26px_rgba(0,74,198,0.18)]" : "text-foreground/68 hover:bg-white/72 hover:text-primary hover:shadow-[0_8px_20px_rgba(15,23,42,0.06)] dark:text-white/68 dark:hover:bg-white/12 dark:hover:text-white"}`}
                   >
                     <span className="whitespace-nowrap">{item.label}</span>
                     <ChevronRight className={`ms-1 h-3 w-3 transition duration-200 rtl:rotate-180 ${isActive ? "translate-x-0.5 opacity-100" : "opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100"}`} aria-hidden="true" />
@@ -172,18 +179,17 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               })}
             </nav>
 
-            <div className="ms-auto hidden shrink-0 items-center gap-1 min-[1120px]:flex min-[1500px]:gap-2.5">
+            <div className="ms-auto hidden shrink-0 items-center gap-1 min-[1120px]:flex min-[1500px]:gap-2">
               {isAuthenticated ? (
                 <>
-                  <Button href="/library" variant="secondary" size="sm" className="rounded-full px-4">
+                  <Button href="/library" variant="secondary" size="sm" className="rounded-full px-3">
                     <LibraryBig className="h-4 w-4" aria-hidden="true" />
                     <span>{libraryLabel}</span>
                   </Button>
-                  <Button href={cartHref} variant="secondary" size="sm" className="relative rounded-full px-4">
+                  <Link href={cartHref} aria-label={cartLabel} title={cartLabel} className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-primary/15 bg-white/86 text-primary shadow-[0_8px_22px_rgba(17,24,39,0.045)] transition duration-200 hover:-translate-y-0.5 hover:bg-primary/8 dark:border-white/10 dark:bg-white/8 dark:text-[#dbe1ff]">
                     <ShoppingCart className="h-4 w-4" aria-hidden="true" />
-                    <span>{cartLabel}</span>
                     {cartCount > 0 ? <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[0.6rem] font-black text-white rtl:-left-1 rtl:right-auto">{cartCount}</span> : null}
-                  </Button>
+                  </Link>
                 </>
               ) : null}
               {authAction}
@@ -220,7 +226,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
               <Link href="/" onClick={() => setMenuOpen(false)} className="relative block h-8 w-28 shrink-0">
                 <Image alt={`${copy.brand} logo`} src="/images/logo-blue.png" fill sizes="112px" className="object-contain object-left dark:brightness-0 dark:invert" />
               </Link>
-              <button type="button" onClick={() => setMenuOpen(false)} className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/86 text-foreground/72 shadow-[0_8px_20px_rgba(15,23,42,0.08)] ring-1 ring-border/60 transition hover:text-primary dark:bg-white/12 dark:text-white/82 dark:ring-white/12" aria-label={isArabic ? "إغلاق القائمة" : "Close menu"}>
+              <button type="button" onClick={() => setMenuOpen(false)} className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-primary shadow-[0_8px_22px_rgba(15,23,42,0.08)] ring-1 ring-border/70 transition hover:bg-primary hover:text-white dark:bg-white/10 dark:text-white dark:ring-white/12 dark:hover:bg-primary" aria-label={isArabic ? "إغلاق القائمة" : "Close menu"}>
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
@@ -248,7 +254,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                       </Button>
                       <Button type="button" variant="secondary" size="sm" className="w-full rounded-full text-red-600 dark:text-red-300" onClick={handleLogout} disabled={isLoggingOut}>
                         <LogOut className="h-4 w-4" aria-hidden="true" />
-                        {isLoggingOut ? (isArabic ? "جاري الخروج..." : "Logging out...") : logoutLabel}
+                        {isLoggingOut ? loggingOutLabel : logoutLabel}
                       </Button>
                     </>
                   ) : (
