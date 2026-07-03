@@ -1,15 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Activity, BookOpen, GraduationCap, Stethoscope } from "lucide-react";
+import { usePreferences } from "@/components/preferences-provider";
 import { LoadingMotionStyles } from "./loading-motion-styles.component";
 
-const defaultMessages = [
+const englishMessages = [
   "Preparing your medical learning experience...",
   "Loading trusted courses and books...",
   "Organizing your study resources...",
   "Building your learning path...",
   "Almost ready...",
+] as const;
+
+const arabicMessages = [
+  "جاري تجهيز تجربة التعلم الطبية...",
+  "جاري تحميل الكورسات والكتب...",
+  "جاري تنظيم مواردك التعليمية...",
+  "جاري بناء مسار التعلم...",
+  "اقتربنا من الانتهاء...",
 ] as const;
 
 type MedicalPageLoaderProps = Readonly<{
@@ -24,27 +33,32 @@ const floatingItems = [
   { icon: Activity, className: "bottom-[19%] right-[17%] delay-1000" },
 ] as const;
 
-export function MedicalPageLoader({ messages = defaultMessages, label = "IASS" }: MedicalPageLoaderProps) {
+export function MedicalPageLoader({ messages, label = "IASS" }: MedicalPageLoaderProps) {
+  const { locale } = usePreferences();
+  const fallbackMessages = locale === "ar" ? arabicMessages : englishMessages;
+  const displayMessages = useMemo(() => messages ?? fallbackMessages, [fallbackMessages, messages]);
   const [messageIndex, setMessageIndex] = useState(0);
 
   useEffect(() => {
-    if (messages.length <= 1) {
-      return;
-    }
+    setMessageIndex(0);
+  }, [displayMessages]);
+
+  useEffect(() => {
+    if (displayMessages.length <= 1) return;
 
     const interval = window.setInterval(() => {
-      setMessageIndex((currentIndex) => (currentIndex + 1) % messages.length);
+      setMessageIndex((currentIndex) => (currentIndex + 1) % displayMessages.length);
     }, 1600);
 
     return () => window.clearInterval(interval);
-  }, [messages.length]);
+  }, [displayMessages.length]);
 
   return (
     <section
       className="relative flex min-h-[calc(100vh-5rem)] items-center justify-center overflow-hidden bg-section-bg px-4 py-16 text-center"
       role="status"
       aria-live="polite"
-      aria-label={messages[messageIndex]}
+      aria-label={displayMessages[messageIndex]}
     >
       <LoadingMotionStyles />
 
@@ -69,35 +83,19 @@ export function MedicalPageLoader({ messages = defaultMessages, label = "IASS" }
         </div>
 
         <div className="mt-5 space-y-2">
-          <p className="text-label-caps uppercase tracking-[0.28em] text-primary">Clinical Loading</p>
+          <p className="text-label-caps uppercase tracking-[0.28em] text-primary">{locale === "ar" ? "جاري التحميل" : "Clinical Loading"}</p>
           <h1 className=" text-3xl font-bold tracking-[-0.03em] text-on-surface sm:text-4xl">{label}</h1>
         </div>
 
         <div className="mx-auto mt-7 w-full max-w-sm overflow-hidden rounded-full bg-primary-soft p-2">
-          <svg viewBox="0 0 360 72" className="h-12 w-full text-primary" role="img" aria-label="Animated ECG progress line">
-            <path
-              className="medical-ecg-path"
-              d="M0 36 H72 L86 36 L96 18 L112 58 L126 36 H174 L188 36 L198 24 L214 48 L228 36 H360"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="5"
-            />
-            <path
-              d="M0 36 H72 L86 36 L96 18 L112 58 L126 36 H174 L188 36 L198 24 L214 48 L228 36 H360"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeOpacity="0.14"
-              strokeWidth="5"
-            />
+          <svg viewBox="0 0 360 72" className="h-12 w-full text-primary" role="img" aria-label={locale === "ar" ? "خط تقدم متحرك" : "Animated ECG progress line"}>
+            <path className="medical-ecg-path" d="M0 36 H72 L86 36 L96 18 L112 58 L126 36 H174 L188 36 L198 24 L214 48 L228 36 H360" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="5" />
+            <path d="M0 36 H72 L86 36 L96 18 L112 58 L126 36 H174 L188 36 L198 24 L214 48 L228 36 H360" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.14" strokeWidth="5" />
           </svg>
         </div>
 
         <p key={messageIndex} className="animate-loader-message mt-6 min-h-6 text-body-reading font-medium text-on-surface">
-          {messages[messageIndex]}
+          {displayMessages[messageIndex]}
         </p>
 
         <div className="mt-5 flex items-center justify-center gap-2" aria-hidden="true">
