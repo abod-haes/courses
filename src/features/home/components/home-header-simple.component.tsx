@@ -35,6 +35,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   const pathname = usePathname();
   const isArabic = locale === "ar";
   const [menuOpen, setMenuOpen] = useState(false);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [currentHash, setCurrentHash] = useState("");
   const [authReady, setAuthReady] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -99,13 +100,13 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
   }, []);
 
   useEffect(() => {
-    if (!menuOpen) return;
+    if (!menuOpen && !logoutDialogOpen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [menuOpen]);
+  }, [menuOpen, logoutDialogOpen]);
 
   const resolveNavState = (href: string) => {
     const itemPath = normalizePath(href || "/");
@@ -114,6 +115,12 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
     return activePath === itemPath || activePath.startsWith(`${itemPath}/`);
   };
 
+  function requestLogout() {
+    if (isLoggingOut) return;
+    setMenuOpen(false);
+    setLogoutDialogOpen(true);
+  }
+
   async function handleLogout() {
     if (isLoggingOut) return;
     setIsLoggingOut(true);
@@ -121,6 +128,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
       await logoutUser();
     } finally {
       setMenuOpen(false);
+      setLogoutDialogOpen(false);
       setIsAuthenticated(false);
       setCartCount(0);
       setCartHref("/checkout");
@@ -134,7 +142,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
       <button
         type="button"
         className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-red-500/15 bg-red-500/5 text-red-600 transition duration-200 hover:-translate-y-0.5 hover:bg-red-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/25 dark:text-red-300"
-        onClick={handleLogout}
+        onClick={requestLogout}
         disabled={isLoggingOut}
         aria-label={isLoggingOut ? loggingOutLabel : logoutLabel}
         title={isLoggingOut ? loggingOutLabel : logoutLabel}
@@ -252,7 +260,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
                         <LibraryBig className="h-4 w-4" aria-hidden="true" />
                         {libraryLabel}
                       </Button>
-                      <Button type="button" variant="secondary" size="sm" className="w-full rounded-full text-red-600 dark:text-red-300" onClick={handleLogout} disabled={isLoggingOut}>
+                      <Button type="button" variant="secondary" size="sm" className="w-full rounded-full text-red-600 dark:text-red-300" onClick={requestLogout} disabled={isLoggingOut}>
                         <LogOut className="h-4 w-4" aria-hidden="true" />
                         {isLoggingOut ? loggingOutLabel : logoutLabel}
                       </Button>
@@ -273,6 +281,51 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
           </aside>
         </div>
       ) : null}
+
+      <LogoutConfirmDialog
+        isArabic={isArabic}
+        open={logoutDialogOpen}
+        loading={isLoggingOut}
+        onCancel={() => setLogoutDialogOpen(false)}
+        onConfirm={handleLogout}
+      />
     </>
+  );
+}
+
+function LogoutConfirmDialog({ isArabic, open, loading, onCancel, onConfirm }: Readonly<{ isArabic: boolean; open: boolean; loading: boolean; onCancel: () => void; onConfirm: () => void }>) {
+  if (!open) return null;
+
+  const title = isArabic ? "تأكيد تسجيل الخروج" : "Confirm logout";
+  const description = isArabic ? "هل أنت متأكد أنك تريد تسجيل الخروج من حسابك؟" : "Are you sure you want to log out of your account?";
+  const cancelLabel = isArabic ? "إلغاء" : "Cancel";
+  const confirmLabel = loading ? (isArabic ? "جاري الخروج..." : "Logging out...") : (isArabic ? "تسجيل الخروج" : "Logout");
+
+  return (
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/50 px-4 py-6 backdrop-blur-[3px]" role="dialog" aria-modal="true" aria-labelledby="logout-confirm-title" onClick={onCancel}>
+      <div className="w-full max-w-md overflow-hidden rounded-[1.25rem] border border-border/70 bg-background shadow-[0_28px_90px_rgba(15,23,42,0.28)] dark:border-white/12 dark:bg-slate-950" onClick={(event) => event.stopPropagation()}>
+        <div className="flex items-start gap-4 px-5 pb-4 pt-5">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-500/10 text-red-600 dark:text-red-300">
+            <LogOut className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <h2 id="logout-confirm-title" className="text-lg font-black text-foreground">{title}</h2>
+            <p className="mt-2 text-sm leading-6 text-foreground/62">{description}</p>
+          </div>
+          <button type="button" className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-foreground/50 transition hover:bg-foreground/5 hover:text-foreground" onClick={onCancel} aria-label={cancelLabel} disabled={loading}>
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+        <div className="flex flex-col-reverse gap-2 border-t border-border/65 bg-section-bg/65 px-5 py-4 sm:flex-row sm:justify-end dark:border-white/10 dark:bg-white/5">
+          <button type="button" className="inline-flex items-center justify-center rounded-full border border-border bg-surface px-4 py-2 text-sm font-bold text-foreground transition hover:bg-foreground/5 disabled:opacity-60" onClick={onCancel} disabled={loading}>
+            {cancelLabel}
+          </button>
+          <button type="button" className="inline-flex items-center justify-center gap-2 rounded-full bg-red-600 px-4 py-2 text-sm font-bold text-white shadow-[0_12px_28px_rgba(220,38,38,0.22)] transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70" onClick={onConfirm} disabled={loading}>
+            <LogOut className="h-4 w-4" aria-hidden="true" />
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
