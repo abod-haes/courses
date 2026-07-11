@@ -12,6 +12,12 @@ function text(value: unknown, fallback = "", locale: Locale = "en"): string {
   return localizedText(value, fallback, locale);
 }
 
+function stringValue(value: unknown, fallback = ""): string {
+  if (typeof value === "number" && Number.isFinite(value)) return String(value);
+  if (typeof value === "string" && value.trim()) return value.trim();
+  return fallback;
+}
+
 function formatPrice(value: unknown, currency: unknown, locale: Locale): string {
   return formatMoney(value, currency, locale);
 }
@@ -45,7 +51,7 @@ function normalizePaginatedResponse<T>(response: RawPaginatedResponse<T>, params
 }
 
 function readEntityId(record: RawRecord): string {
-  return text(record.id ?? record.bookId ?? record.book_id ?? record.itemId ?? record.item_id ?? record.slug, "", "en");
+  return stringValue(record.id ?? record.bookId ?? record.book_id ?? record.itemId ?? record.item_id ?? record.slug);
 }
 
 function readCategory(book: RawRecord, locale: Locale): { id: number; name: string; slug: string } {
@@ -88,8 +94,8 @@ function toBookView(book: RawBook, locale: Locale): BookItemView {
   const title = text(book.title, "Medical book", locale);
   const shortDescription = text(book.shortDescription ?? book.short_description ?? book.excerpt, title, locale);
   const description = text(book.description, shortDescription, locale);
-  const slug = text(book.slug, readEntityId(book), locale);
   const id = readEntityId(book);
+  const slug = text(book.slug, id, locale);
   const amount = numberValue(book.price, 0);
   const currency = currencyCode(book.currency);
 
