@@ -55,14 +55,12 @@ function formatStatValue(value: number, locale: string, originalValue: string) {
 function StatCard({
   item,
   index,
-  isRtl,
   locale,
   shouldReduceMotion,
   variants,
 }: Readonly<{
   item: HomeStatItem;
   index: number;
-  isRtl: boolean;
   locale: string;
   shouldReduceMotion: boolean;
   variants: Variants;
@@ -124,7 +122,7 @@ function StatCard({
 
         <div className={cn("space-y-2 text-center")}>
           <motion.div
-            className="text-[2rem]  leading-none font-semibold tracking-tight text-primary sm:text-[2.2rem]"
+            className="text-[2rem] leading-none font-semibold tracking-tight text-primary sm:text-[2.2rem]"
             initial={false}
             animate={shouldReduceMotion ? undefined : { y: [0, -2, 0] }}
             transition={shouldReduceMotion ? undefined : { duration: 0.9, ease: "easeOut", delay: 0.1 }}
@@ -163,7 +161,7 @@ export function HomeStatsSection({ copy }: HomeStatsSectionProps) {
   };
 
   return (
-    <section id="stats" className="overflow-hidden  py-8 sm:py-10 lg:py-12">
+    <section id="stats" className="overflow-hidden py-8 sm:py-10 lg:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           className="mx-auto max-w-4xl text-center"
@@ -179,7 +177,7 @@ export function HomeStatsSection({ copy }: HomeStatsSectionProps) {
 
         <div className="mt-8 sm:p-5 lg:p-6">
           <motion.div
-            className="grid gap-5 max-sm:grid-cols-1  grid-cols-4 "
+            className="grid grid-cols-4 gap-5 max-sm:grid-cols-1"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
@@ -189,7 +187,6 @@ export function HomeStatsSection({ copy }: HomeStatsSectionProps) {
                 key={item.label}
                 item={item}
                 index={index}
-                isRtl={isRtl}
                 locale={locale}
                 shouldReduceMotion={shouldReduceMotion}
                 variants={cardVariants}
