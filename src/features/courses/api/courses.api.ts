@@ -1,6 +1,6 @@
 import { apiFetch, describeApiError } from "@/shared/api/client";
 import { buildPageMeta, defaultCatalogPerPage } from "@/shared/api/paging";
-import { absoluteMediaUrl, formatMoney, localizedText, numberValue, rawObject, type RawRecord } from "@/shared/api/normalizers";
+import { absoluteMediaUrl, currencyCode, formatMoney, localizedText, numberValue, rawObject, type RawRecord } from "@/shared/api/normalizers";
 import type { CatalogListParams, Course, PaginatedEnvelope, PaginationMeta } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { CourseItemView } from "../courses.types";
@@ -129,6 +129,8 @@ function toCourseView(course: RawCourse, locale: Locale): CourseItemView {
   const description = text(course.description ?? course.longDescription ?? course.long_description, shortDescription, locale);
   const thumbnail = readThumbnail(course, locale);
   const modulesCount = numberValue(course.sectionsCount ?? course.sections_count ?? course.modulesCount ?? course.modules_count, sections.length || Math.max(1, lessons));
+  const amount = numberValue(course.price, 0);
+  const currency = currencyCode(course.currency);
 
   return {
     id: String(course.id),
@@ -138,7 +140,9 @@ function toCourseView(course: RawCourse, locale: Locale): CourseItemView {
     category: category.name,
     description: shortDescription,
     longDescription: description,
-    price: formatPrice(course.price, course.currency, locale),
+    price: formatPrice(amount, currency, locale),
+    amount,
+    currency,
     image: thumbnail?.url ?? "/images/course-1.png",
     imageAlt: thumbnail?.alt ?? title,
     hours: String(hours),
