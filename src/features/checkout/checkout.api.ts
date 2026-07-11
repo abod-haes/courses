@@ -80,7 +80,7 @@ function formatOrderDate(value: string, locale: Locale): string {
   }).format(new Date(value));
 }
 
-function courseToCheckoutItem(course: CourseItemView, copy: CheckoutCopy): CheckoutItemView {
+function courseToCheckoutItem(course: CourseItemView, locale: Locale, copy: CheckoutCopy): CheckoutItemView {
   const amount = numberValue(course.amount ?? course.price, 0);
   const currency = currencyCode(course.currency);
 
@@ -91,7 +91,7 @@ function courseToCheckoutItem(course: CourseItemView, copy: CheckoutCopy): Check
     title: course.title,
     description: course.description,
     category: course.category,
-    price: formatMoney(amount, currency, document.documentElement.lang === "ar" ? "ar" : "en"),
+    price: formatMoney(amount, currency, locale),
     amount,
     currency,
     image: course.image,
@@ -101,7 +101,7 @@ function courseToCheckoutItem(course: CourseItemView, copy: CheckoutCopy): Check
   };
 }
 
-function bookToCheckoutItem(book: BookItemView, copy: CheckoutCopy): CheckoutItemView {
+function bookToCheckoutItem(book: BookItemView, locale: Locale, copy: CheckoutCopy): CheckoutItemView {
   const amount = numberValue(book.amount ?? book.price, 0);
   const currency = currencyCode(book.currency);
 
@@ -112,7 +112,7 @@ function bookToCheckoutItem(book: BookItemView, copy: CheckoutCopy): CheckoutIte
     title: book.title,
     description: book.description,
     category: book.category,
-    price: formatMoney(amount, currency, document.documentElement.lang === "ar" ? "ar" : "en"),
+    price: formatMoney(amount, currency, locale),
     amount,
     currency,
     image: book.image,
@@ -239,11 +239,11 @@ async function getStoredCheckoutSelectionFromApi(locale: Locale, copy: CheckoutC
   return selectedItems.flatMap((item) => {
     if (item.type === "course") {
       const course = coursesPage.data.find((entry) => String(entry.id) === String(item.id));
-      return course ? [courseToCheckoutItem(course, copy)] : [];
+      return course ? [courseToCheckoutItem(course, locale, copy)] : [];
     }
 
     const book = booksPage.data.find((entry) => String(entry.id) === String(item.id));
-    return book ? [bookToCheckoutItem(book, copy)] : [];
+    return book ? [bookToCheckoutItem(book, locale, copy)] : [];
   });
 }
 
@@ -272,13 +272,13 @@ export async function getCheckoutSelectionFromApi(
   if (itemType === "course") {
     const page = await getCourses({ locale, page: 1, perPage: 100 });
     const course = page.data.find((entry) => String(entry.id) === String(itemId));
-    return course ? [courseToCheckoutItem(course, copy)] : [];
+    return course ? [courseToCheckoutItem(course, locale, copy)] : [];
   }
 
   if (itemType === "book") {
     const page = await getBooks({ locale, page: 1, perPage: 100 });
     const book = page.data.find((entry) => String(entry.id) === String(itemId));
-    return book ? [bookToCheckoutItem(book, copy)] : [];
+    return book ? [bookToCheckoutItem(book, locale, copy)] : [];
   }
 
   return [];
