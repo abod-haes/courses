@@ -13,7 +13,9 @@ function validItems(value: unknown): StoredCheckoutItem[] {
   return value.filter((item): item is StoredCheckoutItem => {
     if (!item || typeof item !== "object") return false;
     const candidate = item as Partial<StoredCheckoutItem>;
-    return (candidate.type === "course" || candidate.type === "book") && Number.isInteger(candidate.id) && candidate.id > 0;
+    const id = candidate.id;
+
+    return (candidate.type === "course" || candidate.type === "book") && typeof id === "number" && Number.isInteger(id) && id > 0;
   });
 }
 
