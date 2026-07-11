@@ -1,37 +1,31 @@
 import { cookies as requestCookies } from "next/headers";
 import { CheckoutPage, generateCheckoutMetadata } from "@/features/checkout/checkout-pages.component";
+import { CheckoutCartCookieSync } from "@/features/checkout/components/checkout-cart-sync.component";
+import { checkoutCartCookieName, parseStoredCheckoutItems } from "@/features/checkout/checkout-storage";
+
+export const generateMetadata = generateCheckoutMetadata;
 
 type PageProps = Readonly<{
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }>;
 
-export const generateMetadata = generateCheckoutMetadata;
-
-type CartItem = { type?: unknown; id?: unknown };
-
-function readFirstItem(value: string | undefined): Record<string, string> {
-  if (!value) return {};
-
-  try {
-    const parsed = JSON.parse(decodeURIComponent(value)) as unknown;
-    const item = Array.isArray(parsed) ? (parsed[0] as CartItem | undefined) : undefined;
-    const type = item?.type === "course" || item?.type === "book" ? item.type : undefined;
-    const id = typeof item?.id === "number" || typeof item?.id === "string" ? String(item.id) : undefined;
-    return type && id ? { itemType: type, itemId: id } : {};
-  } catch {
-    return {};
-  }
+function encodeCartItems(value: ReturnType<typeof parseStoredCheckoutItems>): string | undefined {
+  if (!value.length) return undefined;
+  return encodeURIComponent(JSON.stringify(value));
 }
 
 export default async function Page(props: PageProps) {
   const params = props.searchParams ? await props.searchParams : {};
-
-  if (params.itemType && params.itemId) {
-    return <CheckoutPage searchParams={Promise.resolve(params)} />;
-  }
-
   const store = await requestCookies();
-  const savedItem = readFirstItem(store.get("iass_checkout_cart")?.value);
+  const savedItems = parseStoredCheckoutItems(store.get(checkoutCartCookieName)?.value);
+  const hasDirectItem = Boolean(params.itemType && params.itemId);
+  const cartItems = hasDirectItem ? undefined : encodeCartItems(savedItems);
+  const nextParams = cartItems ? { ...params, cartItems } : params;
 
-  return <CheckoutPage searchParams={Promise.resolve({ ...params, ...savedItem })} />;
+  return (
+    <>
+      <CheckoutCartCookieSync cookieCount={savedItems.length} />
+      <CheckoutPage searchParams={Promise.resolve(nextParams)} />
+    </>
+  );
 }
