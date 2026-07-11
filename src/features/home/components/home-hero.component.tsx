@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { BookOpen, Shield, Sparkles, Stethoscope } from "lucide-react";
+import { BookOpen, Shield, Sparkles } from "lucide-react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { SiteContainer } from "@/shared/components/layout/site-container";
 import { Button } from "@/shared/components/ui/button";
@@ -32,11 +32,8 @@ const heroItemVariants: Variants = {
   },
 };
 
-const trustIcons = [Shield, Stethoscope, Sparkles] as const;
-
 export function HomeHero({ copy }: HomeHeroProps) {
   const shouldReduceMotion = Boolean(useReducedMotion());
-  const trustItems = copy.trustStrip.slice(0, 3);
 
   return (
     <section className="relative isolate overflow-hidden bg-section-bg px-0 py-5 dark:bg-[#07111f] sm:py-6 lg:min-h-[calc(88dvh-4.25rem)] lg:py-5 xl:min-h-[calc(90dvh-4.75rem)]">
@@ -76,22 +73,20 @@ export function HomeHero({ copy }: HomeHeroProps) {
             {copy.hero.subtitle}
           </motion.p>
 
-          <motion.div variants={heroItemVariants} className="mt-5 grid gap-2.5 max-sm:px-3 sm:mx-auto sm:max-w-md grid-cols-2 lg:mx-0 lg:max-w-none lg:flex lg:flex-wrap lg:gap-3 xl:gap-3.5">
-            <Button href="#courses" variant="primary" className="group w-full sm:w-auto max-sm:text-xs">
+          <motion.div variants={heroItemVariants} className="mt-5 grid grid-cols-2 gap-2.5 max-sm:px-3 sm:mx-auto sm:max-w-md lg:mx-0 lg:flex lg:max-w-none lg:flex-wrap lg:gap-3 xl:gap-3.5">
+            <Button href="#courses" variant="primary" className="group w-full max-sm:text-xs sm:w-auto">
               <BookOpen className="h-4 w-4 transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-110" aria-hidden="true" />
               {copy.actions.browseCourses}
             </Button>
-            <Button href="#books" variant="secondary" className="group w-full sm:w-auto max-sm:text-xs">
-              <Sparkles className="sm:h-4 sm:w-4 h-3 w-3 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110" aria-hidden="true" />
+            <Button href="#books" variant="secondary" className="group w-full max-sm:text-xs sm:w-auto">
+              <Sparkles className="h-3 w-3 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110 sm:h-4 sm:w-4" aria-hidden="true" />
               {copy.actions.exploreBooks}
             </Button>
           </motion.div>
-
-
         </motion.div>
 
         <motion.div
-          className="mx-auto w-full flex-1 lg:ms-0 "
+          className="mx-auto flex-1 w-full lg:ms-0"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 22, scale: 0.97 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.74, ease: [0.22, 1, 0.36, 1], delay: 0.18 }}
