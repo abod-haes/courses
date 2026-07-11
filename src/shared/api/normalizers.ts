@@ -42,16 +42,18 @@ export function currencyCode(value: unknown, fallback = "USD"): string {
 
 export function formatMoney(value: unknown, currency: unknown, locale: Locale, options?: Intl.NumberFormatOptions): string {
   const amount = numberValue(value, 0);
-  const fractionDigits = amount % 1 === 0 ? 0 : 2;
+  const naturalFractionDigits = amount % 1 === 0 ? 0 : 2;
+  const maximumFractionDigits = options?.maximumFractionDigits ?? naturalFractionDigits;
+  const minimumFractionDigits = options?.minimumFractionDigits ?? Math.min(naturalFractionDigits, maximumFractionDigits);
   const formatterLocale = locale === "ar" ? "en-US-u-nu-latn" : "en-US";
 
   return new Intl.NumberFormat(formatterLocale, {
     style: "currency",
     currency: currencyCode(currency),
     currencyDisplay: "narrowSymbol",
-    minimumFractionDigits: fractionDigits,
-    maximumFractionDigits: fractionDigits,
     ...options,
+    minimumFractionDigits,
+    maximumFractionDigits,
   }).format(amount);
 }
 
