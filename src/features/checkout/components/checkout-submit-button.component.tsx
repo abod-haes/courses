@@ -23,10 +23,57 @@ function hasWebsiteSession(): boolean {
   return Boolean(window.localStorage.getItem(websiteSessionKey) || hasSessionCookie());
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function firstValidationMessage(details: unknown): string | null {
+  if (!isRecord(details)) return null;
+  const errors = isRecord(details.errors) ? details.errors : null;
+  const itemErrors = errors?.items;
+
+  if (Array.isArray(itemErrors)) {
+    const message = itemErrors.find((item): item is string => typeof item === "string" && item.trim().length > 0);
+    if (message) return message;
+  }
+
+  return typeof details.message === "string" && details.message.trim() ? details.message : null;
+}
+
+function translateCheckoutValidation(message: string, isArabic: boolean): string {
+  if (!isArabic) return message;
+
+  const normalized = message.toLowerCase();
+
+  if (normalized.includes("currency") && normalized.includes("not supported")) {
+    return "عملة العنصر لا تطابق عملة الدفع المعتمدة. يجب أن تكون أسعار الكورسات والكتب بعملة USD.";
+  }
+
+  if (normalized.includes("selected book") && normalized.includes("not available")) {
+    return "الكتاب المحدد لم يعد متاحًا للشراء.";
+  }
+
+  if (normalized.includes("selected course") && normalized.includes("not available")) {
+    return "الكورس المحدد لم يعد متاحًا للشراء.";
+  }
+
+  if (normalized.includes("already own") && normalized.includes("book")) {
+    return "هذا الكتاب موجود بالفعل في مكتبتك.";
+  }
+
+  if (normalized.includes("already own") && normalized.includes("course")) {
+    return "هذا الكورس موجود بالفعل في مكتبتك.";
+  }
+
+  return "تعذر إنشاء عملية الدفع. تحقق من بيانات العنصر وحاول مرة أخرى.";
+}
+
 function checkoutErrorMessage(error: unknown): string {
   const isArabic = document.documentElement.lang === "ar" || document.documentElement.dir === "rtl";
 
   if (error instanceof ApiError && error.status === 422) {
+    const validationMessage = firstValidationMessage(error.details);
+    if (validationMessage) return translateCheckoutValidation(validationMessage, isArabic);
     return isArabic ? "تعذر إنشاء عملية الدفع. تأكد من أن العناصر ما زالت متاحة." : "Could not create checkout. Please make sure the selected items are still available.";
   }
 
