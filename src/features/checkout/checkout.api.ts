@@ -32,6 +32,11 @@ type LibraryResponse = Readonly<{
   books?: Book[];
 }>;
 
+type CheckoutCartItem = Readonly<{
+  type: CheckoutItemType;
+  id: number;
+}>;
+
 export type BookAccessResponse = Readonly<{
   bookId: number;
   title: string | Record<string, string | null>;
@@ -184,6 +189,41 @@ function unwrap<T>(response: ApiEnvelope<T> | T): T {
   return response as T;
 }
 
+function uniqueCartItems(items: readonly CheckoutCartItem[]): CheckoutCartItem[] {
+  const seen = new Set<string>();
+  const result: CheckoutCartItem[] = [];
+
+  for (const item of items) {
+    const key = `${item.type}-${item.id}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(item);
+  }
+
+  return result;
+}
+
+async function getStoredCheckoutSelectionFromApi(locale: Locale, copy: CheckoutCopy, cartItems: readonly CheckoutCartItem[]): Promise<CheckoutItemView[]> {
+  const selectedItems = uniqueCartItems(cartItems);
+  const shouldLoadCourses = selectedItems.some((item) => item.type === "course");
+  const shouldLoadBooks = selectedItems.some((item) => item.type === "book");
+
+  const [coursesPage, booksPage] = await Promise.all([
+    shouldLoadCourses ? getCourses({ locale, page: 1, perPage: 100 }) : Promise.resolve({ data: [] as CourseItemView[] }),
+    shouldLoadBooks ? getBooks({ locale, page: 1, perPage: 100 }) : Promise.resolve({ data: [] as BookItemView[] }),
+  ]);
+
+  return selectedItems.flatMap((item) => {
+    if (item.type === "course") {
+      const course = coursesPage.data.find((entry) => String(entry.id) === String(item.id));
+      return course ? [courseToCheckoutItem(course, copy)] : [];
+    }
+
+    const book = booksPage.data.find((entry) => String(entry.id) === String(item.id));
+    return book ? [bookToCheckoutItem(book, copy)] : [];
+  });
+}
+
 export function getCheckoutTotal(items: readonly CheckoutItemView[], locale: Locale): string {
   const total = items.reduce((sum, item) => sum + item.amount, 0);
   return formatPrice(total, "USD", locale);
@@ -195,18 +235,25 @@ export async function getCheckoutSelectionFromApi(
   itemType?: CheckoutItemType | string,
   itemId?: string,
   isEmpty?: boolean,
+  cartItems: readonly CheckoutCartItem[] = [],
 ): Promise<CheckoutItemView[]> {
-  if (isEmpty || !itemType || !itemId) return [];
+  if (isEmpty) return [];
+
+  if (cartItems.length > 0 && (!itemType || !itemId)) {
+    return getStoredCheckoutSelectionFromApi(locale, copy, cartItems);
+  }
+
+  if (!itemType || !itemId) return [];
 
   if (itemType === "course") {
     const page = await getCourses({ locale, page: 1, perPage: 100 });
-    const course = page.data.find((entry) => entry.id === itemId);
+    const course = page.data.find((entry) => String(entry.id) === String(itemId));
     return course ? [courseToCheckoutItem(course, copy)] : [];
   }
 
   if (itemType === "book") {
     const page = await getBooks({ locale, page: 1, perPage: 100 });
-    const book = page.data.find((entry) => entry.id === itemId);
+    const book = page.data.find((entry) => String(entry.id) === String(itemId));
     return book ? [bookToCheckoutItem(book, copy)] : [];
   }
 
