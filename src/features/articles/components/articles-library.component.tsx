@@ -81,9 +81,15 @@ export function ArticlesLibrary({ copy, initialPage, locale }: ArticlesLibraryPr
   const isSearchDebouncing = searchTerm.trim() !== debouncedSearch;
   const isInitialQuery = debouncedSearch.length === 0 && activeCategory === "all" && page === 1;
 
-  useEffect(() => {
+  function handleSearchChange(value: string) {
+    setSearchTerm(value);
     setPage(1);
-  }, [debouncedSearch, activeCategory]);
+  }
+
+  function handleCategoryChange(value: ArticleCategoryFilter) {
+    setActiveCategory(value);
+    setPage(1);
+  }
 
   const query = useQuery({
     queryKey: ["articles", locale, debouncedSearch, activeCategory, page, initialPage.meta.perPage],
@@ -141,8 +147,8 @@ export function ArticlesLibrary({ copy, initialPage, locale }: ArticlesLibraryPr
           categoryLabel={copy.filters.categoryLabel}
           categoryOptions={categoryOptions}
           activeCategory={activeCategory}
-          onSearchChange={setSearchTerm}
-          onCategoryChange={setActiveCategory}
+          onSearchChange={handleSearchChange}
+          onCategoryChange={handleCategoryChange}
         />
 
         {showFilterLoading ? <LoadingNotice locale={locale} /> : null}
