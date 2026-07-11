@@ -65,6 +65,9 @@ function formatOrderDate(value: string, locale: Locale): string {
 }
 
 function courseToCheckoutItem(course: CourseItemView, copy: CheckoutCopy): CheckoutItemView {
+  const amount = numberValue(course.amount ?? course.price, 0);
+  const currency = currencyCode(course.currency);
+
   return {
     id: course.id,
     type: "course",
@@ -73,8 +76,8 @@ function courseToCheckoutItem(course: CourseItemView, copy: CheckoutCopy): Check
     description: course.description,
     category: course.category,
     price: course.price,
-    amount: course.amount,
-    currency: course.currency,
+    amount,
+    currency,
     image: course.image,
     imageAlt: course.imageAlt,
     href: course.href,
@@ -83,6 +86,9 @@ function courseToCheckoutItem(course: CourseItemView, copy: CheckoutCopy): Check
 }
 
 function bookToCheckoutItem(book: BookItemView, copy: CheckoutCopy): CheckoutItemView {
+  const amount = numberValue(book.amount ?? book.price, 0);
+  const currency = currencyCode(book.currency);
+
   return {
     id: book.id,
     type: "book",
@@ -91,8 +97,8 @@ function bookToCheckoutItem(book: BookItemView, copy: CheckoutCopy): CheckoutIte
     description: book.description,
     category: book.category,
     price: book.price,
-    amount: book.amount,
-    currency: book.currency,
+    amount,
+    currency,
     image: book.image,
     imageAlt: book.imageAlt,
     href: book.href,
