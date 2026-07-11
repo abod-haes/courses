@@ -61,8 +61,8 @@ export function formatMoney(value: unknown, currency: unknown, locale: Locale, o
   delete numberOptions.currency;
   delete numberOptions.currencyDisplay;
 
-  const minimumFractionDigits = options?.minimumFractionDigits ?? fallbackDigits;
-  const maximumFractionDigits = options?.maximumFractionDigits ?? minimumFractionDigits;
+  const maximumFractionDigits = options?.maximumFractionDigits ?? options?.minimumFractionDigits ?? fallbackDigits;
+  const minimumFractionDigits = Math.min(options?.minimumFractionDigits ?? fallbackDigits, maximumFractionDigits);
   const formatterLocale = locale === "ar" ? "en-US-u-nu-latn" : "en-US";
   const formattedAmount = new Intl.NumberFormat(formatterLocale, {
     ...numberOptions,
