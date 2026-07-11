@@ -1,3 +1,9 @@
+import { getArticles } from "@/features/articles/api/articles.api";
+import type { ArticleSummary } from "@/features/articles/articles.types";
+import { getBooks } from "@/features/books/api/books.api";
+import type { BookItemView } from "@/features/books/books.types";
+import { getCourses } from "@/features/courses/api/courses.api";
+import type { CourseItemView } from "@/features/courses/courses.types";
 import { apiFetch, describeApiError } from "@/shared/api/client";
 import { currencyCode, formatMoney, localizedText, mediaAlt, mediaUrl, numberValue, rawObject, type RawRecord } from "@/shared/api/normalizers";
 import type { Article, Book, Course } from "@/shared/api/types";
@@ -125,6 +131,78 @@ function toArticleItem(article: RawArticle, locale: Locale): HomeCatalogItem {
   };
 }
 
+function courseViewToHomeItem(course: CourseItemView): HomeCatalogItem {
+  return {
+    category: course.category,
+    title: course.title,
+    author: course.instructor,
+    modules: course.modules,
+    description: course.description,
+    price: course.price,
+    image: course.image,
+    alt: course.imageAlt,
+    href: course.href,
+  };
+}
+
+function bookViewToHomeItem(book: BookItemView): HomeCatalogItem {
+  return {
+    category: book.category,
+    title: book.title,
+    author: book.author,
+    modules: 0,
+    description: book.description,
+    price: book.price,
+    image: book.image,
+    alt: book.imageAlt,
+    href: book.href,
+  };
+}
+
+function articleSummaryToHomeItem(article: ArticleSummary): HomeCatalogItem {
+  return {
+    category: article.category,
+    title: article.title,
+    author: article.author,
+    modules: 0,
+    description: article.excerpt,
+    image: article.image,
+    alt: article.alt,
+    href: article.href,
+  };
+}
+
+function hasCompleteCatalog(catalog: HomeCatalog): boolean {
+  return catalog.courses.length > 0 && catalog.books.length > 0 && catalog.articles.length > 0;
+}
+
+function mergeCatalog(primary: HomeCatalog, fallback: HomeCatalog): HomeCatalog {
+  return {
+    courses: primary.courses.length > 0 ? primary.courses : fallback.courses,
+    books: primary.books.length > 0 ? primary.books : fallback.books,
+    articles: primary.articles.length > 0 ? primary.articles : fallback.articles,
+  };
+}
+
+async function loadCatalogFallback(locale: Locale): Promise<HomeCatalog> {
+  try {
+    const [coursesPage, booksPage, articlesPage] = await Promise.all([
+      getCourses({ locale, page: 1, perPage: 3 }),
+      getBooks({ locale, page: 1, perPage: 3 }),
+      getArticles({ locale, page: 1, perPage: 3 }),
+    ]);
+
+    return {
+      courses: coursesPage.data.slice(0, 3).map(courseViewToHomeItem),
+      books: booksPage.data.slice(0, 3).map(bookViewToHomeItem),
+      articles: articlesPage.data.slice(0, 3).map(articleSummaryToHomeItem),
+    };
+  } catch (error) {
+    console.error("[home-api] failed to load catalog fallback", describeApiError(error));
+    return emptyHomeCatalog();
+  }
+}
+
 function mergeHomeCopy(fallback: HomeMessages, apiData: HomeApiResponse["data"]): HomeMessages {
   return {
     ...fallback,
@@ -173,11 +251,12 @@ export async function getHomePageData(locale: Locale, fallbackMessages: HomeMess
     const response = await apiFetch<HomeApiResponse>("/home", {
       searchParams: { locale, coursesLimit: 3, booksLimit: 3, articlesLimit: 3 },
     });
-    const catalog = toHomeCatalog(response.data, locale);
+    const catalogFromHome = toHomeCatalog(response.data, locale);
+    const catalog = hasCompleteCatalog(catalogFromHome) ? catalogFromHome : mergeCatalog(catalogFromHome, await loadCatalogFallback(locale));
     return { copy: mergeHomeCopy(fallbackMessages, response.data), catalog };
   } catch (error) {
     console.error("[home-api] failed to load home data from backend", describeApiError(error));
-    return { copy: fallbackMessages, catalog: emptyHomeCatalog() };
+    return { copy: fallbackMessages, catalog: await loadCatalogFallback(locale) };
   }
 }
 
@@ -186,9 +265,10 @@ export async function getHomeCatalog(locale: Locale): Promise<HomeCatalog> {
     const response = await apiFetch<HomeApiResponse>("/home", {
       searchParams: { locale, coursesLimit: 3, booksLimit: 3, articlesLimit: 3 },
     });
-    return toHomeCatalog(response.data, locale);
+    const catalogFromHome = toHomeCatalog(response.data, locale);
+    return hasCompleteCatalog(catalogFromHome) ? catalogFromHome : mergeCatalog(catalogFromHome, await loadCatalogFallback(locale));
   } catch (error) {
-    console.error("[home-api] failed to refresh home catalog from backend", describeApiError(error));
-    return emptyHomeCatalog();
+    console.error("[home-api] failed to refresh home catalog", describeApiError(error));
+    return loadCatalogFallback(locale);
   }
 }
