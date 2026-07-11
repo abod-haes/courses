@@ -80,8 +80,30 @@ type CheckoutPageProps = Readonly<{
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }>;
 
+type CheckoutCartItem = Readonly<{
+  type: CheckoutItemType;
+  id: number;
+}>;
+
 function getSearchParamValue(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
+}
+
+function parseCartItemsParam(value: string | undefined): CheckoutCartItem[] {
+  if (!value) return [];
+
+  try {
+    const parsed = JSON.parse(decodeURIComponent(value)) as unknown;
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed.filter((item): item is CheckoutCartItem => {
+      if (!item || typeof item !== "object") return false;
+      const record = item as Partial<CheckoutCartItem>;
+      return (record.type === "course" || record.type === "book") && typeof record.id === "number" && Number.isFinite(record.id);
+    });
+  } catch {
+    return [];
+  }
 }
 
 export async function CheckoutPage({ searchParams }: CheckoutPageProps = {}) {
@@ -91,9 +113,10 @@ export async function CheckoutPage({ searchParams }: CheckoutPageProps = {}) {
   const itemType = getSearchParamValue(params.itemType);
   const itemId = getSearchParamValue(params.itemId);
   const isEmpty = getSearchParamValue(params.empty) === "1";
+  const cartItems = parseCartItemsParam(getSearchParamValue(params.cartItems));
   await requireSessionToken(`/checkout${itemType && itemId ? `?itemType=${itemType}&itemId=${itemId}` : ""}`);
 
-  const items = await getCheckoutSelectionFromApi(locale, copy, itemType as CheckoutItemType | undefined, itemId, isEmpty).catch(() => []);
+  const items = await getCheckoutSelectionFromApi(locale, copy, itemType as CheckoutItemType | undefined, itemId, isEmpty, cartItems).catch(() => []);
 
   return <CheckoutReviewScreen copy={copy} items={items} locale={locale} />;
 }
