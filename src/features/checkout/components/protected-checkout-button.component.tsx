@@ -29,6 +29,11 @@ export function ProtectedCheckoutButton({ itemType, itemId, children, className 
 
   function handleClick() {
     const numericId = Number(itemId);
+
+    if (!Number.isInteger(numericId) || numericId < 1) {
+      return;
+    }
+
     const currentItems = readStoredCheckoutItems();
     const exists = currentItems.some((item) => item.type === itemType && item.id === numericId);
     writeStoredCheckoutItems(exists ? currentItems : [...currentItems, { type: itemType, id: numericId, quantity: 1 }]);
