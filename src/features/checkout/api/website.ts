@@ -1,31 +1,38 @@
 import { apiFetch } from "@/shared/api/client";
+import { currencyCode, formatMoney as formatSharedMoney, mediaUrl, numberValue, rawObject } from "@/shared/api/normalizers";
 import type { ApiEnvelope, Book, Course, Order, PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { CheckoutCopy, CheckoutItemView, OrderView } from "../checkout.types";
 
 function formatMoney(value: number, currency: string, locale: Locale): string {
-  return new Intl.NumberFormat(locale === "ar" ? "ar" : "en-US", { style: "currency", currency, maximumFractionDigits: 0 }).format(value);
+  return formatSharedMoney(value, currency, locale, { maximumFractionDigits: 0 });
 }
 
 export function getCheckoutTotal(items: readonly CheckoutItemView[]): string {
   const amount = items.reduce((total, item) => total + item.amount, 0);
-  return formatMoney(amount, "USD", "en");
+  return formatMoney(amount, items[0]?.currency ?? "USD", "en");
 }
 
 function toCheckoutItem(source: Course | Book, type: "course" | "book", copy: CheckoutCopy, locale: Locale): CheckoutItemView {
   const isCourse = type === "course";
+  const record = source as unknown as Record<string, unknown>;
+  const media = isCourse ? record.thumbnail : record.cover;
+  const amount = numberValue(record.price, 0);
+  const currency = currencyCode(record.currency);
+  const title = typeof source.title === "string" ? source.title : String(source.id);
 
   return {
     id: String(source.id),
     type,
     typeLabel: isCourse ? copy.labels.course : copy.labels.book,
-    title: source.title,
-    description: source.shortDescription,
+    title,
+    description: typeof source.shortDescription === "string" ? source.shortDescription : title,
     category: source.category.name,
-    price: formatMoney(source.price, source.currency, locale),
-    amount: source.price,
-    image: isCourse ? (source as Course).thumbnail?.url ?? "/images/course-1.png" : (source as Book).cover?.url ?? "/images/book-1.png",
-    imageAlt: isCourse ? (source as Course).thumbnail?.alt ?? source.title : (source as Book).cover?.alt ?? source.title,
+    price: formatMoney(amount, currency, locale),
+    amount,
+    currency,
+    image: mediaUrl(media, isCourse ? "/images/course-1.png" : "/images/book-1.png"),
+    imageAlt: typeof rawObject(media)?.alt === "string" ? String(rawObject(media)?.alt) : title,
     href: isCourse ? `/courses/${source.slug}` : `/books/${source.slug}`,
     accessLabel: isCourse ? copy.labels.lifetimeAccess : copy.labels.digitalAccess,
   };
@@ -94,6 +101,7 @@ export async function getOrdersFromApi(locale: Locale, copy: CheckoutCopy, heade
       category: item.type === "course" ? copy.labels.course : copy.labels.book,
       price: formatMoney(item.price, item.currency, locale),
       amount: item.price,
+      currency: currencyCode(item.currency),
       image: item.type === "course" ? "/images/course-1.png" : "/images/book-1.png",
       imageAlt: item.title,
       href: item.type === "course" ? `/courses/${item.itemId}` : `/books/${item.itemId}`,
