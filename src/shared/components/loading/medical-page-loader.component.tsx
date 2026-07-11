@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Activity, BookOpen, GraduationCap, Stethoscope } from "lucide-react";
 import { usePreferences } from "@/components/preferences-provider";
 import { LoadingMotionStyles } from "./loading-motion-styles.component";
@@ -36,12 +36,10 @@ const floatingItems = [
 export function MedicalPageLoader({ messages, label = "IASS" }: MedicalPageLoaderProps) {
   const { locale } = usePreferences();
   const fallbackMessages = locale === "ar" ? arabicMessages : englishMessages;
-  const displayMessages = useMemo(() => messages ?? fallbackMessages, [fallbackMessages, messages]);
+  const displayMessages = messages ?? fallbackMessages;
   const [messageIndex, setMessageIndex] = useState(0);
-
-  useEffect(() => {
-    setMessageIndex(0);
-  }, [displayMessages]);
+  const safeMessageIndex = displayMessages.length > 0 ? messageIndex % displayMessages.length : 0;
+  const currentMessage = displayMessages[safeMessageIndex] ?? "";
 
   useEffect(() => {
     if (displayMessages.length <= 1) return;
@@ -58,7 +56,7 @@ export function MedicalPageLoader({ messages, label = "IASS" }: MedicalPageLoade
       className="relative flex min-h-[calc(100vh-5rem)] items-center justify-center overflow-hidden bg-section-bg px-4 py-16 text-center"
       role="status"
       aria-live="polite"
-      aria-label={displayMessages[messageIndex]}
+      aria-label={currentMessage}
     >
       <LoadingMotionStyles />
 
@@ -94,8 +92,8 @@ export function MedicalPageLoader({ messages, label = "IASS" }: MedicalPageLoade
           </svg>
         </div>
 
-        <p key={messageIndex} className="animate-loader-message mt-6 min-h-6 text-body-reading font-medium text-on-surface">
-          {displayMessages[messageIndex]}
+        <p key={safeMessageIndex} className="animate-loader-message mt-6 min-h-6 text-body-reading font-medium text-on-surface">
+          {currentMessage}
         </p>
 
         <div className="mt-5 flex items-center justify-center gap-2" aria-hidden="true">

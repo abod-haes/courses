@@ -10,6 +10,7 @@ export type CheckoutItemView = Readonly<{
   category: string;
   price: string;
   amount: number;
+  currency?: string;
   image: string;
   imageAlt: string;
   href: string;

@@ -68,9 +68,15 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
   const isSearchDebouncing = searchTerm.trim() !== debouncedSearch;
   const isInitialQuery = debouncedSearch.length === 0 && activeCategory === "all" && page === 1;
 
-  useEffect(() => {
+  function handleSearchChange(value: string) {
+    setSearchTerm(value);
     setPage(1);
-  }, [debouncedSearch, activeCategory]);
+  }
+
+  function handleCategoryChange(value: CoursesCategoryFilter) {
+    setActiveCategory(value);
+    setPage(1);
+  }
 
   useEffect(() => {
     function syncSession() {
@@ -155,8 +161,8 @@ export function CoursesLibrary({ copy, initialPage, locale }: CoursesLibraryProp
           searchPlaceholder={copy.searchPlaceholder}
           categoryOptions={categoryOptions}
           activeCategory={activeCategory}
-          onSearchChange={setSearchTerm}
-          onCategoryChange={setActiveCategory}
+          onSearchChange={handleSearchChange}
+          onCategoryChange={handleCategoryChange}
         />
 
         {showFilterLoading ? <LoadingNotice locale={locale} /> : null}

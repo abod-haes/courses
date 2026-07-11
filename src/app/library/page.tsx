@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { BookOpen, FileText, GraduationCap, PlayCircle, ShieldCheck } from "lucide-react";
@@ -135,8 +136,14 @@ function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: Check
     <Reveal preset="fadeUp">
       <Card className="group overflow-hidden rounded-[18px] border border-border/70 bg-surface shadow-[0_10px_28px_rgba(15,23,42,0.045)] transition duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-[0_16px_38px_rgba(15,23,42,0.075)]">
         <div className="grid gap-0 md:grid-cols-[11rem_minmax(0,1fr)_13rem]">
-          <div className="relative min-h-[11rem] overflow-hidden bg-primary/6 md:min-h-full">
-            <div className="absolute inset-0 bg-cover bg-center transition duration-500 group-hover:scale-105" style={{ backgroundImage: `url(${item.image})` }} role="img" aria-label={item.imageAlt} />
+          <div className="relative aspect-[16/9] overflow-hidden bg-primary/6 md:aspect-auto md:min-h-full">
+            <Image
+              src={item.image}
+              alt={item.imageAlt}
+              fill
+              sizes="(max-width: 767px) 100vw, 176px"
+              className="object-cover transition duration-500 group-hover:scale-105"
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/10 to-transparent" />
             <span className="absolute bottom-3 start-3 inline-flex items-center gap-1.5 rounded-full bg-white/92 px-3 py-1 text-[0.7rem] font-black text-primary shadow-[0_8px_18px_rgba(15,23,42,0.12)]">
               <Icon className="h-3.5 w-3.5" aria-hidden="true" />
@@ -156,7 +163,7 @@ function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: Check
           <div className="flex flex-col justify-between gap-4 border-t border-border/70 bg-section-bg/70 p-5 md:border-s md:border-t-0">
             <div>
               <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-foreground/42">{isCourse ? copy.labels.lifetimeAccess : copy.labels.digitalAccess}</p>
-              <p className="mt-2 text-xl font-black text-foreground">{item.price}</p>
+              <p dir="ltr" className="mt-2 text-start text-xl font-black text-foreground">{item.price}</p>
             </div>
             <Button href={actionHref} className="w-full rounded-full">{actionLabel}</Button>
           </div>

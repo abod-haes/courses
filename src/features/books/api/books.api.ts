@@ -1,6 +1,6 @@
 import { apiFetch, describeApiError } from "@/shared/api/client";
 import { buildPageMeta, defaultCatalogPerPage } from "@/shared/api/paging";
-import { absoluteMediaUrl, formatMoney, localizedText, numberValue, rawObject, type RawRecord } from "@/shared/api/normalizers";
+import { absoluteMediaUrl, currencyCode, formatMoney, localizedText, numberValue, rawObject, type RawRecord } from "@/shared/api/normalizers";
 import type { Book, CatalogListParams, PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { BookItemView } from "../books.types";
@@ -86,6 +86,8 @@ function toBookView(book: RawBook, locale: Locale): BookItemView {
   const shortDescription = text(book.shortDescription ?? book.short_description ?? book.excerpt, title, locale);
   const description = text(book.description, shortDescription, locale);
   const slug = text(book.slug, String(book.id), locale);
+  const amount = numberValue(book.price, 0);
+  const currency = currencyCode(book.currency);
 
   return {
     id: String(book.id),
@@ -94,7 +96,9 @@ function toBookView(book: RawBook, locale: Locale): BookItemView {
     categoryKey: category.id ? String(category.id) : category.slug,
     category: category.name,
     description: shortDescription,
-    price: formatPrice(book.price, book.currency, locale),
+    price: formatPrice(amount, currency, locale),
+    amount,
+    currency,
     isbn: text(book.isbn, "", locale),
     href: `/books/${slug}`,
     image: cover?.url ?? "/images/book-1.png",

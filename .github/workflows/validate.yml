@@ -1,0 +1,49 @@
+name: Validate frontend
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        id: lint
+        continue-on-error: true
+        run: npm run lint > lint.log 2>&1
+
+      - name: Build
+        id: build
+        if: always()
+        continue-on-error: true
+        run: npm run build > build.log 2>&1
+
+      - name: Upload validation logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-logs
+          path: |
+            lint.log
+            build.log
+          if-no-files-found: ignore
+
+      - name: Fail when validation failed
+        if: always()
+        run: |
+          test "${{ steps.lint.outcome }}" = "success"
+          test "${{ steps.build.outcome }}" = "success"

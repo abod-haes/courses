@@ -42,12 +42,18 @@ export function currencyCode(value: unknown, fallback = "USD"): string {
 
 export function formatMoney(value: unknown, currency: unknown, locale: Locale, options?: Intl.NumberFormatOptions): string {
   const amount = numberValue(value, 0);
+  const naturalFractionDigits = amount % 1 === 0 ? 0 : 2;
+  const maximumFractionDigits = options?.maximumFractionDigits ?? naturalFractionDigits;
+  const minimumFractionDigits = options?.minimumFractionDigits ?? Math.min(naturalFractionDigits, maximumFractionDigits);
+  const formatterLocale = locale === "ar" ? "en-US-u-nu-latn" : "en-US";
 
-  return new Intl.NumberFormat(locale === "ar" ? "ar" : "en-US", {
+  return new Intl.NumberFormat(formatterLocale, {
     style: "currency",
     currency: currencyCode(currency),
-    maximumFractionDigits: amount % 1 === 0 ? 0 : 2,
+    currencyDisplay: "narrowSymbol",
     ...options,
+    minimumFractionDigits,
+    maximumFractionDigits,
   }).format(amount);
 }
 
@@ -59,4 +65,10 @@ export function absoluteMediaUrl(value: unknown, fallback: string, backendOrigin
   if (url.startsWith("//")) return `https:${url}`;
 
   return `${backendOrigin}/${url.replace(/^\/+/, "")}`;
+}
+
+export function mediaUrl(value: unknown, fallback: string, backendOrigin?: string): string {
+  const media = rawObject(value);
+  const candidate = media?.url ?? media?.originalUrl ?? media?.original_url ?? value;
+  return absoluteMediaUrl(candidate, fallback, backendOrigin);
 }

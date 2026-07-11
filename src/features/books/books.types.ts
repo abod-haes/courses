@@ -54,6 +54,8 @@ export type BookItemView = Readonly<{
   category: string;
   description: string;
   price: string;
+  amount?: number;
+  currency?: string;
   isbn: string;
   href: string;
   image: string;

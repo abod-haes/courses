@@ -3,6 +3,7 @@ import type { BookItemView } from "@/features/books/books.types";
 import { getCourses } from "@/features/courses/api/courses.api";
 import type { CourseItemView } from "@/features/courses/courses.types";
 import { ApiError, apiFetch } from "@/shared/api/client";
+import { currencyCode, formatMoney, localizedText, mediaUrl, numberValue, rawObject } from "@/shared/api/normalizers";
 import type { ApiEnvelope, Book, CheckoutItemType, Course, Order, OrderItem, PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { CheckoutCopy, CheckoutItemView, OrderView } from "./checkout.types";
@@ -45,35 +46,8 @@ export type BookAccessResponse = Readonly<{
   expiresAt: string | null;
 }>;
 
-function numberValue(value: unknown, fallback = 0): number {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string") {
-    const parsed = Number.parseFloat(value.replace(/[^0-9.-]/g, ""));
-    if (Number.isFinite(parsed)) return parsed;
-  }
-  return fallback;
-}
-
-function text(value: unknown, fallback = ""): string {
-  if (typeof value === "string" && value.trim()) return value.trim();
-  if (!value || typeof value !== "object" || Array.isArray(value)) return fallback;
-  const record = value as Record<string, unknown>;
-  return text(record.en) || text(record.ar) || fallback;
-}
-
-function formatPrice(value: unknown, currency: unknown, locale: Locale): string {
-  const amount = numberValue(value, 0);
-  const currencyCode = text(currency, "USD").toUpperCase();
-  return new Intl.NumberFormat(locale === "ar" ? "ar" : "en-US", {
-    style: "currency",
-    currency: /^[A-Z]{3}$/.test(currencyCode) ? currencyCode : "USD",
-    maximumFractionDigits: amount % 1 === 0 ? 0 : 2,
-  }).format(amount);
-}
-
-function parseAmount(price: string): number {
-  const normalized = price.replace(/[^0-9.]/g, "");
-  return Number.parseFloat(normalized) || 0;
+function text(value: unknown, fallback = "", locale: Locale = "en"): string {
+  return localizedText(value, fallback, locale);
 }
 
 function statusLabel(status: Order["status"], copy: CheckoutCopy): string {
@@ -91,6 +65,9 @@ function formatOrderDate(value: string, locale: Locale): string {
 }
 
 function courseToCheckoutItem(course: CourseItemView, copy: CheckoutCopy): CheckoutItemView {
+  const amount = numberValue(course.amount ?? course.price, 0);
+  const currency = currencyCode(course.currency);
+
   return {
     id: course.id,
     type: "course",
@@ -99,7 +76,8 @@ function courseToCheckoutItem(course: CourseItemView, copy: CheckoutCopy): Check
     description: course.description,
     category: course.category,
     price: course.price,
-    amount: parseAmount(course.price),
+    amount,
+    currency,
     image: course.image,
     imageAlt: course.imageAlt,
     href: course.href,
@@ -108,6 +86,9 @@ function courseToCheckoutItem(course: CourseItemView, copy: CheckoutCopy): Check
 }
 
 function bookToCheckoutItem(book: BookItemView, copy: CheckoutCopy): CheckoutItemView {
+  const amount = numberValue(book.amount ?? book.price, 0);
+  const currency = currencyCode(book.currency);
+
   return {
     id: book.id,
     type: "book",
@@ -116,7 +97,8 @@ function bookToCheckoutItem(book: BookItemView, copy: CheckoutCopy): CheckoutIte
     description: book.description,
     category: book.category,
     price: book.price,
-    amount: parseAmount(book.price),
+    amount,
+    currency,
     image: book.image,
     imageAlt: book.imageAlt,
     href: book.href,
@@ -125,40 +107,62 @@ function bookToCheckoutItem(book: BookItemView, copy: CheckoutCopy): CheckoutIte
 }
 
 function rawCourseToCheckoutItem(course: Course, locale: Locale, copy: CheckoutCopy): CheckoutItemView {
+  const record = course as unknown as Record<string, unknown>;
+  const category = rawObject(record.category);
+  const firstLesson = rawObject(record.firstLesson ?? record.first_lesson);
+  const id = numberValue(record.id, 0);
+  const title = text(record.title, copy.labels.course, locale);
+  const amount = numberValue(record.price, 0);
+  const currency = currencyCode(record.currency);
+  const thumbnail = record.thumbnail ?? record.thumbnailUrl ?? record.thumbnail_url ?? record.image ?? record.imageUrl ?? record.image_url;
+
   return {
-    id: String(course.id),
+    id: String(id),
     type: "course",
     typeLabel: copy.labels.course,
-    title: text(course.title, copy.labels.course),
-    description: text(course.shortDescription, text(course.title, copy.labels.course)),
-    category: text(course.category.name, copy.labels.course),
-    price: formatPrice(course.price, course.currency, locale),
-    amount: numberValue(course.price, 0),
-    image: course.thumbnail?.url ?? "/images/course-1.png",
-    imageAlt: course.thumbnail?.alt ?? text(course.title, copy.labels.course),
-    href: `/courses/${course.slug}`,
+    title,
+    description: text(record.shortDescription ?? record.short_description ?? record.description, title, locale),
+    category: text(category?.name, copy.labels.course, locale),
+    price: formatMoney(amount, currency, locale, { maximumFractionDigits: 0 }),
+    amount,
+    currency,
+    image: mediaUrl(thumbnail, "/images/course-1.png"),
+    imageAlt: text(rawObject(thumbnail)?.alt ?? record.title, title, locale),
+    href: text(firstLesson?.href, `/learn/courses/${id}`, locale),
     accessLabel: copy.labels.lifetimeAccess,
   };
 }
 
 function rawBookToCheckoutItem(book: Book, locale: Locale, copy: CheckoutCopy): CheckoutItemView {
+  const record = book as unknown as Record<string, unknown>;
+  const category = rawObject(record.category);
+  const id = numberValue(record.id, 0);
+  const title = text(record.title, copy.labels.book, locale);
+  const amount = numberValue(record.price, 0);
+  const currency = currencyCode(record.currency);
+  const cover = record.cover ?? record.coverUrl ?? record.cover_url ?? record.image ?? record.imageUrl ?? record.image_url;
+
   return {
-    id: String(book.id),
+    id: String(id),
     type: "book",
     typeLabel: copy.labels.book,
-    title: text(book.title, copy.labels.book),
-    description: text(book.shortDescription, text(book.title, copy.labels.book)),
-    category: text(book.category.name, copy.labels.book),
-    price: formatPrice(book.price, book.currency, locale),
-    amount: numberValue(book.price, 0),
-    image: book.cover?.url ?? "/images/book-1.png",
-    imageAlt: book.cover?.alt ?? text(book.title, copy.labels.book),
-    href: `/books/${book.slug}`,
+    title,
+    description: text(record.shortDescription ?? record.short_description ?? record.description, title, locale),
+    category: text(category?.name, copy.labels.book, locale),
+    price: formatMoney(amount, currency, locale, { maximumFractionDigits: 0 }),
+    amount,
+    currency,
+    image: mediaUrl(cover, "/images/book-1.png"),
+    imageAlt: text(rawObject(cover)?.alt ?? record.title, title, locale),
+    href: `/library/books/${id}/download`,
     accessLabel: copy.labels.digitalAccess,
   };
 }
 
 function orderItemToCheckoutItem(item: OrderItem, locale: Locale, copy: CheckoutCopy): CheckoutItemView {
+  const currency = currencyCode(item.currency);
+  const amount = numberValue(item.price, 0);
+
   return {
     id: String(item.itemId),
     type: item.type,
@@ -166,11 +170,12 @@ function orderItemToCheckoutItem(item: OrderItem, locale: Locale, copy: Checkout
     title: item.title,
     description: item.type === "course" ? copy.labels.lifetimeAccess : copy.labels.digitalAccess,
     category: item.type === "course" ? copy.labels.course : copy.labels.book,
-    price: formatPrice(item.price, item.currency, locale),
-    amount: numberValue(item.price, 0),
+    price: formatMoney(amount, currency, locale, { maximumFractionDigits: 0 }),
+    amount,
+    currency,
     image: item.type === "course" ? "/images/course-1.png" : "/images/book-1.png",
     imageAlt: item.title,
-    href: item.type === "course" ? `/courses/${item.itemId}` : `/books/${item.itemId}`,
+    href: item.type === "course" ? `/learn/courses/${item.itemId}` : `/library/books/${item.itemId}/download`,
     accessLabel: item.type === "course" ? copy.labels.lifetimeAccess : copy.labels.digitalAccess,
   };
 }
@@ -226,7 +231,8 @@ async function getStoredCheckoutSelectionFromApi(locale: Locale, copy: CheckoutC
 
 export function getCheckoutTotal(items: readonly CheckoutItemView[], locale: Locale): string {
   const total = items.reduce((sum, item) => sum + item.amount, 0);
-  return formatPrice(total, "USD", locale);
+  const currency = items[0]?.currency ?? "USD";
+  return formatMoney(total, currency, locale, { maximumFractionDigits: 0 });
 }
 
 export async function getCheckoutSelectionFromApi(
@@ -261,11 +267,19 @@ export async function getCheckoutSelectionFromApi(
 }
 
 export async function createCheckoutSession(items: readonly CheckoutItemView[]): Promise<string> {
+  const checkoutItems = items.map((item) => ({ type: item.type, id: Number(item.id) }));
+
+  if (checkoutItems.some((item) => !Number.isInteger(item.id) || item.id < 1)) {
+    throw new ApiError("One or more checkout item IDs are invalid.", 422, {
+      errors: { items: ["One or more selected items are invalid."] },
+    });
+  }
+
   const response = await apiFetch<CheckoutSessionResponse>("/checkout", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      items: items.map((item) => ({ type: item.type, id: Number(item.id) })),
+      items: checkoutItems,
       successUrl: checkoutReturnUrl("/checkout/success"),
       cancelUrl: checkoutReturnUrl("/checkout/cancel"),
     }),
@@ -293,7 +307,7 @@ export async function getOrdersFromApi(locale: Locale, copy: CheckoutCopy, token
     status: order.status === "failed" || order.status === "expired" ? "cancelled" : order.status,
     statusLabel: statusLabel(order.status, copy),
     date: formatOrderDate(order.createdAt, locale),
-    total: formatPrice(order.total, order.currency, locale),
+    total: formatMoney(order.total, order.currency, locale, { maximumFractionDigits: 0 }),
     itemCount: order.itemCount,
     items: order.items.map((item) => orderItemToCheckoutItem(item, locale, copy)),
     paymentSummary:

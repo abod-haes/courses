@@ -39,7 +39,7 @@ export function CheckoutItemRow({ item, copy, compact = false }: CheckoutItemRow
           {!compact ? <p className="mt-1 line-clamp-2 text-xs leading-5 text-foreground/60">{item.description}</p> : null}
 
           <div className="mt-3 flex items-center justify-between gap-3">
-            <p className="text-sm font-black text-foreground">{item.price}</p>
+            <p dir="ltr" className="text-start text-sm font-black text-foreground">{item.price}</p>
             {!compact ? (
               <Link
                 href="/checkout?empty=1"
