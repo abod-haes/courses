@@ -74,11 +74,11 @@ export function HomeHero({ copy }: HomeHeroProps) {
           </motion.p>
 
           <motion.div variants={heroItemVariants} className="mt-5 grid grid-cols-2 gap-2.5 max-sm:px-3 sm:mx-auto sm:max-w-md lg:mx-0 lg:flex lg:max-w-none lg:flex-wrap lg:gap-3 xl:gap-3.5">
-            <Button href="#courses" variant="primary" className="group w-full max-sm:text-xs sm:w-auto">
+            <Button href="/courses" variant="primary" className="group w-full max-sm:text-xs sm:w-auto">
               <BookOpen className="h-4 w-4 transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-110" aria-hidden="true" />
               {copy.actions.browseCourses}
             </Button>
-            <Button href="#books" variant="secondary" className="group w-full max-sm:text-xs sm:w-auto">
+            <Button href="/books" variant="secondary" className="group w-full max-sm:text-xs sm:w-auto">
               <Sparkles className="h-3 w-3 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110 sm:h-4 sm:w-4" aria-hidden="true" />
               {copy.actions.exploreBooks}
             </Button>
