@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Activity, BookOpen, CheckCircle2, ClipboardList, FileText, HeartPulse, Sparkles } from "lucide-react";
+import { Activity, CheckCircle2, HeartPulse, Sparkles } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { HomeMessages } from "../home.types";
 
@@ -9,11 +9,8 @@ type HomeHeroVisualProps = Readonly<{
   copy: HomeMessages;
 }>;
 
-const resourceIcons = [BookOpen, ClipboardList, FileText] as const;
-
 export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
   const shouldReduceMotion = Boolean(useReducedMotion());
-  const resources = [copy.visual.resources.courses, copy.visual.resources.books, copy.visual.resources.articles];
 
   return (
     <div className="relative mx-auto w-full max-w-[27.5rem] motion-safe:animate-[soft-scale_600ms_ease-out_both] sm:max-w-[30rem] lg:max-w-[33.5rem] xl:max-w-[36.5rem]">
@@ -35,7 +32,6 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
             />
           </div>
 
-
           <Image
             alt={copy.visual.title}
             src="/images/hero-blue.png"
@@ -47,7 +43,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
         </motion.div>
 
         <motion.div
-          className="absolute max-sm:hidden left-3 top-3 z-30 rounded-lg border border-white/70 bg-white/94 px-3 py-2.5 shadow-[0_14px_34px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/82 sm:left-4 sm:top-[-10%] sm:px-3.5 sm:py-3"
+          className="absolute left-3 top-3 z-30 max-sm:hidden rounded-lg border border-white/70 bg-white/94 px-3 py-2.5 shadow-[0_14px_34px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/82 sm:left-4 sm:top-[-10%] sm:px-3.5 sm:py-3"
           initial={shouldReduceMotion ? false : { opacity: 0, y: 14, scale: 0.96 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
@@ -64,7 +60,7 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
         </motion.div>
 
         <motion.div
-          className="absolute right-4 top-[27%] z-30 hidden h-12 w-12 items-center justify-center  text-primary  sm:flex"
+          className="absolute right-4 top-[27%] z-30 hidden h-12 w-12 items-center justify-center text-primary sm:flex"
           initial={shouldReduceMotion ? false : { opacity: 0, x: 18, scale: 0.9 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, x: 0, scale: 1 }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.55 }}
@@ -106,8 +102,6 @@ export function HomeHeroVisual({ copy }: HomeHeroVisualProps) {
             </svg>
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/58 to-transparent motion-safe:animate-[clinical-shimmer_2.7s_ease-in-out_infinite] dark:via-white/8" />
           </div>
-
-
         </motion.div>
       </div>
     </div>
