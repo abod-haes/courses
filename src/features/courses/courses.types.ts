@@ -40,8 +40,8 @@ export type CourseItemView = Readonly<{
   description: string;
   longDescription: string;
   price: string;
-  amount: number;
-  currency: string;
+  amount?: number;
+  currency?: string;
   image: string;
   imageAlt: string;
   hours: string;
