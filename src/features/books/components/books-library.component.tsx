@@ -42,7 +42,7 @@ function LoadingNotice({ locale }: Readonly<{ locale: Locale }>) {
   return (
     <div className="mt-5 flex items-center justify-center gap-2 rounded-[14px] border border-primary/12 bg-primary/5 px-4 py-3 text-sm font-bold text-primary shadow-[0_10px_28px_rgba(29,23,213,0.06)]">
       <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary/25 border-t-primary" aria-hidden="true" />
-      {locale === "ar" ? "جاري جلب البيانات..." : "Fetching data..."}
+      {locale === "ar" ? "يتم تحميل الكتب..." : "Loading books..."}
     </div>
   );
 }
@@ -140,7 +140,7 @@ export function BooksLibrary({ copy, initialPage, locale }: BooksLibraryProps) {
 
         {showInitialLoading ? (
           <div className="mt-8 rounded-[18px] border border-border/60 bg-surface/80 p-6 text-center text-sm font-semibold text-foreground/60">
-            {locale === "ar" ? "جاري تحميل النتائج..." : "Loading results..."}
+            {locale === "ar" ? "يتم تحميل نتائج الكتب..." : "Loading book results..."}
           </div>
         ) : null}
 

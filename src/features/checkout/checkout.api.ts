@@ -3,7 +3,7 @@ import type { BookItemView } from "@/features/books/books.types";
 import { getCourses } from "@/features/courses/api/courses.api";
 import type { CourseItemView } from "@/features/courses/courses.types";
 import { ApiError, apiFetch } from "@/shared/api/client";
-import { currencyCode, formatMoney, localizedText, mediaUrl, numberValue, rawObject } from "@/shared/api/normalizers";
+import { currencyCode, formatMoney, localizedText, mediaAlt, mediaUrl, numberValue, rawObject } from "@/shared/api/normalizers";
 import type { ApiEnvelope, Book, CheckoutItemType, Course, Order, OrderItem, PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { CheckoutCopy, CheckoutItemView, OrderView } from "./checkout.types";
@@ -50,6 +50,22 @@ function text(value: unknown, fallback = "", locale: Locale = "en"): string {
   return localizedText(value, fallback, locale);
 }
 
+function stringValue(value: unknown, fallback = ""): string {
+  if (typeof value === "number" && Number.isFinite(value)) return String(value);
+  if (typeof value === "string" && value.trim()) return value.trim();
+  return fallback;
+}
+
+function entityRecord(record: Record<string, unknown>, key: "course" | "book"): Record<string, unknown> {
+  return rawObject(record[key]) ?? rawObject(record.item) ?? rawObject(record.resource) ?? record;
+}
+
+function entityId(record: Record<string, unknown>, key: "course" | "book"): string {
+  const source = entityRecord(record, key);
+  const idKey = key === "course" ? source.courseId ?? source.course_id : source.bookId ?? source.book_id;
+  return stringValue(source.id ?? idKey ?? source.itemId ?? source.item_id ?? record.id ?? record.itemId ?? record.item_id ?? source.slug);
+}
+
 function statusLabel(status: Order["status"], copy: CheckoutCopy): string {
   if (status === "paid") return copy.labels.paid;
   if (status === "pending") return copy.labels.pending;
@@ -64,7 +80,7 @@ function formatOrderDate(value: string, locale: Locale): string {
   }).format(new Date(value));
 }
 
-function courseToCheckoutItem(course: CourseItemView, copy: CheckoutCopy): CheckoutItemView {
+function courseToCheckoutItem(course: CourseItemView, locale: Locale, copy: CheckoutCopy): CheckoutItemView {
   const amount = numberValue(course.amount ?? course.price, 0);
   const currency = currencyCode(course.currency);
 
@@ -75,7 +91,7 @@ function courseToCheckoutItem(course: CourseItemView, copy: CheckoutCopy): Check
     title: course.title,
     description: course.description,
     category: course.category,
-    price: course.price,
+    price: formatMoney(amount, currency, locale),
     amount,
     currency,
     image: course.image,
@@ -85,7 +101,7 @@ function courseToCheckoutItem(course: CourseItemView, copy: CheckoutCopy): Check
   };
 }
 
-function bookToCheckoutItem(book: BookItemView, copy: CheckoutCopy): CheckoutItemView {
+function bookToCheckoutItem(book: BookItemView, locale: Locale, copy: CheckoutCopy): CheckoutItemView {
   const amount = numberValue(book.amount ?? book.price, 0);
   const currency = currencyCode(book.currency);
 
@@ -96,7 +112,7 @@ function bookToCheckoutItem(book: BookItemView, copy: CheckoutCopy): CheckoutIte
     title: book.title,
     description: book.description,
     category: book.category,
-    price: book.price,
+    price: formatMoney(amount, currency, locale),
     amount,
     currency,
     image: book.image,
@@ -108,26 +124,27 @@ function bookToCheckoutItem(book: BookItemView, copy: CheckoutCopy): CheckoutIte
 
 function rawCourseToCheckoutItem(course: Course, locale: Locale, copy: CheckoutCopy): CheckoutItemView {
   const record = course as unknown as Record<string, unknown>;
-  const category = rawObject(record.category);
-  const firstLesson = rawObject(record.firstLesson ?? record.first_lesson);
-  const id = numberValue(record.id, 0);
-  const title = text(record.title, copy.labels.course, locale);
-  const amount = numberValue(record.price, 0);
-  const currency = currencyCode(record.currency);
-  const thumbnail = record.thumbnail ?? record.thumbnailUrl ?? record.thumbnail_url ?? record.image ?? record.imageUrl ?? record.image_url;
+  const source = entityRecord(record, "course");
+  const category = rawObject(source.category ?? record.category);
+  const firstLesson = rawObject(source.firstLesson ?? source.first_lesson ?? record.firstLesson ?? record.first_lesson);
+  const id = entityId(record, "course");
+  const title = text(source.title ?? record.title, copy.labels.course, locale);
+  const amount = numberValue(source.price ?? record.price, 0);
+  const currency = currencyCode(source.currency ?? record.currency);
+  const thumbnail = source.thumbnail ?? source.thumbnailUrl ?? source.thumbnail_url ?? source.image ?? source.imageUrl ?? source.image_url ?? source.cover ?? source.media ?? record.thumbnail ?? record.thumbnailUrl ?? record.thumbnail_url ?? record.image ?? record.imageUrl ?? record.image_url ?? record.media;
 
   return {
-    id: String(id),
+    id,
     type: "course",
     typeLabel: copy.labels.course,
     title,
-    description: text(record.shortDescription ?? record.short_description ?? record.description, title, locale),
-    category: text(category?.name, copy.labels.course, locale),
-    price: formatMoney(amount, currency, locale, { maximumFractionDigits: 0 }),
+    description: text(source.shortDescription ?? source.short_description ?? source.description ?? record.shortDescription ?? record.short_description ?? record.description, title, locale),
+    category: text(category?.name ?? source.categoryName ?? source.category_name ?? record.categoryName ?? record.category_name, copy.labels.course, locale),
+    price: formatMoney(amount, currency, locale),
     amount,
     currency,
     image: mediaUrl(thumbnail, "/images/course-1.png"),
-    imageAlt: text(rawObject(thumbnail)?.alt ?? record.title, title, locale),
+    imageAlt: mediaAlt(thumbnail, title, locale),
     href: text(firstLesson?.href, `/learn/courses/${id}`, locale),
     accessLabel: copy.labels.lifetimeAccess,
   };
@@ -135,25 +152,26 @@ function rawCourseToCheckoutItem(course: Course, locale: Locale, copy: CheckoutC
 
 function rawBookToCheckoutItem(book: Book, locale: Locale, copy: CheckoutCopy): CheckoutItemView {
   const record = book as unknown as Record<string, unknown>;
-  const category = rawObject(record.category);
-  const id = numberValue(record.id, 0);
-  const title = text(record.title, copy.labels.book, locale);
-  const amount = numberValue(record.price, 0);
-  const currency = currencyCode(record.currency);
-  const cover = record.cover ?? record.coverUrl ?? record.cover_url ?? record.image ?? record.imageUrl ?? record.image_url;
+  const source = entityRecord(record, "book");
+  const category = rawObject(source.category ?? record.category);
+  const id = entityId(record, "book");
+  const title = text(source.title ?? record.title, copy.labels.book, locale);
+  const amount = numberValue(source.price ?? record.price, 0);
+  const currency = currencyCode(source.currency ?? record.currency);
+  const cover = source.cover ?? source.coverUrl ?? source.cover_url ?? source.thumbnail ?? source.thumbnailUrl ?? source.thumbnail_url ?? source.image ?? source.imageUrl ?? source.image_url ?? source.media ?? record.cover ?? record.coverUrl ?? record.cover_url ?? record.image ?? record.imageUrl ?? record.image_url ?? record.media;
 
   return {
-    id: String(id),
+    id,
     type: "book",
     typeLabel: copy.labels.book,
     title,
-    description: text(record.shortDescription ?? record.short_description ?? record.description, title, locale),
-    category: text(category?.name, copy.labels.book, locale),
-    price: formatMoney(amount, currency, locale, { maximumFractionDigits: 0 }),
+    description: text(source.shortDescription ?? source.short_description ?? source.description ?? record.shortDescription ?? record.short_description ?? record.description, title, locale),
+    category: text(category?.name ?? source.categoryName ?? source.category_name ?? record.categoryName ?? record.category_name, copy.labels.book, locale),
+    price: formatMoney(amount, currency, locale),
     amount,
     currency,
     image: mediaUrl(cover, "/images/book-1.png"),
-    imageAlt: text(rawObject(cover)?.alt ?? record.title, title, locale),
+    imageAlt: mediaAlt(cover, title, locale),
     href: `/library/books/${id}/download`,
     accessLabel: copy.labels.digitalAccess,
   };
@@ -170,7 +188,7 @@ function orderItemToCheckoutItem(item: OrderItem, locale: Locale, copy: Checkout
     title: item.title,
     description: item.type === "course" ? copy.labels.lifetimeAccess : copy.labels.digitalAccess,
     category: item.type === "course" ? copy.labels.course : copy.labels.book,
-    price: formatMoney(amount, currency, locale, { maximumFractionDigits: 0 }),
+    price: formatMoney(amount, currency, locale),
     amount,
     currency,
     image: item.type === "course" ? "/images/course-1.png" : "/images/book-1.png",
@@ -221,18 +239,18 @@ async function getStoredCheckoutSelectionFromApi(locale: Locale, copy: CheckoutC
   return selectedItems.flatMap((item) => {
     if (item.type === "course") {
       const course = coursesPage.data.find((entry) => String(entry.id) === String(item.id));
-      return course ? [courseToCheckoutItem(course, copy)] : [];
+      return course ? [courseToCheckoutItem(course, locale, copy)] : [];
     }
 
     const book = booksPage.data.find((entry) => String(entry.id) === String(item.id));
-    return book ? [bookToCheckoutItem(book, copy)] : [];
+    return book ? [bookToCheckoutItem(book, locale, copy)] : [];
   });
 }
 
 export function getCheckoutTotal(items: readonly CheckoutItemView[], locale: Locale): string {
   const total = items.reduce((sum, item) => sum + item.amount, 0);
   const currency = items[0]?.currency ?? "USD";
-  return formatMoney(total, currency, locale, { maximumFractionDigits: 0 });
+  return formatMoney(total, currency, locale);
 }
 
 export async function getCheckoutSelectionFromApi(
@@ -254,24 +272,26 @@ export async function getCheckoutSelectionFromApi(
   if (itemType === "course") {
     const page = await getCourses({ locale, page: 1, perPage: 100 });
     const course = page.data.find((entry) => String(entry.id) === String(itemId));
-    return course ? [courseToCheckoutItem(course, copy)] : [];
+    return course ? [courseToCheckoutItem(course, locale, copy)] : [];
   }
 
   if (itemType === "book") {
     const page = await getBooks({ locale, page: 1, perPage: 100 });
     const book = page.data.find((entry) => String(entry.id) === String(itemId));
-    return book ? [bookToCheckoutItem(book, copy)] : [];
+    return book ? [bookToCheckoutItem(book, locale, copy)] : [];
   }
 
   return [];
 }
 
 export async function createCheckoutSession(items: readonly CheckoutItemView[]): Promise<string> {
-  const checkoutItems = items.map((item) => ({ type: item.type, id: Number(item.id) }));
+  const checkoutItems = uniqueCartItems(
+    items.map((item) => ({ type: item.type, id: Number(item.id) })),
+  );
 
-  if (checkoutItems.some((item) => !Number.isInteger(item.id) || item.id < 1)) {
+  if (checkoutItems.length === 0 || checkoutItems.some((item) => !Number.isInteger(item.id) || item.id < 1)) {
     throw new ApiError("One or more checkout item IDs are invalid.", 422, {
-      errors: { items: ["One or more selected items are invalid."] },
+      errors: { items: ["One or more selected items are invalid. Refresh the catalog and try again."] },
     });
   }
 
@@ -307,7 +327,7 @@ export async function getOrdersFromApi(locale: Locale, copy: CheckoutCopy, token
     status: order.status === "failed" || order.status === "expired" ? "cancelled" : order.status,
     statusLabel: statusLabel(order.status, copy),
     date: formatOrderDate(order.createdAt, locale),
-    total: formatMoney(order.total, order.currency, locale, { maximumFractionDigits: 0 }),
+    total: formatMoney(order.total, order.currency, locale),
     itemCount: order.itemCount,
     items: order.items.map((item) => orderItemToCheckoutItem(item, locale, copy)),
     paymentSummary:

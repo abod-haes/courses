@@ -1,6 +1,6 @@
 import { apiFetch, describeApiError } from "@/shared/api/client";
 import { buildPageMeta, defaultCatalogPerPage } from "@/shared/api/paging";
-import { absoluteMediaUrl, currencyCode, formatMoney, localizedText, numberValue, rawObject, type RawRecord } from "@/shared/api/normalizers";
+import { currencyCode, formatMoney, localizedText, mediaAlt, mediaUrl, numberValue, rawObject, type RawRecord } from "@/shared/api/normalizers";
 import type { Book, CatalogListParams, PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { BookItemView } from "../books.types";
@@ -12,8 +12,14 @@ function text(value: unknown, fallback = "", locale: Locale = "en"): string {
   return localizedText(value, fallback, locale);
 }
 
+function stringValue(value: unknown, fallback = ""): string {
+  if (typeof value === "number" && Number.isFinite(value)) return String(value);
+  if (typeof value === "string" && value.trim()) return value.trim();
+  return fallback;
+}
+
 function formatPrice(value: unknown, currency: unknown, locale: Locale): string {
-  return formatMoney(value, currency, locale, { maximumFractionDigits: 0 });
+  return formatMoney(value, currency, locale);
 }
 
 function emptyBooksPage(params: CatalogListParams): PaginatedEnvelope<BookItemView> {
@@ -44,6 +50,10 @@ function normalizePaginatedResponse<T>(response: RawPaginatedResponse<T>, params
   };
 }
 
+function readEntityId(record: RawRecord): string {
+  return stringValue(record.id ?? record.bookId ?? record.book_id ?? record.itemId ?? record.item_id ?? record.slug);
+}
+
 function readCategory(book: RawRecord, locale: Locale): { id: number; name: string; slug: string } {
   const category = rawObject(book.category);
   const id = numberValue(category?.id ?? book.categoryId ?? book.category_id, 0);
@@ -51,12 +61,11 @@ function readCategory(book: RawRecord, locale: Locale): { id: number; name: stri
 }
 
 function readCover(book: RawRecord, locale: Locale): { url: string; alt: string } | null {
-  const cover = rawObject(book.cover) ?? rawObject(book.media) ?? rawObject(book.image);
-  const directUrl = text(book.cover ?? book.coverUrl ?? book.cover_url ?? book.imageUrl ?? book.image_url, "", locale);
-  const url = text(cover?.url, directUrl, locale);
+  const source = book.cover ?? book.coverUrl ?? book.cover_url ?? book.image ?? book.imageUrl ?? book.image_url ?? book.thumbnail ?? book.thumbnailUrl ?? book.thumbnail_url ?? book.media;
+  const url = mediaUrl(source, "");
   if (!url) return null;
   const title = text(book.title, "Medical book", locale);
-  return { url: absoluteMediaUrl(url, "/images/book-1.png"), alt: text(cover?.alt ?? cover?.altText ?? cover?.alt_text ?? book.title, title, locale) };
+  return { url, alt: mediaAlt(source, title, locale) };
 }
 
 function readStringList(value: unknown, locale: Locale): string[] {
@@ -85,12 +94,13 @@ function toBookView(book: RawBook, locale: Locale): BookItemView {
   const title = text(book.title, "Medical book", locale);
   const shortDescription = text(book.shortDescription ?? book.short_description ?? book.excerpt, title, locale);
   const description = text(book.description, shortDescription, locale);
-  const slug = text(book.slug, String(book.id), locale);
+  const id = readEntityId(book);
+  const slug = text(book.slug, id, locale);
   const amount = numberValue(book.price, 0);
   const currency = currencyCode(book.currency);
 
   return {
-    id: String(book.id),
+    id,
     title,
     author: text(book.author, "", locale),
     categoryKey: category.id ? String(category.id) : category.slug,

@@ -135,13 +135,13 @@ function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: Check
   return (
     <Reveal preset="fadeUp">
       <Card className="group overflow-hidden rounded-[18px] border border-border/70 bg-surface shadow-[0_10px_28px_rgba(15,23,42,0.045)] transition duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-[0_16px_38px_rgba(15,23,42,0.075)]">
-        <div className="grid gap-0 md:grid-cols-[11rem_minmax(0,1fr)_13rem]">
-          <div className="relative aspect-[16/9] overflow-hidden bg-primary/6 md:aspect-auto md:min-h-full">
+        <div className="grid gap-0 md:grid-cols-[13rem_minmax(0,1fr)_13rem]">
+          <div className="relative aspect-[16/9] overflow-hidden bg-primary/6 md:min-h-44">
             <Image
               src={item.image}
               alt={item.imageAlt}
               fill
-              sizes="(max-width: 767px) 100vw, 176px"
+              sizes="(max-width: 767px) 100vw, 208px"
               className="object-cover transition duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/10 to-transparent" />
