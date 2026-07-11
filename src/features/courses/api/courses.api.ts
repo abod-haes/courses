@@ -1,6 +1,6 @@
 import { apiFetch, describeApiError } from "@/shared/api/client";
 import { buildPageMeta, defaultCatalogPerPage } from "@/shared/api/paging";
-import { absoluteMediaUrl, currencyCode, formatMoney, localizedText, numberValue, rawObject, type RawRecord } from "@/shared/api/normalizers";
+import { currencyCode, formatMoney, localizedText, mediaAlt, mediaUrl, numberValue, rawObject, type RawRecord } from "@/shared/api/normalizers";
 import type { CatalogListParams, Course, PaginatedEnvelope, PaginationMeta } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { CourseItemView } from "../courses.types";
@@ -25,8 +25,14 @@ function text(value: unknown, fallback = "", locale: Locale = "en"): string {
   return localizedText(value, fallback, locale);
 }
 
+function stringValue(value: unknown, fallback = ""): string {
+  if (typeof value === "number" && Number.isFinite(value)) return String(value);
+  if (typeof value === "string" && value.trim()) return value.trim();
+  return fallback;
+}
+
 function formatPrice(value: unknown, currency: unknown, locale: Locale): string {
-  return formatMoney(value, currency, locale, { maximumFractionDigits: 0 });
+  return formatMoney(value, currency, locale);
 }
 
 function normalizeMeta(source: RawRecord | undefined, dataLength: number, params: CatalogListParams): PaginationMeta {
@@ -61,6 +67,10 @@ function normalizePaginatedResponse<T>(response: RawPaginatedResponse<T>, params
   };
 }
 
+function readEntityId(record: RawRecord): string {
+  return stringValue(record.id ?? record.courseId ?? record.course_id ?? record.itemId ?? record.item_id ?? record.slug);
+}
+
 function readCategory(course: RawRecord, locale: Locale): { id: number; name: string; slug: string; type: "course" } {
   const category = rawObject(course.category);
   const id = numberValue(category?.id ?? course.categoryId ?? course.category_id, 0);
@@ -71,17 +81,16 @@ function readCategory(course: RawRecord, locale: Locale): { id: number; name: st
 }
 
 function readThumbnail(course: RawRecord, locale: Locale): { url: string; alt: string } | null {
-  const thumbnail = rawObject(course.thumbnail) ?? rawObject(course.media) ?? rawObject(course.image);
-  const directUrl = text(course.thumbnail ?? course.thumbnailUrl ?? course.thumbnail_url ?? course.imageUrl ?? course.image_url, "", locale);
-  const url = text(thumbnail?.url, directUrl, locale);
+  const source = course.thumbnail ?? course.thumbnailUrl ?? course.thumbnail_url ?? course.image ?? course.imageUrl ?? course.image_url ?? course.cover ?? course.media;
+  const url = mediaUrl(source, "");
 
   if (!url) return null;
 
   const title = text(course.title, "Medical course", locale);
 
   return {
-    url: absoluteMediaUrl(url, "/images/course-1.png"),
-    alt: text(thumbnail?.alt ?? thumbnail?.altText ?? thumbnail?.alt_text ?? course.title, title, locale),
+    url,
+    alt: mediaAlt(source, title, locale),
   };
 }
 
@@ -123,8 +132,9 @@ function toCourseView(course: RawCourse, locale: Locale): CourseItemView {
   const lessons = totalLessons(course);
   const minutes = totalMinutes(course);
   const hours = minutes > 0 ? Math.max(1, Math.ceil(minutes / 60)) : Math.max(1, numberValue(course.hours, 1));
+  const id = readEntityId(course);
   const title = text(course.title, "Medical course", locale);
-  const slug = text(course.slug, String(course.id), locale);
+  const slug = text(course.slug, id, locale);
   const shortDescription = text(course.shortDescription ?? course.short_description ?? course.excerpt, title, locale);
   const description = text(course.description ?? course.longDescription ?? course.long_description, shortDescription, locale);
   const thumbnail = readThumbnail(course, locale);
@@ -133,7 +143,7 @@ function toCourseView(course: RawCourse, locale: Locale): CourseItemView {
   const currency = currencyCode(course.currency);
 
   return {
-    id: String(course.id),
+    id,
     title,
     instructor: text(course.instructor ?? course.teacherName ?? course.teacher_name, locale === "ar" ? "د. إياس عكاري" : "Dr. Iyas Akkari", locale),
     categoryKey: category.id ? String(category.id) : category.slug,
