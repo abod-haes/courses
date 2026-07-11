@@ -1,9 +1,9 @@
 import { apiFetch, describeApiError } from "@/shared/api/client";
+import { currencyCode, formatMoney, localizedText, mediaAlt, mediaUrl, numberValue, rawObject, type RawRecord } from "@/shared/api/normalizers";
 import type { Article, Book, Course } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
 import type { HomeCatalog, HomeCatalogItem, HomeMessages } from "../home.types";
 
-type RawRecord = Record<string, unknown>;
 type RawCourse = Course & RawRecord;
 type RawBook = Book & RawRecord;
 type RawArticle = Article & RawRecord;
@@ -26,8 +26,6 @@ type HomeApiResponse = Readonly<{
   }>;
 }>;
 
-const backendOrigin = "https://medical-courses.mustafafares.com";
-
 function emptyHomeCatalog(): HomeCatalog {
   return {
     courses: [],
@@ -36,62 +34,35 @@ function emptyHomeCatalog(): HomeCatalog {
   };
 }
 
-function rawObject(value: unknown): RawRecord | null {
-  return value && typeof value === "object" && !Array.isArray(value) ? (value as RawRecord) : null;
+function text(value: unknown, fallback = "", locale: Locale = "en"): string {
+  return localizedText(value, fallback, locale);
 }
 
-function text(value: unknown, fallback = ""): string {
+function stringValue(value: unknown, fallback = ""): string {
+  if (typeof value === "number" && Number.isFinite(value)) return String(value);
   if (typeof value === "string" && value.trim()) return value.trim();
-  const record = rawObject(value);
-  if (!record) return fallback;
-  return text(record.en) || text(record.ar) || fallback;
-}
-
-function numberValue(value: unknown, fallback = 0): number {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string") {
-    const parsed = Number.parseFloat(value.replace(/[^0-9.-]/g, ""));
-    if (Number.isFinite(parsed)) return parsed;
-  }
   return fallback;
 }
 
-function currencyCode(value: unknown): string {
-  const normalized = text(value, "USD").toUpperCase();
-  return /^[A-Z]{3}$/.test(normalized) ? normalized : "USD";
-}
-
 function formatPrice(value: number, currency: unknown, locale: Locale): string {
-  return new Intl.NumberFormat(locale === "ar" ? "ar" : "en-US", {
-    style: "currency",
-    currency: currencyCode(currency),
-    maximumFractionDigits: 0,
-  }).format(value);
+  return formatMoney(value, currencyCode(currency), locale);
 }
 
-function absoluteMediaUrl(value: unknown, fallback: string): string {
-  const url = text(value);
-  if (!url) return fallback;
-  if (url.startsWith("/") || /^https?:\/\//i.test(url)) return url;
-  if (url.startsWith("//")) return `https:${url}`;
-  return `${backendOrigin}/${url.replace(/^\/+/, "")}`;
-}
-
-function categoryName(item: RawRecord, fallback: string): string {
+function categoryName(item: RawRecord, fallback: string, locale: Locale): string {
   const category = rawObject(item.category);
-  return text(category?.name ?? item.categoryName ?? item.category_name, fallback);
+  return text(category?.name ?? item.categoryName ?? item.category_name, fallback, locale);
 }
 
-function mediaFrom(item: RawRecord, key: "thumbnail" | "cover" | "image"): { url: string; alt: string } | null {
-  const media = rawObject(item[key]) ?? rawObject(item.media) ?? rawObject(item.image) ?? rawObject(item.thumbnail) ?? rawObject(item.cover);
-  const directUrl = text(item[key] ?? item[`${key}Url`] ?? item[`${key}_url`] ?? item.imageUrl ?? item.image_url ?? item.thumbnailUrl ?? item.thumbnail_url ?? item.coverUrl ?? item.cover_url);
-  const url = text(media?.url, directUrl);
+function mediaFrom(item: RawRecord, key: "thumbnail" | "cover" | "image", locale: Locale): { url: string; alt: string } | null {
+  const source = item[key] ?? item[`${key}Url`] ?? item[`${key}_url`] ?? item.image ?? item.imageUrl ?? item.image_url ?? item.thumbnail ?? item.thumbnailUrl ?? item.thumbnail_url ?? item.cover ?? item.coverUrl ?? item.cover_url ?? item.media;
+  const fallback = key === "cover" ? "/images/book-1.png" : "/images/course-1.png";
+  const url = mediaUrl(source, "");
 
   if (!url) return null;
 
   return {
-    url: absoluteMediaUrl(url, key === "cover" ? "/images/book-1.png" : "/images/course-1.png"),
-    alt: text(media?.alt ?? media?.altText ?? media?.alt_text ?? item.title, text(item.title, "Image")),
+    url: mediaUrl(source, fallback),
+    alt: mediaAlt(source, text(item.title, "Image", locale), locale),
   };
 }
 
@@ -105,52 +76,52 @@ function courseModules(course: RawCourse): number {
 }
 
 function toCourseItem(course: RawCourse, locale: Locale): HomeCatalogItem {
-  const image = mediaFrom(course, "thumbnail");
-  const title = text(course.title, locale === "ar" ? "كورس طبي" : "Medical course");
+  const image = mediaFrom(course, "thumbnail", locale);
+  const title = text(course.title, locale === "ar" ? "كورس طبي" : "Medical course", locale);
 
   return {
-    category: categoryName(course, "Course"),
+    category: categoryName(course, "Course", locale),
     title,
-    author: text(course.instructor ?? course.teacherName ?? course.teacher_name, locale === "ar" ? "د. إياس عكاري" : "Dr. Iyas Akkari"),
+    author: text(course.instructor ?? course.teacherName ?? course.teacher_name, locale === "ar" ? "د. إياس عكاري" : "Dr. Iyas Akkari", locale),
     modules: courseModules(course),
-    description: text(course.shortDescription ?? course.short_description ?? course.excerpt, title),
+    description: text(course.shortDescription ?? course.short_description ?? course.excerpt, title, locale),
     price: formatPrice(numberValue(course.price, 0), course.currency, locale),
     image: image?.url ?? "/images/course-1.png",
     alt: image?.alt ?? title,
-    href: `/courses/${text(course.slug, String(course.id))}`,
+    href: `/courses/${text(course.slug, stringValue(course.id), locale)}`,
   };
 }
 
 function toBookItem(book: RawBook, locale: Locale): HomeCatalogItem {
-  const image = mediaFrom(book, "cover");
-  const title = text(book.title, locale === "ar" ? "كتاب طبي" : "Medical book");
+  const image = mediaFrom(book, "cover", locale);
+  const title = text(book.title, locale === "ar" ? "كتاب طبي" : "Medical book", locale);
 
   return {
-    category: categoryName(book, "Book"),
+    category: categoryName(book, "Book", locale),
     title,
-    author: text(book.author, locale === "ar" ? "فريق IASS الأكاديمي" : "IASS Academic Team"),
+    author: text(book.author, locale === "ar" ? "فريق IASS الأكاديمي" : "IASS Academic Team", locale),
     modules: 0,
-    description: text(book.shortDescription ?? book.short_description ?? book.excerpt, title),
+    description: text(book.shortDescription ?? book.short_description ?? book.excerpt, title, locale),
     price: formatPrice(numberValue(book.price, 0), book.currency, locale),
     image: image?.url ?? "/images/book-1.png",
     alt: image?.alt ?? title,
-    href: `/books/${text(book.slug, String(book.id))}`,
+    href: `/books/${text(book.slug, stringValue(book.id), locale)}`,
   };
 }
 
-function toArticleItem(article: RawArticle): HomeCatalogItem {
-  const image = mediaFrom(article, "image");
-  const title = text(article.title, "Article");
+function toArticleItem(article: RawArticle, locale: Locale): HomeCatalogItem {
+  const image = mediaFrom(article, "image", locale);
+  const title = text(article.title, "Article", locale);
 
   return {
-    category: categoryName(article, "Article"),
+    category: categoryName(article, "Article", locale),
     title,
-    author: text(article.author, "IASS Academic Team"),
+    author: text(article.author, "IASS Academic Team", locale),
     modules: 0,
-    description: text(article.excerpt ?? article.shortDescription ?? article.short_description, title),
+    description: text(article.excerpt ?? article.shortDescription ?? article.short_description, title, locale),
     image: image?.url ?? "/images/course-1.png",
     alt: image?.alt ?? title,
-    href: `/articles/${text(article.slug, String(article.id))}`,
+    href: `/articles/${text(article.slug, stringValue(article.id), locale)}`,
   };
 }
 
@@ -193,7 +164,7 @@ function toHomeCatalog(data: HomeApiResponse["data"], locale: Locale): HomeCatal
   return {
     courses: data.latestCourses?.map((course) => toCourseItem(course, locale)) ?? [],
     books: data.latestBooks?.map((book) => toBookItem(book, locale)) ?? [],
-    articles: data.latestArticles?.map(toArticleItem) ?? [],
+    articles: data.latestArticles?.map((article) => toArticleItem(article, locale)) ?? [],
   };
 }
 
