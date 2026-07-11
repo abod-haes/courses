@@ -20,8 +20,6 @@ export type CourseCatalogItem = Readonly<{
   description: LocalizedText;
   longDescription: LocalizedText;
   price: string;
-  amount: number;
-  currency: string;
   image: string;
   imageAlt: LocalizedText;
   hours: string;
