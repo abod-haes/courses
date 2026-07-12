@@ -109,7 +109,7 @@ export function ArticlesLibrary({ copy, initialPage, locale }: ArticlesLibraryPr
     const categories = new Map<string, string>();
 
     initialPage.data.forEach((article) => {
-      categories.set(article.category, article.category);
+      categories.set(article.categoryKey, article.category);
     });
 
     return [
@@ -121,7 +121,7 @@ export function ArticlesLibrary({ copy, initialPage, locale }: ArticlesLibraryPr
   const categoriesQuery = useQuery({
     queryKey: ["catalog-categories", "article", locale],
     queryFn: () => getCatalogCategoryOptions("article", locale, copy.filters.allCategories),
-    initialData: fallbackCategoryOptions,
+    placeholderData: fallbackCategoryOptions,
     staleTime: 5 * 60 * 1000,
   });
 
