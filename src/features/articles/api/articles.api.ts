@@ -48,9 +48,16 @@ function normalizePaginatedResponse<T>(response: RawPaginatedResponse<T>, params
   };
 }
 
-function readCategory(article: RawRecord, locale: Locale): string {
+function readCategory(article: RawRecord, locale: Locale): { key: string; label: string } {
   const category = rawObject(article.category);
-  return text(category?.name ?? article.categoryName ?? article.category_name, "Article", locale);
+  const id = numberValue(category?.id ?? article.categoryId ?? article.category_id, 0);
+  const slug = text(category?.slug ?? article.categorySlug ?? article.category_slug, "", locale);
+  const label = text(category?.name ?? article.categoryName ?? article.category_name, "Article", locale);
+
+  return {
+    key: id > 0 ? String(id) : slug || label,
+    label,
+  };
 }
 
 function readImage(article: RawRecord, locale: Locale): { url: string; alt: string } | null {
@@ -67,13 +74,15 @@ function toArticleSummary(article: RawArticle, locale: Locale): ArticleSummary {
   const title = text(article.title, "Article", locale);
   const slug = text(article.slug, String(article.id), locale);
   const excerpt = text(article.excerpt ?? article.shortDescription ?? article.short_description, title, locale);
+  const category = readCategory(article, locale);
 
   return {
     id: numberValue(article.id, 0),
     slug,
     title,
     excerpt,
-    category: readCategory(article, locale),
+    category: category.label,
+    categoryKey: category.key,
     author: text(article.author, "IASS Academic Team", locale),
     image: image?.url ?? "/images/course-1.png",
     alt: image?.alt ?? title,
@@ -124,19 +133,29 @@ function normalizeArticleBody(value: string): string {
   return sanitizeArticleHtml(hasHtml(body) ? body : plainTextToHtml(body));
 }
 
+function articleFilterSearchParams(params: CatalogListParams, locale: Locale) {
+  const category = params.category?.trim();
+
+  return {
+    locale,
+    page: params.page,
+    perPage: params.perPage,
+    search: params.search,
+    sort: params.sort ?? "-publishedAt",
+    ...(category
+      ? /^\d+$/.test(category)
+        ? { "filter[categoryId]": category }
+        : { "filter[categorySlug]": category }
+      : {}),
+  };
+}
+
 export async function getArticles(params: CatalogListParams): Promise<PaginatedEnvelope<ArticleSummary>> {
   const locale = params.locale ?? "en";
 
   try {
     const response = await apiFetch<RawPaginatedResponse<RawArticle>>("/articles", {
-      searchParams: {
-        locale,
-        page: params.page,
-        perPage: params.perPage,
-        search: params.search,
-        sort: params.sort ?? "-publishedAt",
-        "filter[categoryId]": params.category,
-      },
+      searchParams: articleFilterSearchParams(params, locale),
     });
     const normalized = normalizePaginatedResponse(response, params);
     const articles = normalized.data.map((article) => toArticleSummary(article, locale));
