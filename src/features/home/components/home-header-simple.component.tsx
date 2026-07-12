@@ -159,7 +159,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
   return (
     <>
-      <header className="sticky top-0 z-[100] shrink-0 overflow-visible bg-gradient-to-b from-background via-background/96 to-background/90 shadow-[0_1px_0_rgba(15,23,42,0.06)] backdrop-blur-xl dark:from-slate-950 dark:via-slate-950/96 dark:to-slate-950/90 dark:shadow-[0_1px_0_rgba(255,255,255,0.08)]">
+      <header className="relative z-50 shrink-0 overflow-visible bg-gradient-to-b from-background via-background/96 to-background/90 shadow-[0_1px_0_rgba(15,23,42,0.06)] backdrop-blur-xl dark:from-slate-950 dark:via-slate-950/96 dark:to-slate-950/90 dark:shadow-[0_1px_0_rgba(255,255,255,0.08)]">
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-80 dark:via-white/14" />
         <SiteContainer>
           <div className="flex min-h-[3.15rem] items-center gap-1 py-1.5 min-[1500px]:min-h-[3.35rem] min-[1500px]:gap-2 min-[1500px]:py-2">
