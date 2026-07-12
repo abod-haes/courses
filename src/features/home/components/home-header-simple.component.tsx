@@ -159,7 +159,7 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
 
   return (
     <>
-      <header className="relative z-50 shrink-0 overflow-visible bg-gradient-to-b from-background via-background/96 to-background/90 shadow-[0_1px_0_rgba(15,23,42,0.06)] backdrop-blur-xl dark:from-slate-950 dark:via-slate-950/96 dark:to-slate-950/90 dark:shadow-[0_1px_0_rgba(255,255,255,0.08)]">
+      <header className="sticky top-0 z-[100] shrink-0 overflow-visible bg-gradient-to-b from-background via-background/96 to-background/90 shadow-[0_1px_0_rgba(15,23,42,0.06)] backdrop-blur-xl dark:from-slate-950 dark:via-slate-950/96 dark:to-slate-950/90 dark:shadow-[0_1px_0_rgba(255,255,255,0.08)]">
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-80 dark:via-white/14" />
         <SiteContainer>
           <div className="flex min-h-[3.15rem] items-center gap-1 py-1.5 min-[1500px]:min-h-[3.35rem] min-[1500px]:gap-2 min-[1500px]:py-2">
@@ -229,52 +229,65 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
       {menuOpen ? (
         <div className="fixed inset-0 z-[9999] min-[1120px]:hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
           <button type="button" className="absolute inset-0 bg-slate-950/46 backdrop-blur-[3px]" aria-label={isArabic ? "إغلاق القائمة" : "Close menu"} onClick={() => setMenuOpen(false)} />
-          <aside id="mobile-navigation" className={`fixed inset-y-0 ${isArabic ? "right-0 rounded-l-[1.2rem] border-l" : "left-0 rounded-r-[1.2rem] border-r"} flex w-[min(86vw,21.5rem)] flex-col overflow-hidden border-white/65 bg-background/98 shadow-[0_26px_80px_rgba(15,23,42,0.28)] ring-1 ring-slate-200/70 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/98 dark:ring-white/12`}>
-            <div className="flex items-center justify-between border-b border-border/60 bg-white/58 px-4 py-3.5 dark:border-white/10 dark:bg-white/6">
-              <Link href="/" onClick={() => setMenuOpen(false)} className="relative block h-8 w-28 shrink-0">
-                <Image alt={`${copy.brand} logo`} src="/images/logo-blue.png" fill sizes="112px" className="object-contain object-left dark:brightness-0 dark:invert" />
+          <aside id="mobile-navigation" className={`fixed inset-y-0 ${isArabic ? "right-0 rounded-l-[1.2rem]" : "left-0 rounded-r-[1.2rem]"} flex w-[min(84vw,22rem)] flex-col border border-white/12 bg-white/95 p-5 shadow-[0_24px_64px_rgba(15,23,42,0.22)] backdrop-blur-xl dark:bg-slate-950/95`}>
+            <div className="flex items-center justify-between gap-3">
+              <Link href="/" onClick={() => setMenuOpen(false)} className="relative block h-9 w-28">
+                <Image alt={`${copy.brand} logo`} src="/images/logo-blue.png" fill sizes="112px" className="object-contain object-left rtl:object-right dark:brightness-0 dark:invert" />
               </Link>
-              <button type="button" onClick={() => setMenuOpen(false)} className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-primary shadow-[0_8px_22px_rgba(15,23,42,0.08)] ring-1 ring-border/70 transition hover:bg-primary hover:text-white dark:bg-white/10 dark:text-white dark:ring-white/12 dark:hover:bg-primary" aria-label={isArabic ? "إغلاق القائمة" : "Close menu"}>
+              <button type="button" onClick={() => setMenuOpen(false)} className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/8 text-primary transition hover:bg-primary hover:text-white" aria-label={isArabic ? "إغلاق القائمة" : "Close menu"}>
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-4 py-5">
-              <nav className="grid gap-2">
-                {navItems.map((item) => {
-                  const isActive = resolveNavState(item.href);
-                  return (
-                    <Link key={item.href} href={item.href} onClick={() => setMenuOpen(false)} aria-current={isActive ? "page" : undefined} className={`flex items-center justify-between rounded-[0.95rem] px-4 py-3 text-sm font-semibold transition ${isActive ? "bg-primary !text-white shadow-[0_12px_26px_rgba(0,74,198,0.18)]" : "bg-white/70 text-foreground/75 ring-1 ring-border/55 hover:bg-primary/8 hover:text-primary dark:bg-white/8 dark:text-white/74 dark:ring-white/10"}`}>
-                      <span>{item.label}</span>
-                      <ChevronRight className="h-4 w-4 opacity-55 rtl:rotate-180" aria-hidden="true" />
-                    </Link>
-                  );
-                })}
-              </nav>
+            <nav className="mt-8 grid gap-2">
+              {navItems.map((item) => {
+                const isActive = resolveNavState(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMenuOpen(false)}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-bold transition ${isActive ? "bg-primary text-white shadow-[0_12px_30px_rgba(0,74,198,0.16)]" : "bg-slate-100/80 text-foreground/76 hover:bg-primary/8 hover:text-primary dark:bg-white/8 dark:text-white/74"}`}
+                  >
+                    {item.label}
+                    <ChevronRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
+                  </Link>
+                );
+              })}
+            </nav>
 
-              <div className="mt-5 grid gap-3">
-                {authReady ? (
-                  isAuthenticated ? (
-                    <>
-                      <Button href="/library" variant="primary" size="sm" className="w-full rounded-full" onClick={() => setMenuOpen(false)}>
-                        <LibraryBig className="h-4 w-4" aria-hidden="true" />
-                        {libraryLabel}
-                      </Button>
-                      <Button type="button" variant="secondary" size="sm" className="w-full rounded-full text-red-600 dark:text-red-300" onClick={requestLogout} disabled={isLoggingOut}>
-                        <LogOut className="h-4 w-4" aria-hidden="true" />
-                        {isLoggingOut ? loggingOutLabel : logoutLabel}
-                      </Button>
-                    </>
-                  ) : (
-                    <Button href="/login" variant="primary" size="sm" className="w-full rounded-full" onClick={() => setMenuOpen(false)}>
-                      <LogIn className="h-4 w-4" aria-hidden="true" />
-                      {copy.actions.signIn}
-                    </Button>
-                  )
-                ) : null}
-              </div>
-
-              <div className="mt-5 rounded-[1.05rem] border border-border/60 bg-white/72 p-2 shadow-[0_12px_30px_rgba(15,23,42,0.05)] dark:border-white/10 dark:bg-white/6">
+            <div className="mt-auto grid gap-3 pt-8">
+              {isAuthenticated ? (
+                <>
+                  <Button href="/library" variant="secondary" onClick={() => setMenuOpen(false)} className="w-full rounded-full">
+                    <LibraryBig className="h-4 w-4" aria-hidden="true" />
+                    {libraryLabel}
+                  </Button>
+                  <Button href={cartHref} variant="secondary" onClick={() => setMenuOpen(false)} className="w-full rounded-full">
+                    <ShoppingCart className="h-4 w-4" aria-hidden="true" />
+                    {cartLabel}{cartCount > 0 ? ` (${cartCount})` : ""}
+                  </Button>
+                </>
+              ) : null}
+              {authReady && !isAuthenticated ? (
+                <Button href="/login" className="w-full rounded-full" onClick={() => setMenuOpen(false)}>
+                  <LogIn className="h-4 w-4" aria-hidden="true" />
+                  {copy.actions.signIn}
+                </Button>
+              ) : null}
+              {authReady && isAuthenticated ? (
+                <button
+                  type="button"
+                  onClick={requestLogout}
+                  disabled={isLoggingOut}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-red-500/15 bg-red-500/5 px-5 py-3 text-sm font-bold text-red-600 transition hover:bg-red-500/10 disabled:opacity-60 dark:text-red-300"
+                >
+                  <LogOut className="h-4 w-4" aria-hidden="true" />
+                  {isLoggingOut ? loggingOutLabel : logoutLabel}
+                </button>
+              ) : null}
+              <div className="flex justify-center pt-1">
                 <HomeHeaderControls copy={copy.controls} />
               </div>
             </div>
@@ -282,50 +295,30 @@ export function HomeHeader({ copy }: HomeHeaderProps) {
         </div>
       ) : null}
 
-      <LogoutConfirmDialog
-        isArabic={isArabic}
-        open={logoutDialogOpen}
-        loading={isLoggingOut}
-        onCancel={() => setLogoutDialogOpen(false)}
-        onConfirm={handleLogout}
-      />
-    </>
-  );
-}
-
-function LogoutConfirmDialog({ isArabic, open, loading, onCancel, onConfirm }: Readonly<{ isArabic: boolean; open: boolean; loading: boolean; onCancel: () => void; onConfirm: () => void }>) {
-  if (!open) return null;
-
-  const title = isArabic ? "تأكيد تسجيل الخروج" : "Confirm logout";
-  const description = isArabic ? "هل أنت متأكد أنك تريد تسجيل الخروج من حسابك؟" : "Are you sure you want to log out of your account?";
-  const cancelLabel = isArabic ? "إلغاء" : "Cancel";
-  const confirmLabel = loading ? (isArabic ? "جاري الخروج..." : "Logging out...") : (isArabic ? "تسجيل الخروج" : "Logout");
-
-  return (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/50 px-4 py-6 backdrop-blur-[3px]" role="dialog" aria-modal="true" aria-labelledby="logout-confirm-title" onClick={onCancel}>
-      <div className="w-full max-w-md overflow-hidden rounded-[1.25rem] border border-border/70 bg-background shadow-[0_28px_90px_rgba(15,23,42,0.28)] dark:border-white/12 dark:bg-slate-950" onClick={(event) => event.stopPropagation()}>
-        <div className="flex items-start gap-4 px-5 pb-4 pt-5">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-500/10 text-red-600 dark:text-red-300">
-            <LogOut className="h-5 w-5" aria-hidden="true" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <h2 id="logout-confirm-title" className="text-lg font-black text-foreground">{title}</h2>
-            <p className="mt-2 text-sm leading-6 text-foreground/62">{description}</p>
+      {logoutDialogOpen ? (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="logout-title">
+          <button type="button" className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm" aria-label={isArabic ? "إلغاء تسجيل الخروج" : "Cancel logout"} onClick={() => setLogoutDialogOpen(false)} />
+          <div className="relative w-full max-w-sm rounded-[24px] border border-border bg-surface p-6 text-center shadow-[0_24px_70px_rgba(15,23,42,0.22)]">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-red-600 dark:text-red-300">
+              <LogOut className="h-5 w-5" aria-hidden="true" />
+            </div>
+            <h2 id="logout-title" className="mt-4 text-lg font-black text-foreground">
+              {isArabic ? "تأكيد تسجيل الخروج" : "Confirm logout"}
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-foreground/64">
+              {isArabic ? "هل تريد تسجيل الخروج من حسابك؟" : "Do you want to sign out of your account?"}
+            </p>
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <button type="button" onClick={() => setLogoutDialogOpen(false)} disabled={isLoggingOut} className="rounded-full border border-border bg-background px-4 py-2.5 text-sm font-bold text-foreground/70 transition hover:bg-foreground/5 disabled:opacity-60">
+                {isArabic ? "إلغاء" : "Cancel"}
+              </button>
+              <button type="button" onClick={handleLogout} disabled={isLoggingOut} className="rounded-full bg-red-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-700 disabled:opacity-60">
+                {isLoggingOut ? loggingOutLabel : logoutLabel}
+              </button>
+            </div>
           </div>
-          <button type="button" className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-foreground/50 transition hover:bg-foreground/5 hover:text-foreground" onClick={onCancel} aria-label={cancelLabel} disabled={loading}>
-            <X className="h-4 w-4" aria-hidden="true" />
-          </button>
         </div>
-        <div className="flex flex-col-reverse gap-2 border-t border-border/65 bg-section-bg/65 px-5 py-4 sm:flex-row sm:justify-end dark:border-white/10 dark:bg-white/5">
-          <button type="button" className="inline-flex items-center justify-center rounded-full border border-border bg-surface px-4 py-2 text-sm font-bold text-foreground transition hover:bg-foreground/5 disabled:opacity-60" onClick={onCancel} disabled={loading}>
-            {cancelLabel}
-          </button>
-          <button type="button" className="inline-flex items-center justify-center gap-2 rounded-full bg-red-600 px-4 py-2 text-sm font-bold text-white shadow-[0_12px_28px_rgba(220,38,38,0.22)] transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70" onClick={onConfirm} disabled={loading}>
-            <LogOut className="h-4 w-4" aria-hidden="true" />
-            {confirmLabel}
-          </button>
-        </div>
-      </div>
-    </div>
+      ) : null}
+    </>
   );
 }
