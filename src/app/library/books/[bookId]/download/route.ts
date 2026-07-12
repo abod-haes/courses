@@ -1,18 +1,30 @@
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
-import { ApiError } from "@/shared/api/client";
 import { websiteSessionCookieName } from "@/shared/api/website-session";
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
 import { localeCookieName } from "@/shared/lib/preferences";
 import type { Locale } from "@/shared/lib/types";
-import { getBookAccessFromApi, type BookAccessResponse } from "@/features/checkout/checkout.api";
 
 export const dynamic = "force-dynamic";
 
+const defaultBackendApiBaseUrl = "https://medical-courses.mustafafares.com/api";
 const defaultBackendOrigin = "https://medical-courses.mustafafares.com";
+const defaultAppOrigin = "https://iass-mocha.vercel.app";
 const localHosts = new Set(["localhost", "127.0.0.1", "0.0.0.0"]);
 
 type RouteContext = Readonly<{ params: Promise<{ bookId: string }> }>;
+
+type BookAccessResponse = Readonly<{
+  bookId: number;
+  title: string | Record<string, string | null>;
+  accessType: "external_url" | "signed_url";
+  accessUrl: string;
+  expiresAt: string | null;
+}>;
+
+type BookAccessEnvelope = Readonly<{
+  data?: BookAccessResponse;
+}>;
 
 async function getCurrentLocale(): Promise<Locale> {
   const cookieStore = await cookies();
@@ -30,45 +42,66 @@ async function requireSessionToken(returnTo: string): Promise<string | NextRespo
   return token;
 }
 
+function withProtocol(value: string): string {
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+}
+
 function appOrigin(): string {
-  const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim() || process.env.SITE_URL?.trim() || "https://iass-mocha.vercel.app";
-  return /^https?:\/\//i.test(configured) ? configured.replace(/\/+$/, "") : `https://${configured.replace(/\/+$/, "")}`;
+  const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim() || process.env.SITE_URL?.trim() || defaultAppOrigin;
+  return withProtocol(configured).replace(/\/+$/, "");
+}
+
+function isLocalHost(hostname: string): boolean {
+  return localHosts.has(hostname) || hostname.endsWith(".localhost");
 }
 
 function isFrontendHost(hostname: string): boolean {
-  const appHostname = (() => {
-    try {
-      return new URL(appOrigin()).hostname;
-    } catch {
-      return "";
-    }
-  })();
-
-  return hostname === appHostname || hostname.endsWith(".vercel.app");
+  try {
+    const appHostname = new URL(appOrigin()).hostname;
+    return hostname === appHostname || hostname.endsWith(".vercel.app");
+  } catch {
+    return hostname.endsWith(".vercel.app");
+  }
 }
 
-function backendOrigin(): string {
-  const configured = process.env.API_BASE_URL?.trim() || process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || defaultBackendOrigin;
-  const withProtocol = /^https?:\/\//i.test(configured) ? configured : `https://${configured}`;
+function normalizeBackendApiBaseUrl(value: string): string {
+  const configured = withProtocol(value.trim().replace(/\/+$/, ""));
 
   try {
-    const url = new URL(withProtocol);
-    url.pathname = url.pathname.replace(/\/api\/?$/i, "").replace(/\/+$/, "");
+    const url = new URL(configured);
+
+    if (isLocalHost(url.hostname) || isFrontendHost(url.hostname)) {
+      return defaultBackendApiBaseUrl;
+    }
+
+    url.pathname = url.pathname.replace(/\/+$/, "");
+    if (!url.pathname || url.pathname === "/") url.pathname = "/api";
+    if (!url.pathname.endsWith("/api")) url.pathname = `${url.pathname}/api`.replace(/\/+/g, "/");
     url.search = "";
     url.hash = "";
 
-    if (isLocalUrl(url) || isFrontendHost(url.hostname)) {
-      return defaultBackendOrigin;
-    }
+    return url.toString().replace(/\/+$/, "");
+  } catch {
+    return defaultBackendApiBaseUrl;
+  }
+}
 
+function backendApiBaseUrl(): string {
+  return normalizeBackendApiBaseUrl(
+    process.env.API_BASE_URL?.trim() || process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || defaultBackendApiBaseUrl,
+  );
+}
+
+function backendOrigin(): string {
+  try {
+    const url = new URL(backendApiBaseUrl());
+    url.pathname = url.pathname.replace(/\/api\/?$/i, "").replace(/\/+$/, "");
+    url.search = "";
+    url.hash = "";
     return url.toString().replace(/\/+$/, "");
   } catch {
     return defaultBackendOrigin;
   }
-}
-
-function isLocalUrl(url: URL): boolean {
-  return localHosts.has(url.hostname) || url.hostname.endsWith(".localhost");
 }
 
 function normalizeBookAccessUrl(value: string): string {
@@ -80,7 +113,7 @@ function normalizeBookAccessUrl(value: string): string {
   try {
     const url = new URL(accessUrl, apiOrigin);
 
-    if (isLocalUrl(url) || isFrontendHost(url.hostname)) {
+    if (isLocalHost(url.hostname) || isFrontendHost(url.hostname)) {
       const productionOrigin = new URL(apiOrigin);
       url.protocol = productionOrigin.protocol;
       url.host = productionOrigin.host;
@@ -123,16 +156,47 @@ function downloadFilename(access: BookAccessResponse, locale: Locale, url: strin
   return title.toLowerCase().endsWith(extension.toLowerCase()) ? title : `${title}${extension}`;
 }
 
-function apiErrorResponse(error: unknown, returnTo: string): NextResponse {
-  if (error instanceof ApiError && error.status === 401) {
-    return NextResponse.redirect(new URL(`/login?redirectTo=${encodeURIComponent(returnTo)}&sessionExpired=1`, appOrigin()));
+function backendAccessUrl(bookId: string): string {
+  const url = new URL(`${backendApiBaseUrl()}/my/books/${encodeURIComponent(bookId)}/access`);
+  return url.toString();
+}
+
+async function fetchBookAccess(bookId: string, locale: Locale, token: string): Promise<BookAccessResponse | NextResponse> {
+  const response = await fetch(backendAccessUrl(bookId), {
+    method: "GET",
+    cache: "no-store",
+    headers: {
+      Accept: "application/json",
+      "Accept-Language": locale,
+      "X-Accept-Language": locale,
+      Authorization: `Bearer ${token}`,
+    },
+  }).catch(() => null);
+
+  if (!response) {
+    return NextResponse.json({ message: "Could not reach the book access API." }, { status: 502 });
   }
 
-  if (error instanceof ApiError && (error.status === 403 || error.status === 404)) {
+  if (response.status === 401) {
+    return NextResponse.redirect(new URL(`/login?redirectTo=${encodeURIComponent(`/library/books/${bookId}/download`)}&sessionExpired=1`, appOrigin()));
+  }
+
+  if (response.status === 403 || response.status === 404) {
     return NextResponse.json({ message: "Book file is not available." }, { status: 404 });
   }
 
-  return NextResponse.json({ message: "Could not prepare book download." }, { status: 502 });
+  if (!response.ok) {
+    return NextResponse.json({ message: "Could not prepare book download." }, { status: 502 });
+  }
+
+  const payload = (await response.json().catch(() => null)) as BookAccessEnvelope | BookAccessResponse | null;
+  const access = payload && "data" in payload ? payload.data : payload;
+
+  if (!access?.accessUrl) {
+    return NextResponse.json({ message: "Book file is not available." }, { status: 404 });
+  }
+
+  return access;
 }
 
 function redirectToAccessUrl(accessUrl: string, filename: string): NextResponse {
@@ -150,13 +214,9 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
 
   if (typeof tokenOrRedirect !== "string") return tokenOrRedirect;
 
-  let access: BookAccessResponse;
+  const access = await fetchBookAccess(bookId, locale, tokenOrRedirect);
 
-  try {
-    access = await getBookAccessFromApi(bookId, locale, tokenOrRedirect);
-  } catch (error) {
-    return apiErrorResponse(error, returnTo);
-  }
+  if (access instanceof NextResponse) return access;
 
   const accessUrl = normalizeBookAccessUrl(access.accessUrl);
 
