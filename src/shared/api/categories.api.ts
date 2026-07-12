@@ -51,12 +51,12 @@ function readLocalized(value: unknown, locale: "ar" | "en"): string {
   return readLocalized(first, locale) || readLocalized(second, "en") || readLocalized(third, "ar");
 }
 
-function getCategoryLabel(category: RawCategory): string {
-  return readLocalized(category.name ?? category.title, "en") || String(category.name ?? category.title ?? "").trim();
+function getCategoryLabel(category: RawCategory, locale: "ar" | "en"): string {
+  return readLocalized(category.name ?? category.title, locale) || String(category.name ?? category.title ?? "").trim();
 }
 
 function getCategoryKey(category: RawCategory): string {
-  return String(category.id ?? category.slug ?? getCategoryLabel(category)).trim();
+  return String(category.id ?? category.slug ?? getCategoryLabel(category, "en")).trim();
 }
 
 export async function getCatalogCategoryOptions(
@@ -74,7 +74,7 @@ export async function getCatalogCategoryOptions(
 
     const categories = arrayFromPayload(response)
       .filter((category) => normalizeType(category.type ?? category.category_type) === type)
-      .map((category) => ({ key: getCategoryKey(category), label: getCategoryLabel(category) }))
+      .map((category) => ({ key: getCategoryKey(category), label: getCategoryLabel(category, locale) }))
       .filter((category) => category.key && category.label);
 
     return [{ key: "all", label: allLabel }, ...categories];
