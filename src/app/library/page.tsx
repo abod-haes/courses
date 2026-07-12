@@ -135,13 +135,13 @@ function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: Check
   return (
     <Reveal preset="fadeUp">
       <Card className="group overflow-hidden rounded-[18px] border border-border/70 bg-surface shadow-[0_10px_28px_rgba(15,23,42,0.045)] transition duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-[0_16px_38px_rgba(15,23,42,0.075)]">
-        <div className="grid gap-0 md:grid-cols-[13rem_minmax(0,1fr)_13rem]">
-          <div className="relative aspect-[16/9] overflow-hidden bg-primary/6 md:min-h-44">
+        <div className="flex min-w-0 flex-col lg:flex-row">
+          <div className="relative h-52 w-full shrink-0 overflow-hidden bg-primary/6 sm:h-60 lg:h-auto lg:w-72 xl:w-80">
             <Image
               src={item.image}
               alt={item.imageAlt}
               fill
-              sizes="(max-width: 767px) 100vw, 208px"
+              sizes="(max-width: 1023px) 100vw, 320px"
               className="object-cover transition duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/10 to-transparent" />
@@ -151,16 +151,16 @@ function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: Check
             </span>
           </div>
 
-          <div className="min-w-0 p-5 md:p-6">
+          <div className="min-w-0 flex-1 p-5 md:p-6">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-primary/7 px-3 py-1 text-[0.68rem] font-black text-primary">{item.category}</span>
+              <span className="max-w-full truncate rounded-full bg-primary/7 px-3 py-1 text-[0.68rem] font-black text-primary">{item.category}</span>
               <span className="rounded-full bg-section-bg px-3 py-1 text-[0.68rem] font-bold text-foreground/58">{item.accessLabel}</span>
             </div>
             <h3 className="mt-3 line-clamp-2 text-lg font-black text-foreground sm:text-xl">{item.title}</h3>
-            <p className="mt-2 line-clamp-2 text-sm text-foreground/62">{item.description}</p>
+            <p className="mt-2 line-clamp-2 text-sm leading-6 text-foreground/62">{item.description}</p>
           </div>
 
-          <div className="flex flex-col justify-between gap-4 border-t border-border/70 bg-section-bg/70 p-5 md:border-s md:border-t-0">
+          <div className="flex w-full shrink-0 flex-col justify-between gap-4 border-t border-border/70 bg-section-bg/70 p-5 lg:w-56 lg:border-s lg:border-t-0 xl:w-60">
             <div>
               <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-foreground/42">{isCourse ? copy.labels.lifetimeAccess : copy.labels.digitalAccess}</p>
               <p dir="ltr" className="mt-2 text-start text-xl font-black text-foreground">{item.price}</p>
