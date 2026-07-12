@@ -129,6 +129,10 @@ function getSlug(item: HomeCatalogItem): string {
   return item.href.split("/").filter(Boolean).at(-1) ?? item.title.toLowerCase().replaceAll(" ", "-");
 }
 
+function categoryKey(value: string): string {
+  return value.toLowerCase().trim().replace(/\s+/g, "-");
+}
+
 function getHomeMessages(locale: Locale): HomeMessages {
   return messagesByLocale[locale].Home as HomeMessages;
 }
@@ -141,6 +145,7 @@ function toArticleSummary(item: HomeCatalogItem, index: number): ArticleSummary 
     title: item.title,
     excerpt: item.description ?? item.author,
     category: item.category,
+    categoryKey: categoryKey(item.category),
     author: item.author,
     image: item.image,
     alt: item.alt,
@@ -178,7 +183,7 @@ export function filterArticles(
       const matchesSearch = normalizedSearch
         ? `${article.title} ${article.excerpt} ${article.category}`.toLowerCase().includes(normalizedSearch)
         : true;
-      const matchesCategory = category ? article.category === category : true;
+      const matchesCategory = category ? article.category === category || article.categoryKey === category : true;
       return matchesSearch && matchesCategory;
     })
     .sort((first, second) => {
