@@ -57,7 +57,15 @@ const socialIcons: Record<HomeMessages["footer"]["social"][number]["icon"], Comp
   facebook: FacebookIcon,
 };
 
+function isArabicFooter(copy: HomeMessages): boolean {
+  return copy.footer.learn === "التعلم" || copy.navigation.textbooks === "الكتب";
+}
+
 export function HomeFooter({ copy }: HomeFooterProps) {
+  const isArabic = isArabicFooter(copy);
+  const termsLabel = isArabic ? "الشروط والأحكام" : "Terms & Conditions";
+  const supportLabel = isArabic ? "الدعم" : "Support";
+
   return (
     <footer className="relative overflow-hidden  ">
       <div className="pointer-events-none h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" />
@@ -150,18 +158,23 @@ export function HomeFooter({ copy }: HomeFooterProps) {
                 <h4 className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-foreground/48">{copy.footer.support}</h4>
                 <ul className="mt-3 space-y-2.5 text-[0.88rem] text-foreground/70">
                   <li>
-                    <Link href="/about-us#academy" className="transition hover:text-primary max-sm:text-sm">
-                      {copy.footer.links.helpCenter}
+                    <Link href="/support" className="transition hover:text-primary max-sm:text-sm">
+                      {copy.footer.links.helpCenter || supportLabel}
                     </Link>
                   </li>
                   <li>
-                    <Link href="/about-us#founder" className="transition hover:text-primary max-sm:text-sm">
+                    <Link href="/support" className="transition hover:text-primary max-sm:text-sm">
                       {copy.footer.links.contact}
                     </Link>
                   </li>
                   <li>
-                    <Link href="/about-us" className="transition hover:text-primary max-sm:text-sm">
+                    <Link href="/privacy" className="transition hover:text-primary max-sm:text-sm">
                       {copy.footer.links.privacy}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/terms" className="transition hover:text-primary max-sm:text-sm">
+                      {termsLabel}
                     </Link>
                   </li>
                 </ul>
