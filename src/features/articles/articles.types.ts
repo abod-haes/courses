@@ -8,6 +8,7 @@ export type ArticleSummary = Readonly<{
   title: string;
   excerpt: string;
   category: string;
+  categoryKey: string;
   author: string;
   image: string;
   alt: string;
