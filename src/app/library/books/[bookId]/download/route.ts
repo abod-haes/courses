@@ -92,30 +92,18 @@ function sanitizeFilename(value: string): string {
     .slice(0, 120) || "book";
 }
 
-function extensionFromUrl(url: string, contentType: string | null): string {
+function extensionFromUrl(url: string): string {
   try {
-    const extension = new URL(url).pathname.match(/\.[a-z0-9]{2,8}$/i)?.[0];
-    if (extension) return extension;
+    return new URL(url).pathname.match(/\.[a-z0-9]{2,8}$/i)?.[0] ?? ".pdf";
   } catch {
-    // Ignore malformed URL and use the content type fallback.
+    return ".pdf";
   }
-
-  if (contentType?.includes("pdf")) return ".pdf";
-  if (contentType?.includes("epub")) return ".epub";
-  if (contentType?.includes("zip")) return ".zip";
-
-  return ".pdf";
 }
 
-function downloadFilename(access: BookAccessResponse, locale: Locale, url: string, contentType: string | null): string {
+function downloadFilename(access: BookAccessResponse, locale: Locale, url: string): string {
   const title = sanitizeFilename(localizedTitle(access.title, locale));
-  const extension = extensionFromUrl(url, contentType);
+  const extension = extensionFromUrl(url);
   return title.toLowerCase().endsWith(extension.toLowerCase()) ? title : `${title}${extension}`;
-}
-
-function contentDisposition(filename: string): string {
-  const asciiFallback = filename.replace(/[^\x20-\x7E]/g, "_").replace(/"/g, "'");
-  return `attachment; filename="${asciiFallback}"; filename*=UTF-8''${encodeURIComponent(filename)}`;
 }
 
 function apiErrorResponse(error: unknown, returnTo: string): NextResponse {
@@ -128,6 +116,13 @@ function apiErrorResponse(error: unknown, returnTo: string): NextResponse {
   }
 
   return NextResponse.json({ message: "Could not prepare book download." }, { status: 502 });
+}
+
+function redirectToAccessUrl(accessUrl: string, filename: string): NextResponse {
+  const response = NextResponse.redirect(accessUrl, 302);
+  response.headers.set("cache-control", "private, no-store, max-age=0");
+  response.headers.set("x-iass-download-filename", filename);
+  return response;
 }
 
 export async function GET(_request: NextRequest, { params }: RouteContext) {
@@ -152,22 +147,5 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
     return NextResponse.json({ message: "Book file is not available." }, { status: 404 });
   }
 
-  const upstream = await fetch(accessUrl, { cache: "no-store" }).catch(() => null);
-
-  if (!upstream?.ok || !upstream.body) {
-    return NextResponse.redirect(accessUrl);
-  }
-
-  const contentType = upstream.headers.get("content-type") ?? "application/octet-stream";
-  const filename = downloadFilename(access, locale, accessUrl, contentType);
-  const headers = new Headers();
-
-  headers.set("content-type", contentType);
-  headers.set("content-disposition", contentDisposition(filename));
-  headers.set("cache-control", "private, no-store, max-age=0");
-
-  const contentLength = upstream.headers.get("content-length");
-  if (contentLength) headers.set("content-length", contentLength);
-
-  return new Response(upstream.body, { status: 200, headers });
+  return redirectToAccessUrl(accessUrl, downloadFilename(access, locale, accessUrl));
 }
