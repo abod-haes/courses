@@ -8,9 +8,10 @@ type RevealProps = Readonly<{
   children: React.ReactNode;
   preset?: MotionPresetName;
   className?: string;
+  delay?: number;
 }>;
 
-export function Reveal({ children, preset = "fadeUp", className }: RevealProps) {
+export function Reveal({ children, preset = "fadeUp", className, delay = 0 }: RevealProps) {
   const shouldReduceMotion = useReducedMotion();
 
   if (shouldReduceMotion) {
@@ -24,6 +25,7 @@ export function Reveal({ children, preset = "fadeUp", className }: RevealProps) 
       initial="hidden"
       whileInView="visible"
       viewport={{ once: false, amount: 0.18 }}
+      transition={delay > 0 ? { delay } : undefined}
     >
       {children}
     </motion.div>
