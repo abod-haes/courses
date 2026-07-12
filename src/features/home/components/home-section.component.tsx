@@ -47,24 +47,27 @@ const dividerVariants: Variants = {
   },
 };
 
+const blueGlow = "from-primary/[0.14] via-blue-500/[0.06] to-transparent dark:from-blue-400/[0.16] dark:via-blue-400/[0.08]";
+const blueIcon = "bg-primary text-white shadow-primary/25 dark:bg-primary dark:text-white dark:shadow-blue-400/20";
+
 const sectionMeta = {
   courses: {
     icon: GraduationCap,
     eyebrow: "Courses",
-    glow: "from-primary/[0.14] via-blue-500/[0.06] to-transparent dark:from-blue-400/[0.16] dark:via-blue-400/[0.08]",
-    iconClass: "bg-primary text-white shadow-primary/25 dark:bg-primary dark:text-white dark:shadow-blue-400/20",
+    glow: blueGlow,
+    iconClass: blueIcon,
   },
   books: {
     icon: BookOpen,
     eyebrow: "Books",
-    glow: "from-secondary/[0.14] via-emerald-400/[0.08] to-transparent dark:from-emerald-300/[0.16] dark:via-emerald-300/[0.08]",
-    iconClass: "bg-secondary text-white shadow-secondary/25 dark:bg-secondary dark:text-white dark:shadow-emerald-300/20",
+    glow: blueGlow,
+    iconClass: blueIcon,
   },
   articles: {
     icon: Newspaper,
     eyebrow: "Articles",
-    glow: "from-primary/[0.14] via-blue-500/[0.06] to-transparent dark:from-blue-400/[0.16] dark:via-blue-400/[0.08]",
-    iconClass: "bg-primary text-white shadow-primary/25 dark:bg-primary dark:text-white dark:shadow-blue-400/20",
+    glow: blueGlow,
+    iconClass: blueIcon,
   },
 } satisfies Record<"courses" | "books" | "articles", { icon: typeof GraduationCap; eyebrow: string; glow: string; iconClass: string }>;
 
@@ -86,9 +89,9 @@ export function HomeSection({ section, title, description, emptyState, items, ct
         viewport={{ once: true, amount: 0.22, margin: "0px 0px -12% 0px" }}
         variants={headingVariants}
       >
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(37,99,235,0.075),transparent_38%,rgba(13,148,136,0.055))] dark:bg-[linear-gradient(135deg,rgba(96,165,250,0.13),transparent_38%,rgba(45,212,191,0.08))]" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(37,99,235,0.075),transparent_38%,rgba(29,23,213,0.055))] dark:bg-[linear-gradient(135deg,rgba(96,165,250,0.13),transparent_38%,rgba(59,130,246,0.08))]" />
         <div className="pointer-events-none absolute -end-8 -top-10 h-32 w-32 rounded-full border border-primary/10 bg-primary/5 dark:border-white/10 dark:bg-white/5" />
-        <div className="pointer-events-none absolute -bottom-12 start-10 h-28 w-28 rounded-full border border-secondary/10 bg-secondary/5 dark:border-white/10 dark:bg-white/5" />
+        <div className="pointer-events-none absolute -bottom-12 start-10 h-28 w-28 rounded-full border border-primary/10 bg-primary/5 dark:border-white/10 dark:bg-white/5" />
 
         <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex max-w-3xl items-start gap-4">
@@ -120,7 +123,6 @@ export function HomeSection({ section, title, description, emptyState, items, ct
             href={ctaHref}
             variant="primary"
             size="sm"
-
           >
             <span>{ctaLabel}</span>
             <span className="grid h-7 w-7 place-items-center rounded-full bg-white/[0.16] text-white transition duration-300 group-hover:translate-x-0.5 group-hover:bg-white/[0.24] dark:bg-white/[0.16] dark:text-white rtl:group-hover:-translate-x-0.5">
