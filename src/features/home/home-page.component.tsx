@@ -55,7 +55,7 @@ export async function HomePage() {
   const { copy, catalog } = await getHomePageData(locale, fallbackCopy);
 
   return (
-    <div className="home-scroll-area h-full overflow-y-auto">
+    <div className="min-h-full bg-background">
       <HomeHero copy={copy} />
       <AboutUsSection copy={copy} />
       <FounderSection copy={copy} />
