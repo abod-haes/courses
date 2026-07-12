@@ -35,6 +35,18 @@ function appOrigin(): string {
   return /^https?:\/\//i.test(configured) ? configured.replace(/\/+$/, "") : `https://${configured.replace(/\/+$/, "")}`;
 }
 
+function isFrontendHost(hostname: string): boolean {
+  const appHostname = (() => {
+    try {
+      return new URL(appOrigin()).hostname;
+    } catch {
+      return "";
+    }
+  })();
+
+  return hostname === appHostname || hostname.endsWith(".vercel.app");
+}
+
 function backendOrigin(): string {
   const configured = process.env.API_BASE_URL?.trim() || process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || defaultBackendOrigin;
   const withProtocol = /^https?:\/\//i.test(configured) ? configured : `https://${configured}`;
@@ -44,6 +56,11 @@ function backendOrigin(): string {
     url.pathname = url.pathname.replace(/\/api\/?$/i, "").replace(/\/+$/, "");
     url.search = "";
     url.hash = "";
+
+    if (isLocalUrl(url) || isFrontendHost(url.hostname)) {
+      return defaultBackendOrigin;
+    }
+
     return url.toString().replace(/\/+$/, "");
   } catch {
     return defaultBackendOrigin;
@@ -63,7 +80,7 @@ function normalizeBookAccessUrl(value: string): string {
   try {
     const url = new URL(accessUrl, apiOrigin);
 
-    if (isLocalUrl(url)) {
+    if (isLocalUrl(url) || isFrontendHost(url.hostname)) {
       const productionOrigin = new URL(apiOrigin);
       url.protocol = productionOrigin.protocol;
       url.host = productionOrigin.host;
