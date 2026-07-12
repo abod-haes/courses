@@ -105,12 +105,30 @@ function isMockApiBaseUrl(baseUrl: string): boolean {
   return normalized === "/api/mock" || normalized.endsWith("/api/mock");
 }
 
+function isFrontendApiBaseUrl(baseUrl: string): boolean {
+  const normalized = baseUrl.trim().replace(/\/+$/, "").toLowerCase();
+
+  if (normalized === "/api") return true;
+
+  try {
+    const url = new URL(baseUrl);
+    const browserHostname = typeof window !== "undefined" ? window.location.hostname : "";
+    return url.hostname === browserHostname || url.hostname.endsWith(".vercel.app");
+  } catch {
+    return false;
+  }
+}
+
 function resolveApiBaseUrl(): string {
   const configuredApiUrl = process.env.API_BASE_URL?.trim() || process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || defaultApiBaseUrl;
   const apiBaseUrl = normalizeApiBaseUrl(configuredApiUrl);
 
   if (!apiBaseUrl || isMockApiBaseUrl(apiBaseUrl)) {
     throw new ApiError("Mock API is disabled. Configure a real Laravel API base URL.", 0);
+  }
+
+  if (isFrontendApiBaseUrl(apiBaseUrl)) {
+    return defaultApiBaseUrl;
   }
 
   return apiBaseUrl;
@@ -122,7 +140,7 @@ function resolveServerFallbackBaseUrl(): string | null {
   if (!value) return null;
 
   const normalized = normalizeApiBaseUrl(value);
-  return normalized && !isMockApiBaseUrl(normalized) ? normalized : null;
+  return normalized && !isMockApiBaseUrl(normalized) && !isFrontendApiBaseUrl(normalized) ? normalized : null;
 }
 
 function languageFromSearchParams(params?: Record<string, SearchParamValue>): "ar" | "en" | null {
