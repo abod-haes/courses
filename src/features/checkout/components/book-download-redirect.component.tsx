@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Download, Loader2, RefreshCcw } from "lucide-react";
 import { usePreferences } from "@/components/preferences-provider";
 import { getBookAccessFromApi, type BookAccessResponse } from "@/features/checkout/checkout.api";
-import { ApiError } from "@/shared/api/client";
+import { ApiError, apiFetch } from "@/shared/api/client";
 import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
 
@@ -46,6 +46,59 @@ function logWarn(message: string, details?: unknown): void {
 
 function logError(message: string, error: unknown): void {
   console.error(debugPrefix, message, error);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function arrayFromPayload(value: unknown): unknown[] {
+  if (Array.isArray(value)) return value;
+  if (!isRecord(value)) return [];
+
+  if (Array.isArray(value.data)) return value.data;
+  if (Array.isArray(value.books)) return value.books;
+
+  if (isRecord(value.data)) {
+    if (Array.isArray(value.data.data)) return value.data.data;
+    if (Array.isArray(value.data.books)) return value.data.books;
+  }
+
+  return [];
+}
+
+function findBookInPayload(payload: unknown, bookId: string): unknown | null {
+  const targetId = String(bookId);
+
+  return (
+    arrayFromPayload(payload).find((item) => {
+      if (!isRecord(item)) return false;
+      return String(item.id ?? item.bookId ?? item.book_id ?? "") === targetId;
+    }) ?? null
+  );
+}
+
+async function logBookDataBeforeDownload(bookId: string, locale: "ar" | "en"): Promise<void> {
+  logDebug("loading book data before download", { bookId, locale });
+
+  const [libraryResult, catalogResult] = await Promise.allSettled([
+    apiFetch<unknown>("/my/library", { searchParams: { locale } }),
+    apiFetch<unknown>("/books", { searchParams: { locale, page: 1, perPage: 100 } }),
+  ]);
+
+  if (libraryResult.status === "fulfilled") {
+    logDebug("library payload before download", libraryResult.value);
+    logDebug("matched library book before download", findBookInPayload(libraryResult.value, bookId));
+  } else {
+    logWarn("failed to load library payload before download", libraryResult.reason);
+  }
+
+  if (catalogResult.status === "fulfilled") {
+    logDebug("catalog books payload before download", catalogResult.value);
+    logDebug("matched catalog book before download", findBookInPayload(catalogResult.value, bookId));
+  } else {
+    logWarn("failed to load catalog book payload before download", catalogResult.reason);
+  }
 }
 
 function isLocalHost(hostname: string): boolean {
@@ -207,6 +260,8 @@ export function BookDownloadRedirect({ bookId }: BookDownloadRedirectProps) {
       });
 
       try {
+        await logBookDataBeforeDownload(bookId, locale);
+
         logDebug("requesting access from backend", { bookId, locale });
         const access = await getBookAccessFromApi(bookId, locale);
         logDebug("backend access response", access);
