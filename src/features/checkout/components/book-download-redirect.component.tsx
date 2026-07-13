@@ -11,6 +11,7 @@ import { Card } from "@/shared/components/ui/card";
 const defaultBackendOrigin = "https://medical-courses.mustafafares.com";
 const localHosts = new Set(["localhost", "127.0.0.1", "0.0.0.0"]);
 const invalidBookPagePaths = new Set(["/books", "/courses", "/articles", "/library", "/checkout", "/login", "/register"]);
+const debugPrefix = "[book-download]";
 
 type Status = "loading" | "redirecting" | "error";
 
@@ -23,6 +24,28 @@ class InvalidBookAccessUrlError extends Error {
     super("invalid_external_book_access_url");
     this.name = "InvalidBookAccessUrlError";
   }
+}
+
+function logDebug(message: string, details?: unknown): void {
+  if (details === undefined) {
+    console.log(debugPrefix, message);
+    return;
+  }
+
+  console.log(debugPrefix, message, details);
+}
+
+function logWarn(message: string, details?: unknown): void {
+  if (details === undefined) {
+    console.warn(debugPrefix, message);
+    return;
+  }
+
+  console.warn(debugPrefix, message, details);
+}
+
+function logError(message: string, error: unknown): void {
+  console.error(debugPrefix, message, error);
 }
 
 function isLocalHost(hostname: string): boolean {
@@ -38,27 +61,36 @@ function backendOrigin(): string {
     url.pathname = url.pathname.replace(/\/api\/?$/i, "").replace(/\/+$/, "");
     url.search = "";
     url.hash = "";
-    return url.toString().replace(/\/+$/, "");
-  } catch {
+    const origin = url.toString().replace(/\/+$/, "");
+    logDebug("resolved backend origin", { configured, origin });
+    return origin;
+  } catch (error) {
+    logWarn("failed to resolve backend origin, using default", { configured, defaultBackendOrigin, error });
     return defaultBackendOrigin;
   }
 }
 
 function normalizeExternalAccessUrl(accessUrl: string): string {
   const value = accessUrl.trim();
-  if (!value) return "";
+  if (!value) {
+    logWarn("external access URL is empty");
+    return "";
+  }
 
   try {
     const url = new URL(value, backendOrigin());
+    const before = url.toString();
 
     if (isLocalHost(url.hostname)) {
       const productionOrigin = new URL(backendOrigin());
       url.protocol = productionOrigin.protocol;
       url.host = productionOrigin.host;
+      logWarn("external access URL had localhost and was normalized", { before, after: url.toString() });
     }
 
     return url.toString();
-  } catch {
+  } catch (error) {
+    logWarn("failed to normalize external access URL", { value, error });
     return value;
   }
 }
@@ -67,24 +99,42 @@ function isInvalidExternalBookUrl(value: string): boolean {
   try {
     const url = new URL(value);
     const pathname = url.pathname.replace(/\/+$/, "") || "/";
+    const result = url.port === "5173" || invalidBookPagePaths.has(pathname) || (pathname.startsWith("/books/") && !pathname.includes("/file"));
 
-    if (url.port === "5173") return true;
-    if (invalidBookPagePaths.has(pathname)) return true;
-    if (pathname.startsWith("/books/") && !pathname.includes("/file")) return true;
+    logDebug("validated external access URL", {
+      url: value,
+      hostname: url.hostname,
+      port: url.port || null,
+      pathname,
+      isInvalid: result,
+    });
 
-    return false;
-  } catch {
+    return result;
+  } catch (error) {
+    logWarn("external access URL is malformed", { value, error });
     return true;
   }
 }
 
 function normalizeAccessUrl(access: BookAccessResponse): string {
   const accessUrl = access.accessUrl.trim();
+  logDebug("normalizing access URL", {
+    bookId: access.bookId,
+    accessType: access.accessType,
+    rawAccessUrl: access.accessUrl,
+    expiresAt: access.expiresAt,
+  });
+
   if (!accessUrl) return "";
 
   if (access.accessType === "external_url") {
     const url = normalizeExternalAccessUrl(accessUrl);
     if (!url || isInvalidExternalBookUrl(url)) {
+      logWarn("rejected invalid external book URL", {
+        bookId: access.bookId,
+        rawAccessUrl: access.accessUrl,
+        normalizedUrl: url,
+      });
       throw new InvalidBookAccessUrlError();
     }
 
@@ -93,12 +143,16 @@ function normalizeAccessUrl(access: BookAccessResponse): string {
 
   if (accessUrl.startsWith("/")) {
     try {
-      return new URL(accessUrl, backendOrigin()).toString();
-    } catch {
+      const url = new URL(accessUrl, backendOrigin()).toString();
+      logDebug("normalized relative signed URL", { rawAccessUrl: accessUrl, normalizedUrl: url });
+      return url;
+    } catch (error) {
+      logWarn("failed to normalize relative signed URL", { rawAccessUrl: accessUrl, error });
       return accessUrl;
     }
   }
 
+  logDebug("using signed URL as returned by backend", { accessUrl });
   return accessUrl;
 }
 
@@ -145,22 +199,46 @@ export function BookDownloadRedirect({ bookId }: BookDownloadRedirectProps) {
       setMessage(copy.loading);
       setDownloadUrl("");
 
+      logDebug("start", {
+        bookId,
+        locale,
+        pageUrl: window.location.href,
+        apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? null,
+      });
+
       try {
+        logDebug("requesting access from backend", { bookId, locale });
         const access = await getBookAccessFromApi(bookId, locale);
+        logDebug("backend access response", access);
+
         const url = normalizeAccessUrl(access);
+        logDebug("final download URL", { url });
 
         if (!url) {
+          logWarn("final download URL is empty", { access });
           throw new Error("Book access URL is empty.");
         }
 
-        if (cancelled) return;
+        if (cancelled) {
+          logWarn("download flow cancelled before redirect", { url });
+          return;
+        }
 
         setDownloadUrl(url);
         setStatus("redirecting");
         setMessage(copy.redirecting);
+        logDebug("redirecting browser", { url });
         window.location.replace(url);
       } catch (error) {
         if (cancelled) return;
+        logError("failed", error);
+        if (error instanceof ApiError) {
+          logError("api error details", {
+            status: error.status,
+            message: error.message,
+            details: error.details,
+          });
+        }
         setStatus("error");
         setMessage(errorMessage(error, isArabic));
       }
@@ -170,6 +248,7 @@ export function BookDownloadRedirect({ bookId }: BookDownloadRedirectProps) {
 
     return () => {
       cancelled = true;
+      logDebug("cleanup", { bookId });
     };
   }, [bookId, copy.loading, copy.redirecting, isArabic, locale]);
 
