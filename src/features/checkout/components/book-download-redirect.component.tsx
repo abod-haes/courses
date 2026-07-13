@@ -10,12 +10,20 @@ import { Card } from "@/shared/components/ui/card";
 
 const defaultBackendOrigin = "https://medical-courses.mustafafares.com";
 const localHosts = new Set(["localhost", "127.0.0.1", "0.0.0.0"]);
+const invalidBookPagePaths = new Set(["/books", "/courses", "/articles", "/library", "/checkout", "/login", "/register"]);
 
 type Status = "loading" | "redirecting" | "error";
 
 type BookDownloadRedirectProps = Readonly<{
   bookId: string;
 }>;
+
+class InvalidBookAccessUrlError extends Error {
+  constructor() {
+    super("invalid_external_book_access_url");
+    this.name = "InvalidBookAccessUrlError";
+  }
+}
 
 function isLocalHost(hostname: string): boolean {
   return localHosts.has(hostname) || hostname.endsWith(".localhost");
@@ -55,12 +63,32 @@ function normalizeExternalAccessUrl(accessUrl: string): string {
   }
 }
 
+function isInvalidExternalBookUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    const pathname = url.pathname.replace(/\/+$/, "") || "/";
+
+    if (url.port === "5173") return true;
+    if (invalidBookPagePaths.has(pathname)) return true;
+    if (pathname.startsWith("/books/") && !pathname.includes("/file")) return true;
+
+    return false;
+  } catch {
+    return true;
+  }
+}
+
 function normalizeAccessUrl(access: BookAccessResponse): string {
   const accessUrl = access.accessUrl.trim();
   if (!accessUrl) return "";
 
   if (access.accessType === "external_url") {
-    return normalizeExternalAccessUrl(accessUrl);
+    const url = normalizeExternalAccessUrl(accessUrl);
+    if (!url || isInvalidExternalBookUrl(url)) {
+      throw new InvalidBookAccessUrlError();
+    }
+
+    return url;
   }
 
   if (accessUrl.startsWith("/")) {
@@ -75,6 +103,12 @@ function normalizeAccessUrl(access: BookAccessResponse): string {
 }
 
 function errorMessage(error: unknown, isArabic: boolean): string {
+  if (error instanceof InvalidBookAccessUrlError) {
+    return isArabic
+      ? "رابط ملف الكتاب المخزن في الباك إند غير صحيح. الرابط الحالي يفتح صفحة من الموقع وليس ملف كتاب. عدّل رابط ملف الكتاب من الداشبورد أو ارفع ملف الكتاب نفسه."
+      : "The stored book file URL is invalid. It points to a website page, not a book file. Update the book file URL in the dashboard or upload the book file.";
+  }
+
   if (error instanceof ApiError) {
     if (error.status === 401) return isArabic ? "انتهت الجلسة. سجل الدخول مرة أخرى لتحميل الكتاب." : "Your session expired. Sign in again to download the book.";
     if (error.status === 403) return isArabic ? "لا يوجد وصول لهذا الكتاب من هذا الحساب." : "This account does not have access to this book.";
