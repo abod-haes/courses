@@ -162,9 +162,8 @@ function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: Check
           </div>
 
           <div className="flex w-full shrink-0 flex-col justify-between gap-4 border-t border-border/70 bg-section-bg/70 p-5 lg:w-56 lg:border-s lg:border-t-0 xl:w-60">
-            <div>
-              <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-foreground/42">{isCourse ? copy.labels.lifetimeAccess : copy.labels.digitalAccess}</p>
-              <p dir="ltr" className="mt-2 text-start text-xl font-black text-foreground">{item.price}</p>
+            <div className="rounded-2xl border border-primary/12 bg-primary/7 px-4 py-3 text-center">
+              <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-primary">{isCourse ? copy.labels.lifetimeAccess : copy.labels.digitalAccess}</p>
             </div>
             {isCourse ? (
               <Button href={actionHref} className="w-full rounded-full">{actionLabel}</Button>
