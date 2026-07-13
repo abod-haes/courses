@@ -2,7 +2,7 @@ import { getBooks } from "@/features/books/api/books.api";
 import type { BookItemView } from "@/features/books/books.types";
 import { getCourses } from "@/features/courses/api/courses.api";
 import type { CourseItemView } from "@/features/courses/courses.types";
-import { ApiError, apiFetch } from "@/shared/api/client";
+import { ApiError, apiFetch, describeApiError } from "@/shared/api/client";
 import { currencyCode, formatMoney, localizedText, mediaAlt, mediaUrl, numberValue, rawObject } from "@/shared/api/normalizers";
 import type { ApiEnvelope, Book, CheckoutItemType, Course, Order, OrderItem, PaginatedEnvelope } from "@/shared/api/types";
 import type { Locale } from "@/shared/lib/types";
@@ -226,6 +226,62 @@ function uniqueCartItems(items: readonly CheckoutCartItem[]): CheckoutCartItem[]
   return result;
 }
 
+function byId<T extends { id: string | number }>(items: readonly T[]): Map<string, T> {
+  return new Map(items.map((item) => [String(item.id), item]));
+}
+
+async function getCatalogCoursesForLibrary(locale: Locale): Promise<CourseItemView[]> {
+  try {
+    const page = await getCourses({ locale, page: 1, perPage: 200 });
+    return page.data;
+  } catch (error) {
+    console.error("[library-api] failed to enrich purchased courses from catalog", describeApiError(error));
+    return [];
+  }
+}
+
+async function getCatalogBooksForLibrary(locale: Locale): Promise<BookItemView[]> {
+  try {
+    const page = await getBooks({ locale, page: 1, perPage: 200 });
+    return page.data;
+  } catch (error) {
+    console.error("[library-api] failed to enrich purchased books from catalog", describeApiError(error));
+    return [];
+  }
+}
+
+function enrichCourseFromCatalog(item: CheckoutItemView, catalog: CourseItemView | undefined, locale: Locale, copy: CheckoutCopy): CheckoutItemView {
+  if (!catalog) return item;
+  const catalogItem = courseToCheckoutItem(catalog, locale, copy);
+
+  return {
+    ...catalogItem,
+    id: item.id,
+    type: item.type,
+    typeLabel: item.typeLabel,
+    title: item.title || catalogItem.title,
+    description: item.description || catalogItem.description,
+    href: item.href,
+    accessLabel: item.accessLabel,
+  };
+}
+
+function enrichBookFromCatalog(item: CheckoutItemView, catalog: BookItemView | undefined, locale: Locale, copy: CheckoutCopy): CheckoutItemView {
+  if (!catalog) return item;
+  const catalogItem = bookToCheckoutItem(catalog, locale, copy);
+
+  return {
+    ...catalogItem,
+    id: item.id,
+    type: item.type,
+    typeLabel: item.typeLabel,
+    title: item.title || catalogItem.title,
+    description: item.description || catalogItem.description,
+    href: item.href,
+    accessLabel: item.accessLabel,
+  };
+}
+
 async function getStoredCheckoutSelectionFromApi(locale: Locale, copy: CheckoutCopy, cartItems: readonly CheckoutCartItem[]): Promise<CheckoutItemView[]> {
   const selectedItems = uniqueCartItems(cartItems);
   const shouldLoadCourses = selectedItems.some((item) => item.type === "course");
@@ -343,10 +399,19 @@ export async function getLibraryFromApi(locale: Locale, copy: CheckoutCopy, toke
   });
 
   const payload = response.data ?? response;
+  const courses = (payload.courses ?? []).map((course) => rawCourseToCheckoutItem(course, locale, copy));
+  const books = (payload.books ?? []).map((book) => rawBookToCheckoutItem(book, locale, copy));
+
+  const [catalogCourses, catalogBooks] = await Promise.all([
+    courses.length > 0 ? getCatalogCoursesForLibrary(locale) : Promise.resolve([]),
+    books.length > 0 ? getCatalogBooksForLibrary(locale) : Promise.resolve([]),
+  ]);
+  const catalogCoursesById = byId(catalogCourses);
+  const catalogBooksById = byId(catalogBooks);
 
   return {
-    courses: (payload.courses ?? []).map((course) => rawCourseToCheckoutItem(course, locale, copy)),
-    books: (payload.books ?? []).map((book) => rawBookToCheckoutItem(book, locale, copy)),
+    courses: courses.map((course) => enrichCourseFromCatalog(course, catalogCoursesById.get(String(course.id)), locale, copy)),
+    books: books.map((book) => enrichBookFromCatalog(book, catalogBooksById.get(String(book.id)), locale, copy)),
   };
 }
 
