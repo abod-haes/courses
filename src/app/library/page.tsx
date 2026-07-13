@@ -131,6 +131,7 @@ function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: Check
   const isCourse = item.type === "course";
   const Icon = isCourse ? PlayCircle : FileText;
   const actionHref = isCourse ? `/learn/courses/${item.id}` : `/library/books/${item.id}/download`;
+  const actionClassName = "relative inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-[0.9rem] font-semibold leading-none tracking-[-0.01em] !text-white shadow-[0_8px_22px_rgba(29,23,213,0.14)] transition duration-200 ease-out hover:bg-primary-strong hover:!text-white hover:shadow-[0_10px_26px_rgba(29,23,213,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:bg-primary dark:!text-white dark:hover:bg-primary/90 dark:hover:!text-white";
 
   return (
     <Reveal preset="fadeUp">
@@ -165,7 +166,13 @@ function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: Check
               <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-foreground/42">{isCourse ? copy.labels.lifetimeAccess : copy.labels.digitalAccess}</p>
               <p dir="ltr" className="mt-2 text-start text-xl font-black text-foreground">{item.price}</p>
             </div>
-            <Button href={actionHref} className="w-full rounded-full">{actionLabel}</Button>
+            {isCourse ? (
+              <Button href={actionHref} className="w-full rounded-full">{actionLabel}</Button>
+            ) : (
+              <a href={actionHref} className={actionClassName}>
+                {actionLabel}
+              </a>
+            )}
           </div>
         </div>
       </Card>
