@@ -8,6 +8,8 @@ import type { BookItemView } from "../books.types";
 type RawBook = Book & RawRecord;
 type RawPaginatedResponse<T> = PaginatedEnvelope<T> | T[] | { data?: T[] | { data?: T[]; meta?: RawRecord }; meta?: RawRecord; current_page?: number; per_page?: number; last_page?: number; total?: number; from?: number | null; to?: number | null };
 
+const backendMaxPerPage = 100;
+
 function text(value: unknown, fallback = "", locale: Locale = "en"): string {
   return localizedText(value, fallback, locale);
 }
@@ -16,6 +18,10 @@ function stringValue(value: unknown, fallback = ""): string {
   if (typeof value === "number" && Number.isFinite(value)) return String(value);
   if (typeof value === "string" && value.trim()) return value.trim();
   return fallback;
+}
+
+function requestPerPage(value: number | undefined): number | undefined {
+  return value ? Math.min(value, backendMaxPerPage) : value;
 }
 
 function formatPrice(value: unknown, currency: unknown, locale: Locale): string {
@@ -133,7 +139,7 @@ export async function getBooks(params: CatalogListParams): Promise<PaginatedEnve
       searchParams: {
         locale,
         page: params.page,
-        perPage: params.perPage,
+        perPage: requestPerPage(params.perPage),
         search: params.search,
         sort: params.sort ?? "-publishedAt",
         "filter[categoryId]": params.category,
