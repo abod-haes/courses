@@ -155,16 +155,12 @@ function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: Check
           <div className="min-w-0 flex-1 p-5 md:p-6">
             <div className="flex flex-wrap items-center gap-2">
               <span className="max-w-full truncate rounded-full bg-primary/7 px-3 py-1 text-[0.68rem] font-black text-primary">{item.category}</span>
-              <span className="rounded-full bg-section-bg px-3 py-1 text-[0.68rem] font-bold text-foreground/58">{item.accessLabel}</span>
             </div>
             <h3 className="mt-3 line-clamp-2 text-lg font-black text-foreground sm:text-xl">{item.title}</h3>
             <p className="mt-2 line-clamp-2 text-sm leading-6 text-foreground/62">{item.description}</p>
           </div>
 
-          <div className="flex w-full shrink-0 flex-col justify-between gap-4 border-t border-border/70 bg-section-bg/70 p-5 lg:w-56 lg:border-s lg:border-t-0 xl:w-60">
-            <div className="rounded-2xl border border-primary/12 bg-primary/7 px-4 py-3 text-center">
-              <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-primary">{isCourse ? copy.labels.lifetimeAccess : copy.labels.digitalAccess}</p>
-            </div>
+          <div className="flex w-full shrink-0 flex-col justify-end gap-4 border-t border-border/70 bg-section-bg/70 p-5 lg:w-56 lg:border-s lg:border-t-0 xl:w-60">
             {isCourse ? (
               <Button href={actionHref} className="w-full rounded-full">{actionLabel}</Button>
             ) : (
