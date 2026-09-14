@@ -20,6 +20,13 @@ function stringValue(value: unknown, fallback = ""): string {
   return fallback;
 }
 
+function isoDate(value: unknown): string | undefined {
+  const raw = stringValue(value);
+  if (!raw) return undefined;
+  const date = new Date(raw);
+  return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
+}
+
 function requestPerPage(value: number | undefined): number | undefined {
   return value ? Math.min(value, backendMaxPerPage) : value;
 }
@@ -128,6 +135,8 @@ function toBookView(book: RawBook, locale: Locale): BookItemView {
       authorBio: readStringList(book.authorBio ?? book.author_bio, locale),
       productDetails: readProductDetails(book, locale),
     },
+    publishedAt: isoDate(book.publishedAt ?? book.published_at),
+    updatedAt: isoDate(book.updatedAt ?? book.updated_at),
   };
 }
 
