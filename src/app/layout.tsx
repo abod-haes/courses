@@ -28,22 +28,32 @@ const cairo = Cairo({
   variable: "--font-cairo",
 });
 
-export const metadata: Metadata = createSeoMetadata({
-  title: "IASS - International Academy of Aesthetic Science and Skills",
-  description:
-    "IASS is a bilingual digital academy for aesthetic medicine courses, books, and articles focused on anatomy, safety, and clinical protocols.",
-  path: "/",
-  image: "/images/hero-blue.png",
-  imageAlt: "IASS aesthetic medicine academy",
-  keywords: [
-    "medical education platform",
-    "aesthetic medicine academy",
-    "clinical protocols",
-    "digital medical books",
-    "منصة تعليم طبي",
-    "أكاديمية طب تجميلي",
-  ],
-});
+export const metadata: Metadata = {
+  ...createSeoMetadata({
+    title: "IASS - International Academy of Aesthetic Science and Skills",
+    description:
+      "IASS is a bilingual digital academy for aesthetic medicine courses, books, and articles focused on anatomy, safety, and clinical protocols.",
+    path: "/",
+    image: "/images/hero-blue.png",
+    imageAlt: "IASS aesthetic medicine academy",
+    keywords: [
+      "medical education platform",
+      "aesthetic medicine academy",
+      "clinical protocols",
+      "digital medical books",
+      "منصة تعليم طبي",
+      "أكاديمية طب تجميلي",
+    ],
+  }),
+  manifest: "/manifest.webmanifest",
+  category: "education",
+  creator: "IASS",
+  publisher: "International Academy of Aesthetic Science and Skills",
+  icons: {
+    icon: [{ url: "/images/logo-blue.png", type: "image/png" }],
+    apple: [{ url: "/images/logo-blue.png", type: "image/png" }],
+  },
+};
 
 export default async function RootLayout({
   children,
