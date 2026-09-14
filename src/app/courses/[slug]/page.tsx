@@ -28,7 +28,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return createSeoMetadata({ title: "Course not found | IASS", description: "The requested course is not available right now.", path: "/courses", locale, noIndex: true });
   }
 
-  return createSeoMetadata({ title: `${course.title} | IASS Courses`, description: course.longDescription || course.description, path: course.href, locale, image: course.image, imageAlt: course.imageAlt, keywords: [course.title, course.category, course.instructor] });
+  return createSeoMetadata({
+    title: `${course.title} | IASS Courses`,
+    description: course.longDescription || course.description,
+    path: course.href,
+    locale,
+    image: course.image,
+    imageAlt: course.imageAlt,
+    keywords: [course.title, course.category, course.instructor],
+  });
 }
 
 export default async function Page(props: PageProps) {
@@ -44,7 +52,28 @@ export default async function Page(props: PageProps) {
 
   return (
     <>
-      <JsonLd data={[courseJsonLd({ title: course.title, description: course.longDescription || course.description, image: course.image, href: course.href, category: course.category }, locale), breadcrumbJsonLd([{ name: locale === "ar" ? "الرئيسية" : "Home", path: "/" }, { name: locale === "ar" ? "الكورسات" : "Courses", path: "/courses" }, { name: course.title, path: course.href }])]} />
+      <JsonLd
+        data={[
+          courseJsonLd(
+            {
+              title: course.title,
+              description: course.longDescription || course.description,
+              image: course.image,
+              href: course.href,
+              category: course.category,
+              instructor: course.instructor,
+              amount: course.amount,
+              currency: course.currency,
+            },
+            locale,
+          ),
+          breadcrumbJsonLd([
+            { name: locale === "ar" ? "الرئيسية" : "Home", path: "/" },
+            { name: locale === "ar" ? "الكورسات" : "Courses", path: "/courses" },
+            { name: course.title, path: course.href },
+          ]),
+        ]}
+      />
       <div className="min-h-full bg-section-bg">
         <section className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8 lg:py-8">
           <Link href="/courses" className="inline-flex items-center gap-2 text-xs font-bold text-primary hover:text-primary-strong">
