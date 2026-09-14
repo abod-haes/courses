@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { AboutPage } from "@/features/about/about-page.component";
+import { JsonLd } from "@/shared/components/seo/json-ld";
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
 import { localeCookieName } from "@/shared/lib/preferences";
-import { createSeoMetadata } from "@/shared/lib/seo";
+import { breadcrumbJsonLd, createSeoMetadata } from "@/shared/lib/seo";
 import type { Locale } from "@/shared/lib/types";
 
 function getLocaleFromCookies(cookieLocale: string | null | undefined): Locale {
@@ -32,5 +33,13 @@ export default async function Page() {
   const cookieStore = await cookies();
   const locale = getLocaleFromCookies(cookieStore.get(localeCookieName)?.value);
 
-  return <AboutPage locale={locale} />;
+  return (
+    <>
+      <JsonLd data={breadcrumbJsonLd([
+        { name: locale === "ar" ? "الرئيسية" : "Home", path: "/" },
+        { name: locale === "ar" ? "من نحن" : "About Us", path: "/about-us" },
+      ])} />
+      <AboutPage locale={locale} />
+    </>
+  );
 }
