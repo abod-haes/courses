@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
+import { JsonLd } from "@/shared/components/seo/json-ld";
 import { localeCookieName } from "@/shared/lib/preferences";
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
 import { defaultCatalogPerPage } from "@/shared/api/paging";
+import { createSeoMetadata, itemListJsonLd } from "@/shared/lib/seo";
 import type { Locale } from "@/shared/lib/types";
 import { getBooksPageCopy } from "./books.data";
 import { getBooks } from "./api/books.api";
@@ -15,13 +17,13 @@ function getLocaleFromCookies(cookieLocale: string | null | undefined): Locale {
 function buildMetadata(locale: Locale): Metadata {
   const copy = getBooksPageCopy(locale);
 
-  return {
-    title: { absolute: copy.meta.title },
+  return createSeoMetadata({
+    title: copy.meta.title,
     description: copy.meta.description,
-    alternates: { canonical: "/books" },
-    openGraph: { title: copy.meta.ogTitle, description: copy.meta.ogDescription, type: "website", url: "/books" },
-    twitter: { card: "summary_large_image", title: copy.meta.title, description: copy.meta.description },
-  };
+    path: "/books",
+    locale,
+    keywords: locale === "ar" ? ["كتب طبية", "كتب طب تجميلي", "كتب طبية رقمية"] : ["medical books", "aesthetic medicine books", "digital medical books"],
+  });
 }
 
 export async function generateBooksMetadata(): Promise<Metadata> {
@@ -37,5 +39,10 @@ export async function BooksPage() {
   const copy = getBooksPageCopy(locale);
   const initialPage = await getBooks({ locale, page: 1, perPage: defaultCatalogPerPage });
 
-  return <BooksLibrary copy={copy} initialPage={initialPage} locale={locale} />;
+  return (
+    <>
+      <JsonLd data={itemListJsonLd(initialPage.data.map((book) => ({ name: book.title, path: book.href })))} />
+      <BooksLibrary copy={copy} initialPage={initialPage} locale={locale} />
+    </>
+  );
 }

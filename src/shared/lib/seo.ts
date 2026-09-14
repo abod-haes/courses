@@ -5,12 +5,26 @@ function stripTrailingSlash(value: string): string {
   return value.replace(/\/$/, "");
 }
 
+function verificationMetadata(): Metadata["verification"] | undefined {
+  const google = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
+  const other = process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION?.trim();
+
+  if (!google && !other) return undefined;
+
+  return {
+    ...(google ? { google } : {}),
+    ...(other ? { other: { "msvalidate.01": other } } : {}),
+  };
+}
+
 export const siteConfig = {
   name: "IASS",
   fullName: "International Academy of Aesthetic Science and Skills",
   url: stripTrailingSlash(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   defaultImage: "/images/hero-blue.png",
   logo: "/images/logo-blue.png",
+  defaultDescription:
+    "IASS is a bilingual digital academy for aesthetic medicine courses, medical books, and educational articles focused on anatomy, safety, and clinical protocols.",
 } as const;
 
 export function absoluteUrl(path = "/"): string {
@@ -44,29 +58,36 @@ export function createSeoMetadata({
   noIndex?: boolean;
   keywords?: readonly string[];
 }>): Metadata {
-  const metaDescription = trimDescription(description);
+  const metaDescription = trimDescription(description || siteConfig.defaultDescription);
   const imageUrl = absoluteUrl(image);
+  const canonicalUrl = absoluteUrl(path);
 
   return {
     metadataBase: new URL(siteConfig.url),
     applicationName: siteConfig.name,
-    title,
+    title: { absolute: title },
     description: metaDescription,
     keywords: [
       "IASS",
       "International Academy of Aesthetic Science and Skills",
       "aesthetic medicine training",
-      "courses",
-      "books",
-      "articles",
-      "كورسات",
-      "كتب",
-      "مقالات",
+      "medical education",
+      "medical courses",
+      "medical books",
+      "كورسات طبية",
+      "كتب طبية",
+      "طب تجميلي",
       ...keywords,
     ],
-    alternates: { canonical: path },
+    alternates: { canonical: canonicalUrl },
+    verification: verificationMetadata(),
     robots: noIndex
-      ? { index: false, follow: false }
+      ? {
+          index: false,
+          follow: false,
+          nocache: true,
+          googleBot: { index: false, follow: false, noimageindex: true },
+        }
       : {
           index: true,
           follow: true,
@@ -84,7 +105,7 @@ export function createSeoMetadata({
       type,
       locale: locale === "ar" ? "ar_AR" : "en_US",
       siteName: siteConfig.name,
-      url: path,
+      url: canonicalUrl,
       images: [{ url: imageUrl, width: 1200, height: 630, alt: imageAlt }],
     },
     twitter: {
@@ -94,6 +115,15 @@ export function createSeoMetadata({
       images: [imageUrl],
     },
   };
+}
+
+export function createPrivatePageMetadata(title = `Account | ${siteConfig.name}`): Metadata {
+  return createSeoMetadata({
+    title,
+    description: "Private account area for authenticated IASS users.",
+    path: "/",
+    noIndex: true,
+  });
 }
 
 export type JsonLdData = string | number | boolean | null | JsonLdData[] | { readonly [key: string]: JsonLdData | undefined };
@@ -115,14 +145,10 @@ export function websiteJsonLd(locale: Locale): JsonLdData {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: siteConfig.name,
+    alternateName: siteConfig.fullName,
     url: siteConfig.url,
     inLanguage: locale,
-    publisher: { "@type": "Organization", name: siteConfig.fullName, logo: absoluteUrl(siteConfig.logo) },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${absoluteUrl("/courses")}?search={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
+    publisher: { "@type": "EducationalOrganization", name: siteConfig.fullName, logo: absoluteUrl(siteConfig.logo) },
   };
 }
 
@@ -134,6 +160,8 @@ export function organizationJsonLd(locale: Locale): JsonLdData {
     alternateName: siteConfig.name,
     url: siteConfig.url,
     logo: absoluteUrl(siteConfig.logo),
+    image: absoluteUrl(siteConfig.defaultImage),
+    description: siteConfig.defaultDescription,
     inLanguage: locale,
   };
 }
@@ -151,7 +179,33 @@ export function breadcrumbJsonLd(items: ReadonlyArray<Readonly<{ name: string; p
   };
 }
 
-export function courseJsonLd(course: Readonly<{ title: string; description: string; image: string; href: string; category: string }>, locale: Locale): JsonLdData {
+export function itemListJsonLd(items: ReadonlyArray<Readonly<{ name: string; path: string }>>): JsonLdData {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    numberOfItems: items.length,
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      url: absoluteUrl(item.path),
+    })),
+  };
+}
+
+export function courseJsonLd(
+  course: Readonly<{
+    title: string;
+    description: string;
+    image: string;
+    href: string;
+    category: string;
+    instructor?: string;
+    amount?: number;
+    currency?: string;
+  }>,
+  locale: Locale,
+): JsonLdData {
   return {
     "@context": "https://schema.org",
     "@type": "Course",
@@ -161,11 +215,34 @@ export function courseJsonLd(course: Readonly<{ title: string; description: stri
     url: absoluteUrl(course.href),
     inLanguage: locale,
     about: course.category,
-    provider: { "@type": "Organization", name: siteConfig.fullName, url: siteConfig.url },
+    provider: { "@type": "EducationalOrganization", name: siteConfig.fullName, url: siteConfig.url },
+    author: course.instructor ? { "@type": "Person", name: course.instructor } : undefined,
+    offers:
+      typeof course.amount === "number" && course.currency
+        ? {
+            "@type": "Offer",
+            url: absoluteUrl(course.href),
+            price: course.amount.toFixed(2),
+            priceCurrency: course.currency.toUpperCase(),
+            availability: "https://schema.org/InStock",
+          }
+        : undefined,
   };
 }
 
-export function bookJsonLd(book: Readonly<{ title: string; description: string; image: string; href: string; author: string; isbn?: string }>, locale: Locale): JsonLdData {
+export function bookJsonLd(
+  book: Readonly<{
+    title: string;
+    description: string;
+    image: string;
+    href: string;
+    author: string;
+    isbn?: string;
+    amount?: number;
+    currency?: string;
+  }>,
+  locale: Locale,
+): JsonLdData {
   return {
     "@context": "https://schema.org",
     "@type": "Book",
@@ -175,7 +252,49 @@ export function bookJsonLd(book: Readonly<{ title: string; description: string; 
     url: absoluteUrl(book.href),
     inLanguage: locale,
     isbn: book.isbn,
-    author: { "@type": "Person", name: book.author },
-    publisher: { "@type": "Organization", name: siteConfig.fullName, url: siteConfig.url },
+    author: book.author ? { "@type": "Person", name: book.author } : undefined,
+    publisher: { "@type": "EducationalOrganization", name: siteConfig.fullName, url: siteConfig.url },
+    offers:
+      typeof book.amount === "number" && book.currency
+        ? {
+            "@type": "Offer",
+            url: absoluteUrl(book.href),
+            price: book.amount.toFixed(2),
+            priceCurrency: book.currency.toUpperCase(),
+            availability: "https://schema.org/InStock",
+          }
+        : undefined,
+  };
+}
+
+export function articleJsonLd(
+  article: Readonly<{
+    title: string;
+    description: string;
+    image: string;
+    href: string;
+    author: string;
+    publishedAt?: string;
+    updatedAt?: string;
+  }>,
+  locale: Locale,
+): JsonLdData {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: trimDescription(article.description, 500),
+    image: [absoluteUrl(article.image)],
+    url: absoluteUrl(article.href),
+    mainEntityOfPage: { "@type": "WebPage", "@id": absoluteUrl(article.href) },
+    inLanguage: locale,
+    datePublished: article.publishedAt,
+    dateModified: article.updatedAt || article.publishedAt,
+    author: { "@type": "Person", name: article.author || siteConfig.fullName },
+    publisher: {
+      "@type": "EducationalOrganization",
+      name: siteConfig.fullName,
+      logo: { "@type": "ImageObject", url: absoluteUrl(siteConfig.logo) },
+    },
   };
 }

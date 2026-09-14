@@ -1,5 +1,19 @@
 import type { MetadataRoute } from "next";
-import { absoluteUrl } from "@/shared/lib/seo";
+import { absoluteUrl, siteConfig } from "@/shared/lib/seo";
+
+const privateRoutes = [
+  "/api/",
+  "/checkout",
+  "/payment/",
+  "/library",
+  "/orders",
+  "/learn/",
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/forget-password",
+  "/reset-password",
+] as const;
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -7,9 +21,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/checkout", "/payment/", "/library", "/orders"],
+        disallow: [...privateRoutes],
       },
     ],
     sitemap: absoluteUrl("/sitemap.xml"),
+    host: siteConfig.url,
   };
 }

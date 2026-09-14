@@ -56,6 +56,8 @@ export type CourseItemView = Readonly<{
     locked?: boolean;
   }>;
   href: string;
+  publishedAt?: string;
+  updatedAt?: string;
 }>;
 
 export type CoursesPageCopy = Readonly<{
