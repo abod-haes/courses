@@ -1,9 +1,18 @@
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { AlertCircle, Home, LibraryBig } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
 import { localeCookieName } from "@/shared/lib/preferences";
+import { createSeoMetadata } from "@/shared/lib/seo";
+
+export const metadata: Metadata = createSeoMetadata({
+  title: "Page Not Found | IASS",
+  description: "The requested page is not available.",
+  path: "/",
+  noIndex: true,
+});
 
 export default async function NotFound() {
   const cookieStore = await cookies();
