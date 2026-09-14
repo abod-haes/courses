@@ -61,6 +61,8 @@ export type BookItemView = Readonly<{
   image: string;
   imageAlt: string;
   details: BookDetailView;
+  publishedAt?: string;
+  updatedAt?: string;
 }>;
 
 export type BooksPageCopy = Readonly<{
