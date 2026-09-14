@@ -60,6 +60,7 @@ async function bookEntries(): Promise<MetadataRoute.Sitemap> {
     entries.push(
       ...result.data.map((book) => ({
         url: absoluteUrl(book.href),
+        lastModified: validDate(book.updatedAt ?? book.publishedAt),
         changeFrequency: "monthly" as const,
         priority: 0.75,
       })),
