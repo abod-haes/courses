@@ -24,7 +24,12 @@ const nextConfig: NextConfig = {
       {
         source: "/about",
         destination: "/about-us",
-        permanent: false,
+        permanent: true,
+      },
+      {
+        source: "/forget-password",
+        destination: "/forgot-password",
+        permanent: true,
       },
     ];
   },
