@@ -1,7 +1,4 @@
 import type { MetadataRoute } from "next";
-import { getArticles } from "@/features/articles/api/articles.api";
-import { getBooks } from "@/features/books/api/books.api";
-import { getCourses } from "@/features/courses/api/courses.api";
 import { absoluteUrl } from "@/shared/lib/seo";
 
 type StaticRoute = Readonly<{
@@ -9,6 +6,8 @@ type StaticRoute = Readonly<{
   priority: number;
   changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
 }>;
+
+type RawRecord = Record<string, unknown>;
 
 const staticRoutes: readonly StaticRoute[] = [
   { path: "/", priority: 1, changeFrequency: "weekly" },
@@ -23,71 +22,100 @@ const staticRoutes: readonly StaticRoute[] = [
 
 const sitemapPageSize = 100;
 const sitemapMaxPages = 100;
+const defaultApiBaseUrl = "https://medical-courses.mustafafares.com/api";
 
-function validDate(value?: string): Date | undefined {
-  if (!value) return undefined;
-  const date = new Date(value);
+function record(value: unknown): RawRecord | null {
+  return typeof value === "object" && value !== null && !Array.isArray(value) ? (value as RawRecord) : null;
+}
+
+function numberValue(value: unknown, fallback: number): number {
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function localizedString(value: unknown): string {
+  if (typeof value === "string") return value.trim();
+  const object = record(value);
+  if (!object) return "";
+  const candidate = object.en ?? object.ar;
+  return typeof candidate === "string" ? candidate.trim() : "";
+}
+
+function validDate(value: unknown): Date | undefined {
+  const text = typeof value === "string" ? value : "";
+  if (!text) return undefined;
+  const date = new Date(text);
   return Number.isNaN(date.getTime()) ? undefined : date;
 }
 
-async function courseEntries(): Promise<MetadataRoute.Sitemap> {
-  const entries: MetadataRoute.Sitemap = [];
-
-  for (let page = 1; page <= sitemapMaxPages; page += 1) {
-    const result = await getCourses({ locale: "en", page, perPage: sitemapPageSize, sort: "-publishedAt" });
-
-    entries.push(
-      ...result.data.map((course) => ({
-        url: absoluteUrl(course.href),
-        lastModified: validDate(course.updatedAt ?? course.publishedAt),
-        changeFrequency: "monthly" as const,
-        priority: 0.8,
-      })),
-    );
-
-    if (page >= result.meta.lastPage) break;
-  }
-
-  return entries;
+function apiBaseUrl(): string {
+  return (process.env.API_BASE_URL?.trim() || process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || defaultApiBaseUrl).replace(/\/+$/, "");
 }
 
-async function bookEntries(): Promise<MetadataRoute.Sitemap> {
-  const entries: MetadataRoute.Sitemap = [];
-
-  for (let page = 1; page <= sitemapMaxPages; page += 1) {
-    const result = await getBooks({ locale: "en", page, perPage: sitemapPageSize, sort: "-publishedAt" });
-
-    entries.push(
-      ...result.data.map((book) => ({
-        url: absoluteUrl(book.href),
-        lastModified: validDate(book.updatedAt ?? book.publishedAt),
-        changeFrequency: "monthly" as const,
-        priority: 0.75,
-      })),
-    );
-
-    if (page >= result.meta.lastPage) break;
+function pagePayload(payload: unknown, currentPage: number): { items: RawRecord[]; lastPage: number } {
+  if (Array.isArray(payload)) {
+    return { items: payload.map(record).filter((item): item is RawRecord => Boolean(item)), lastPage: currentPage };
   }
 
-  return entries;
+  const root = record(payload) ?? {};
+  const nested = record(root.data);
+  const source = Array.isArray(root.data) ? root.data : Array.isArray(nested?.data) ? nested.data : [];
+  const items = source.map(record).filter((item): item is RawRecord => Boolean(item));
+  const meta = record(root.meta) ?? record(nested?.meta) ?? nested ?? root;
+  const lastPage = numberValue(meta.lastPage ?? meta.last_page, currentPage);
+
+  return { items, lastPage };
 }
 
-async function articleEntries(): Promise<MetadataRoute.Sitemap> {
+async function fetchCatalogPage(resource: "courses" | "books" | "articles", page: number): Promise<{ items: RawRecord[]; lastPage: number }> {
+  const url = new URL(`${apiBaseUrl()}/${resource}`);
+  url.searchParams.set("page", String(page));
+  url.searchParams.set("perPage", String(sitemapPageSize));
+  url.searchParams.set("sort", "-publishedAt");
+
+  const response = await fetch(url, {
+    headers: {
+      Accept: "application/json",
+      "Accept-Language": "en",
+      "X-Accept-Language": "en",
+    },
+    next: { revalidate: 3600 },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Sitemap API request failed: ${resource} returned ${response.status}`);
+  }
+
+  return pagePayload(await response.json(), page);
+}
+
+async function dynamicEntries(
+  resource: "courses" | "books" | "articles",
+  prefix: "/courses" | "/books" | "/articles",
+  priority: number,
+): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [];
 
-  for (let page = 1; page <= sitemapMaxPages; page += 1) {
-    const result = await getArticles({ locale: "en", page, perPage: sitemapPageSize, sort: "-publishedAt" });
+  try {
+    for (let page = 1; page <= sitemapMaxPages; page += 1) {
+      const result = await fetchCatalogPage(resource, page);
 
-    entries.push(
-      ...result.data.map((article) => ({
-        url: absoluteUrl(article.href),
-        lastModified: validDate(article.publishedAt),
-        changeFrequency: "monthly" as const,
-        priority: 0.7,
-      })),
-    );
+      for (const item of result.items) {
+        const slug = localizedString(item.slug);
+        if (!slug) continue;
 
-    if (page >= result.meta.lastPage) break;
+        entries.push({
+          url: absoluteUrl(`${prefix}/${encodeURIComponent(slug)}`),
+          lastModified: validDate(item.updatedAt ?? item.updated_at ?? item.publishedAt ?? item.published_at),
+          changeFrequency: "monthly",
+          priority,
+        });
+      }
+
+      if (page >= result.lastPage) break;
+    }
+  } catch (error) {
+    console.error(`[sitemap] failed to load ${resource}`, error instanceof Error ? error.message : error);
   }
 
   return entries;
@@ -102,7 +130,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route.priority,
   }));
 
-  const [courses, books, articles] = await Promise.all([courseEntries(), bookEntries(), articleEntries()]);
+  const [courses, books, articles] = await Promise.all([
+    dynamicEntries("courses", "/courses", 0.8),
+    dynamicEntries("books", "/books", 0.75),
+    dynamicEntries("articles", "/articles", 0.7),
+  ]);
 
-  return [...staticEntries, ...courses, ...books, ...articles];
+  const uniqueEntries = new Map<string, MetadataRoute.Sitemap[number]>();
+  for (const entry of [...staticEntries, ...courses, ...books, ...articles]) uniqueEntries.set(entry.url, entry);
+
+  return [...uniqueEntries.values()];
 }
