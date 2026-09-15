@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const isArabic = locale === "ar";
 
   return createSeoMetadata({
-    title: isArabic ? "من نحن | IASS" : "About Us | IASS",
+    title: isArabic ? "عن أكاديمية IASS للطب التجميلي | IASS" : "About IASS Medical Academy | IASS",
     description: isArabic
       ? "تعرف على الأكاديمية الدولية لعلوم ومهارات التجميل IASS والدكتور إياس عكاري ورؤية التدريب الاحترافي في الطب التجميلي."
       : "Learn about IASS, Dr. Iyas Akkari, and the academy vision for professional aesthetic medicine training.",
