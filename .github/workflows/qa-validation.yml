@@ -6,7 +6,41 @@ on:
       - 004-production-validation-fixes
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
+  security-upgrade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: 004-production-validation-fixes
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Upgrade vulnerable framework dependencies when needed
+        run: |
+          if grep -q '"next": "16.2.9"' package.json; then
+            npm install next@16.3.5 eslint-config-next@16.3.5 --save-exact
+            npm audit fix || true
+            npm audit --omit=dev --audit-level=high
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package.json package-lock.json
+            git commit -m "chore: upgrade Next.js security patch"
+            git push origin HEAD:004-production-validation-fixes
+          else
+            echo "Secure Next.js patch already applied."
+          fi
+
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -28,8 +62,6 @@ jobs:
         run: npm ci
 
       - name: Audit production dependencies
-        id: dependency_audit
-        continue-on-error: true
         run: npm audit --omit=dev --audit-level=high
 
       - name: Lint
@@ -50,6 +82,16 @@ jobs:
           done
           cat /tmp/iass-next.log
           exit 1
+
+      - name: Validate baseline security headers
+        run: |
+          headers="$(curl -fsSI http://127.0.0.1:3000/)"
+          echo "$headers"
+          echo "$headers" | grep -qi '^x-content-type-options: nosniff'
+          echo "$headers" | grep -qi '^x-frame-options: DENY'
+          echo "$headers" | grep -qi '^referrer-policy: strict-origin-when-cross-origin'
+          echo "$headers" | grep -qi '^permissions-policy:'
+          echo "$headers" | grep -qi '^strict-transport-security:'
 
       - name: Audit local production build
         env:
