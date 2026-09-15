@@ -104,7 +104,7 @@ export default async function Page({ searchParams }: LibraryPageProps) {
         {activeItems.length > 0 ? (
           <div className="grid gap-4">
             {activeItems.map((item) => (
-              <LibraryResourceCard key={`${item.type}-${item.id}`} item={item} copy={copy} actionLabel={item.type === "course" ? copy.library.continueLearning : copy.library.accessBook} />
+              <LibraryResourceCard key={`${item.type}-${item.id}`} item={item} actionLabel={item.type === "course" ? copy.library.continueLearning : copy.library.accessBook} />
             ))}
           </div>
         ) : (
@@ -127,7 +127,7 @@ function LibraryTabLink({ href, isActive, icon, label, count }: Readonly<{ href:
   );
 }
 
-function LibraryResourceCard({ item, copy, actionLabel }: Readonly<{ item: CheckoutItemView; copy: CheckoutCopy; actionLabel: string }>) {
+function LibraryResourceCard({ item, actionLabel }: Readonly<{ item: CheckoutItemView; actionLabel: string }>) {
   const isCourse = item.type === "course";
   const Icon = isCourse ? PlayCircle : FileText;
   const actionHref = isCourse ? `/learn/courses/${item.id}` : `/library/books/${item.id}/download`;
