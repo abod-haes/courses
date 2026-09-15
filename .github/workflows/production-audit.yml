@@ -1,9 +1,6 @@
 name: Production website audit
 
 on:
-  push:
-    branches:
-      - 004-production-validation-fixes
   workflow_dispatch:
 
 jobs:
