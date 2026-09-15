@@ -1,0 +1,78 @@
+name: QA validation
+
+on:
+  push:
+    branches:
+      - 004-production-validation-fixes
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_PUBLIC_SITE_URL: https://dr-iyas.com
+      API_BASE_URL: https://medical-courses.mustafafares.com/api
+      NEXT_PUBLIC_API_BASE_URL: https://medical-courses.mustafafares.com/api
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build production app
+        run: npm run build
+
+      - name: Start production app
+        run: |
+          npm run start -- -p 3000 > /tmp/iass-next.log 2>&1 &
+          echo $! > /tmp/iass-next.pid
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/iass-next.log
+          exit 1
+
+      - name: Audit local production build
+        env:
+          TARGET_URL: http://127.0.0.1:3000
+          PUBLIC_URL: https://dr-iyas.com
+        run: node scripts/local-build-audit.mjs
+
+      - name: Show server log
+        if: always()
+        run: cat /tmp/iass-next.log || true
+
+  dns:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: DNS and TLS diagnostics
+        run: |
+          set +e
+          echo '=== getent ==='
+          getent ahosts dr-iyas.com
+          echo '=== dig A ==='
+          dig +short A dr-iyas.com
+          echo '=== dig AAAA ==='
+          dig +short AAAA dr-iyas.com
+          echo '=== dig NS ==='
+          dig +short NS dr-iyas.com
+          echo '=== curl HTTPS ==='
+          curl -vkI --connect-timeout 10 --max-time 20 https://dr-iyas.com/
+          echo '=== curl HTTP ==='
+          curl -vI --connect-timeout 10 --max-time 20 http://dr-iyas.com/
+          exit 0
