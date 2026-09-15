@@ -1,0 +1,40 @@
+name: Production website audit
+
+on:
+  push:
+    branches:
+      - 004-production-validation-fixes
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run production audit
+        id: audit
+        continue-on-error: true
+        env:
+          SITE_URL: https://dr-iyas.com
+          API_URL: https://medical-courses.mustafafares.com/api
+        run: node scripts/production-audit.mjs
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-audit-report
+          path: production-audit.json
+          if-no-files-found: warn
+
+      - name: Fail when audit failed
+        if: always()
+        run: test "${{ steps.audit.outcome }}" = "success"
