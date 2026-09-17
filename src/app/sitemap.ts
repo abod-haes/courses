@@ -22,7 +22,7 @@ const staticRoutes: readonly StaticRoute[] = [
 
 const sitemapPageSize = 100;
 const sitemapMaxPages = 100;
-const defaultApiBaseUrl = "https://medical-courses.mustafafares.com/api";
+const defaultApiBaseUrl = "https://api-iass.dr-iyas.com/api";
 
 function record(value: unknown): RawRecord | null {
   return typeof value === "object" && value !== null && !Array.isArray(value) ? (value as RawRecord) : null;

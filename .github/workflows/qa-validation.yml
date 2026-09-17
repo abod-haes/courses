@@ -8,9 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      NEXT_PUBLIC_SITE_URL: https://dr-iyas.com
-      API_BASE_URL: https://medical-courses.mustafafares.com/api
-      NEXT_PUBLIC_API_BASE_URL: https://medical-courses.mustafafares.com/api
+      NEXT_PUBLIC_SITE_URL: https://iass.dr-iyas.com
+      API_BASE_URL: https://api-iass.dr-iyas.com/api
+      NEXT_PUBLIC_API_BASE_URL: https://api-iass.dr-iyas.com/api
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,7 +59,7 @@ jobs:
       - name: Audit local production build
         env:
           TARGET_URL: http://127.0.0.1:3000
-          PUBLIC_URL: https://dr-iyas.com
+          PUBLIC_URL: https://iass.dr-iyas.com
         run: node scripts/local-build-audit.mjs
 
       - name: Show server log
@@ -73,16 +73,18 @@ jobs:
       - name: DNS and TLS diagnostics
         run: |
           set +e
-          echo '=== getent ==='
-          getent ahosts dr-iyas.com
-          echo '=== dig A ==='
-          dig +short A dr-iyas.com
-          echo '=== dig AAAA ==='
-          dig +short AAAA dr-iyas.com
-          echo '=== dig NS ==='
+          echo '=== website getent ==='
+          getent ahosts iass.dr-iyas.com
+          echo '=== website dig A ==='
+          dig +short A iass.dr-iyas.com
+          echo '=== website dig AAAA ==='
+          dig +short AAAA iass.dr-iyas.com
+          echo '=== API dig A ==='
+          dig +short A api-iass.dr-iyas.com
+          echo '=== parent NS ==='
           dig +short NS dr-iyas.com
-          echo '=== curl HTTPS ==='
-          curl -vkI --connect-timeout 10 --max-time 20 https://dr-iyas.com/
-          echo '=== curl HTTP ==='
-          curl -vI --connect-timeout 10 --max-time 20 http://dr-iyas.com/
+          echo '=== website HTTPS ==='
+          curl -vkI --connect-timeout 10 --max-time 20 https://iass.dr-iyas.com/
+          echo '=== API health ==='
+          curl -vkI --connect-timeout 10 --max-time 20 https://api-iass.dr-iyas.com/api/health
           exit 0
