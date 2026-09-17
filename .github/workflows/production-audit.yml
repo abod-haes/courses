@@ -20,8 +20,8 @@ jobs:
         id: audit
         continue-on-error: true
         env:
-          SITE_URL: https://dr-iyas.com
-          API_URL: https://medical-courses.mustafafares.com/api
+          SITE_URL: https://iass.dr-iyas.com
+          API_URL: https://api-iass.dr-iyas.com/api
         run: node scripts/production-audit.mjs
 
       - name: Upload audit report
