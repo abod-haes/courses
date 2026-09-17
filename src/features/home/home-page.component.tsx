@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { SiteContainer } from "@/shared/components/layout/site-container";
 import { localeCookieName } from "@/shared/lib/preferences";
 import { resolveLocale } from "@/shared/lib/helpers/locale.helper";
+import { createSeoMetadata } from "@/shared/lib/seo";
 import type { Locale } from "@/shared/lib/types";
 import { getHomePageData } from "./api/home.api";
 import { getHomeMessages } from "./home.data";
@@ -18,25 +19,25 @@ function getLocaleFromCookies(cookieLocale: string | null | undefined): Locale {
 
 function buildMetadata(locale: Locale): Metadata {
   const copy = getHomeMessages(locale);
+  const metadata = createSeoMetadata({
+    title: copy.meta.title,
+    description: copy.meta.description,
+    path: "/",
+    locale,
+    image: "/images/hero-blue.png",
+    imageAlt: locale === "ar" ? "أكاديمية IASS للطب التجميلي" : "IASS aesthetic medicine academy",
+    keywords:
+      locale === "ar"
+        ? ["IASS", "الدكتور إياس عكاري", "إياس عكاري", "طب تجميلي", "تدريب طب تجميلي"]
+        : ["IASS", "Dr. Iyas Akkari", "Iyas Akkari", "aesthetic medicine", "aesthetic medicine training"],
+  });
 
   return {
-    title: {
-      absolute: copy.meta.title,
-    },
-    description: copy.meta.description,
-    alternates: {
-      canonical: "/",
-    },
+    ...metadata,
     openGraph: {
+      ...metadata.openGraph,
       title: copy.meta.ogTitle,
       description: copy.meta.ogDescription,
-      type: "website",
-      url: "/",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: copy.meta.title,
-      description: copy.meta.description,
     },
   };
 }
