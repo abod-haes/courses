@@ -33,6 +33,21 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: securityHeaders,
       },
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "iass-mocha.vercel.app",
+          },
+        ],
+        headers: [
+          {
+            key: "X-Robots-Tag",
+            value: "noindex, nofollow, noarchive, nosnippet",
+          },
+        ],
+      },
     ];
   },
   async redirects() {
